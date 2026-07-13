@@ -36,6 +36,11 @@ export const LayersAnimation: FC = () => {
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const isAnimating = useRef(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
 
   // Set initial states
   useEffect(() => {
@@ -192,7 +197,7 @@ export const LayersAnimation: FC = () => {
             key={i}
             ref={(el) => { layerItemsRef.current[i] = el; }}
             className="absolute inset-0 w-full h-full overflow-hidden opacity-0"
-            style={{ willChange: 'clip-path' }}
+            style={isMobile ? undefined : { willChange: 'clip-path' }}
           >
             <div
               ref={(el) => { layerImagesRef.current[i] = el; }}

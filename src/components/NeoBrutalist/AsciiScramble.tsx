@@ -27,8 +27,9 @@ export default function AsciiScramble({
   const intervalRef = useRef<any>(null);
   const timeoutRef = useRef<any>(null);
   
-  // ASCII / Matrix character set for scrambling
-  const chars = '!?@#$*()_+[]{}<>;:=-%&/\\0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  // ASCII / Matrix character sets for scrambling (case-matched to prevent text height jumping)
+  const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz!?@#$*()_+[]{}<>;:=-%&/\\0123456789';
+  const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!?@#$*()_+[]{}<>;:=-%&/\\0123456789';
 
   const startScramble = () => {
     // Clear any existing active intervals
@@ -60,8 +61,11 @@ export default function AsciiScramble({
         if (frame >= charResolveFrame) {
           currentResult += text[i];
         } else {
-          // Return a random ASCII character
-          currentResult += chars[Math.floor(Math.random() * chars.length)];
+          // Detect case of the original character to avoid jarring uppercase-lowercase size flickering
+          const isCharLowercase = text[i] === text[i].toLowerCase() && text[i] !== text[i].toUpperCase();
+          const targetChars = isCharLowercase ? lowercaseChars : uppercaseChars;
+          currentResult += targetChars[Math.floor(Math.random() * targetChars.length)];
+          
           // Occasional tick sound for randomized organic density
           if (Math.random() > 0.65) {
             playTick = true;
@@ -99,14 +103,23 @@ export default function AsciiScramble({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            // Clear any pending timeout and start scramble
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
             timeoutRef.current = setTimeout(startScramble, delay);
           } else {
-            // Reset text when it leaves viewport so it animates again when scrolled back into view
-            setDisplayText('');
+            // Only reset when completely out of view to avoid flickering near the scroll boundary
+            if (entry.intersectionRatio === 0) {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+              if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+              }
+              setDisplayText('');
+            }
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: [0, 0.15] }
     );
 
     const currentElement = elementRef.current;
