@@ -32,6 +32,10 @@ export function useDeviceOrientationDelta(onUpdate: (coords: ICoords) => void) {
     if (!granted) {
       return undefined;
     }
+    // Skip device orientation events on mobile devices as it is only used on desktop
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return undefined;
+    }
 
     window.addEventListener('deviceorientation', handle);
 

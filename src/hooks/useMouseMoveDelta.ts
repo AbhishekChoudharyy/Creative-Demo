@@ -7,6 +7,11 @@ export function useMouseMoveDelta(onUpdateProp: (delta: Vector2) => void) {
   const prevMouseRef = useRef<Vector2>(new Vector2(NaN, NaN));
 
   useEffect(() => {
+    // Skip cursor movement tracking on mobile viewports
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return undefined;
+    }
+
     const handleMouseMove = addEventListener(window, 'mousemove', (evt) => {
       const prev = prevMouseRef.current;
 

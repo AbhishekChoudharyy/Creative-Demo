@@ -10,6 +10,10 @@ export function useScreenPositionDelta(onUpdateProp: (delta: Vector2) => void) {
   const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   useFrame(() => {
+    // Skip calculations on mobile as screen coordinates are static and unused
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return;
+    }
     const prev = prevScreenRef.current;
 
     const x = window.screenX / (window.screen.width / 2);

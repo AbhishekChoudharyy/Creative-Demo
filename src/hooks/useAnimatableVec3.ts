@@ -14,6 +14,11 @@ export function useAnimatableVec3(
   const onUpdate = useRef(onUpdateProp);
 
   useEffect(() => {
+    // Skip animation frame loops on mobile devices to prevent redundant matrix recalculations
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return undefined;
+    }
+
     const raf = new Raf();
     raf.play();
 
