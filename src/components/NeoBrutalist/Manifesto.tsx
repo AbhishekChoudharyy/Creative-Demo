@@ -18,55 +18,73 @@ const statements = [
 export default function Manifesto() {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRefs = useRef<(HTMLHeadingElement | null)[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-  }, []);
 
   useEffect(() => {
     let lastIndex = -1;
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: "top top",
-        end: `+=${statements.length * 100}%`,
-        pin: true,
-        anticipatePin: 1,
-        scrub: 0.8,
-        onUpdate: (self) => {
-          const rawIndex = self.progress * statements.length;
-          const index = Math.min(
-            Math.floor(rawIndex),
-            statements.length - 1
-          );
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: `+=${statements.length * 100}%`,
+          pin: true,
+          anticipatePin: 1,
+          scrub: 0.8,
+          onUpdate: (self) => {
+            const rawIndex = self.progress * statements.length;
+            const index = Math.min(
+              Math.floor(rawIndex),
+              statements.length - 1
+            );
 
-          if (index !== lastIndex) {
-            // Play directional whoosh based on scroll direction
-            if (self.direction === 1) {
-              soundManager.playWhooshUp(0.35);
-            } else {
-              soundManager.playWhooshDown(0.3);
+            if (index !== lastIndex) {
+              // Play directional whoosh based on scroll direction
+              if (self.direction === 1) {
+                soundManager.playWhooshUp(0.35);
+              } else {
+                soundManager.playWhooshDown(0.3);
+              }
+              lastIndex = index;
             }
-            lastIndex = index;
           }
-
-          // Use gsap.set() driven by scroll position — CSS transitions handle the easing
-          const isMobile = window.innerWidth < 768;
-          textRefs.current.forEach((el, i) => {
-            if (!el) return;
-            if (i === index) {
-              el.style.opacity = '1';
-              el.style.transform = 'scale(1)';
-              el.style.filter = isMobile ? 'none' : 'blur(0px)';
-            } else {
-              el.style.opacity = '0';
-              el.style.transform = 'scale(0.9)';
-              el.style.filter = isMobile ? 'none' : 'blur(8px)';
-            }
-          });
         }
       });
+
+      // Animate each statement in and out smoothly using GSAP instead of buggy CSS transitions
+      textRefs.current.forEach((el, i) => {
+        if (!el) return;
+
+        // Set initial values
+        if (i > 0) {
+          gsap.set(el, { opacity: 0, scale: 0.9, filter: 'blur(8px)' });
+        } else {
+          gsap.set(el, { opacity: 1, scale: 1, filter: 'blur(0px)' });
+        }
+
+        // Build transition timeline slots
+        if (i > 0) {
+          // Fade/Scale/Blur in the current statement
+          tl.to(el, {
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px)',
+            duration: 0.5,
+            ease: "power2.out"
+          }, i - 0.2);
+        }
+
+        if (i < statements.length - 1) {
+          // Fade/Scale/Blur out the current statement before the next one starts
+          tl.to(el, {
+            opacity: 0,
+            scale: 0.9,
+            filter: 'blur(8px)',
+            duration: 0.5,
+            ease: "power2.in"
+          }, i + 0.5);
+        }
+      });
+
     }, containerRef);
 
     return () => ctx.revert();
@@ -84,8 +102,7 @@ export default function Manifesto() {
            <h2 
              key={i}
              ref={el => { textRefs.current[i] = el; }}
-             className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-[6vw] md:text-[5vw] font-heading font-bold uppercase leading-tight text-black ${i === 0 ? 'opacity-100' : 'opacity-0 scale-90 md:blur-sm'}`}
-             style={{ transition: 'opacity 0.35s ease, transform 0.35s ease' + (isMobile ? '' : ', filter 0.35s ease') }}
+             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-[6vw] md:text-[5vw] font-heading font-bold uppercase leading-tight text-black"
            >
              {text}
            </h2>
