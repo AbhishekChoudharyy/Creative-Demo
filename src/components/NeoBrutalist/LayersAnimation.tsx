@@ -42,6 +42,19 @@ export const LayersAnimation: FC = () => {
     setIsMobile(window.innerWidth < 768);
   }, []);
 
+  useEffect(() => {
+    // Preload and decode images asynchronously on mount to prevent click transition freezes
+    LAYERS_IMAGES.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      if (img.decode) {
+        img.decode().catch((err) => {
+          console.warn(`Failed to preload/decode image: ${src}`, err);
+        });
+      }
+    });
+  }, []);
+
   // Set initial states
   useEffect(() => {
     // Hide all contents except active one
@@ -98,8 +111,8 @@ export const LayersAnimation: FC = () => {
     // Reset next content elements positions
     gsap.set([nextTitle, nextDesc], { yPercent: 150 });
 
-    // 1. Reset layer positions and animate them in (Clip-Path wipe from bottom)
-    gsap.set(layerItems, { opacity: 1, clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)' });
+    // 1. Reset layer positions (Clip-Path wipe from bottom) - keep opacity: 0 initially to avoid GPU layout rendering lag
+    gsap.set(layerItems, { clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)' });
     
     tl.to(layerItems, {
       clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
@@ -107,6 +120,13 @@ export const LayersAnimation: FC = () => {
       ease: 'power3.inOut',
       stagger: {
         each: 0.15,
+        onStart: function(this: any) {
+          const targets = this.targets();
+          if (targets && targets.length > 0) {
+            // Set opacity of active stagger layer to 1 dynamically when it starts animating to prevent rendering all 6 layers simultaneously
+            gsap.set(targets[0], { opacity: 1 });
+          }
+        },
         onComplete: function(this: any) {
           const targets = this.targets();
           if (targets && targets.length > 0) {
