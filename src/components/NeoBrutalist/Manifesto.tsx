@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { soundManager } from '@/lib/sound';
@@ -18,6 +18,11 @@ const statements = [
 export default function Manifesto() {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRefs = useRef<(HTMLHeadingElement | null)[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
 
   useEffect(() => {
     let lastIndex = -1;
@@ -80,7 +85,7 @@ export default function Manifesto() {
              key={i}
              ref={el => { textRefs.current[i] = el; }}
              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-[6vw] md:text-[5vw] font-heading font-bold uppercase leading-tight text-black ${i === 0 ? 'opacity-100' : 'opacity-0 scale-90 md:blur-sm'}`}
-             style={{ transition: 'opacity 0.35s ease, transform 0.35s ease' + (typeof window !== 'undefined' && window.innerWidth < 768 ? '' : ', filter 0.35s ease') }}
+             style={{ transition: 'opacity 0.35s ease, transform 0.35s ease' + (isMobile ? '' : ', filter 0.35s ease') }}
            >
              {text}
            </h2>
