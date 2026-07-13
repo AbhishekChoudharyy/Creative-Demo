@@ -212,6 +212,8 @@ class SoundManager {
    */
   public playHover() {
     if (this.isMuted) return;
+    // Disable hover sound effects entirely on mobile screens (since hover doesn't exist and touch triggers it, lagging scroll)
+    if (typeof window !== 'undefined' && window.innerWidth < 768) return;
     // Rate-limit hover to max once every 60ms to avoid cascade firing on nested elements
     const now = Date.now();
     if (now - this.lastHoverTime < 60) return;

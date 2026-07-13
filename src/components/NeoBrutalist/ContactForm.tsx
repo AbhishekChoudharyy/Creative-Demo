@@ -137,11 +137,7 @@ export default function ContactForm() {
         </div>
       </div>
 
-      {/* Scroll indicator for StackCards reveal */}
-      <div className="flex flex-col items-center justify-center mt-16 font-mono text-[10px] text-black/55 tracking-[0.15em] gap-1 select-none pointer-events-none uppercase">
-        <span>Keep scrolling to reveal footer</span>
-        <span className="text-xs animate-bounce mt-1">↓</span>
-      </div>
+
     </section>
   );
 }
