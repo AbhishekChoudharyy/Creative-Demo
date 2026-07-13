@@ -33,6 +33,7 @@ export const LayersAnimation: FC = () => {
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const layerItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const layerImagesRef = useRef<(HTMLDivElement | null)[]>([]);
+  const hudRef = useRef<HTMLDivElement>(null);
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const isAnimating = useRef(false);
@@ -105,11 +106,18 @@ export const LayersAnimation: FC = () => {
     const tl = gsap.timeline({
       onComplete: () => {
         isAnimating.current = false;
+        // Sync React state at the very end of the transition to prevent heavy re-renders during active GPU animation
+        setCurrentIndex(nextIndex);
+        // Disable GPU layers to free up VRAM when static
+        gsap.set(layerItems, { willChange: 'auto' });
       }
     });
 
     // Reset next content elements positions
     gsap.set([nextTitle, nextDesc], { yPercent: 150 });
+
+    // Enable GPU layers dynamically before animation starts
+    gsap.set(layerItems, { willChange: 'clip-path' });
 
     // 1. Reset layer positions (Clip-Path wipe from bottom) - keep opacity: 0 initially to avoid GPU layout rendering lag,
     // but set the first layer's opacity to 1 immediately so its initial wipe is fully visible without frame drops
@@ -166,9 +174,12 @@ export const LayersAnimation: FC = () => {
       ease: 'power3.in'
     }, 0);
 
-    // 4. Midway callback: toggle active index in state and hide previous content wrapper
+    // 4. Midway callback: hide previous content wrapper and update HUD DOM directly
     tl.add(() => {
-      setCurrentIndex(nextIndex);
+      // Direct DOM update of the HUD slide index to prevent heavy React re-renders during active GPU transitions
+      if (hudRef.current) {
+        hudRef.current.textContent = `0${nextIndex + 1} / 0${SLIDES.length}`;
+      }
       activeContent.style.visibility = 'hidden';
       activeContent.style.pointerEvents = 'none';
       
@@ -187,11 +198,12 @@ export const LayersAnimation: FC = () => {
       ease: 'expo.out'
     }, 0.75);
 
-    // 6. Clip-out the last layer (collapsing upward) to reveal the new content underneath
+    // 6. Clip-out the last layer (collapsing upward) to reveal the new content underneath (instant on mobile to prevent lingering)
+    const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
     const lastItem = layerItems[layerItems.length - 1];
     tl.to(lastItem, {
       clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)',
-      duration: 0.9,
+      duration: isMobileDevice ? 0 : 0.9,
       ease: 'power4.inOut',
       onComplete: () => {
         gsap.set(lastItem, { opacity: 0 });
@@ -219,7 +231,6 @@ export const LayersAnimation: FC = () => {
             key={i}
             ref={(el) => { layerItemsRef.current[i] = el; }}
             className="absolute inset-0 w-full h-full overflow-hidden opacity-0"
-            style={isMobile ? undefined : { willChange: 'clip-path' }}
           >
             <div
               ref={(el) => { layerImagesRef.current[i] = el; }}
@@ -260,7 +271,7 @@ export const LayersAnimation: FC = () => {
         VARIATION_01
       </div>
 
-      <div className="absolute bottom-12 right-8 md:right-16 font-mono text-[10px] tracking-[0.2em] text-black/50 uppercase pointer-events-none">
+      <div ref={hudRef} className="absolute bottom-12 right-8 md:right-16 font-mono text-[10px] tracking-[0.2em] text-black/50 uppercase pointer-events-none">
         0{currentIndex + 1} / 0{SLIDES.length}
       </div>
 
