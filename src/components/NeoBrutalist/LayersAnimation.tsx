@@ -111,8 +111,10 @@ export const LayersAnimation: FC = () => {
     // Reset next content elements positions
     gsap.set([nextTitle, nextDesc], { yPercent: 150 });
 
-    // 1. Reset layer positions (Clip-Path wipe from bottom) - keep opacity: 0 initially to avoid GPU layout rendering lag
+    // 1. Reset layer positions (Clip-Path wipe from bottom) - keep opacity: 0 initially to avoid GPU layout rendering lag,
+    // but set the first layer's opacity to 1 immediately so its initial wipe is fully visible without frame drops
     gsap.set(layerItems, { clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)' });
+    gsap.set(layerItems[0], { opacity: 1 });
     
     tl.to(layerItems, {
       clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
