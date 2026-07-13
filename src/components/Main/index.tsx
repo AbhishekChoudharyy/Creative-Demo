@@ -31,7 +31,7 @@ export const Main: FC = () => {
       <DeviceOrientationButton />
 
       <Canvas
-        dpr={[0.8, 3]}
+        dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.8, 1.2] : [0.8, 1.8]}
         camera={{ fov: 60 }}
         style={{ touchAction: 'pan-y' }}
       >

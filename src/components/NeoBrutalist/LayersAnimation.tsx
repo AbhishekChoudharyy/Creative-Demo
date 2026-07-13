@@ -116,17 +116,20 @@ export const LayersAnimation: FC = () => {
       }
     }, 0);
 
-    // 2. Animate brightness of layer background images to look high-contrast
-    tl.fromTo(layerImages, 
-      { yPercent: 0, filter: 'brightness(30%)' },
-      {
-        filter: 'brightness(100%)',
-        duration: 1.2,
-        ease: 'power3.inOut',
-        stagger: 0.15
-      }, 
-      0
-    );
+    // 2. Animate brightness of layer background images to look high-contrast (skipped on mobile for GPU performance)
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    if (!isMobile) {
+      tl.fromTo(layerImages, 
+        { yPercent: 0, filter: 'brightness(30%)' },
+        {
+          filter: 'brightness(100%)',
+          duration: 1.2,
+          ease: 'power3.inOut',
+          stagger: 0.15
+        }, 
+        0
+      );
+    }
 
     // 3. Animate current slide text up and out
     tl.to([activeTitle, activeDesc], {

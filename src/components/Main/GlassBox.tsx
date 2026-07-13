@@ -1,12 +1,15 @@
 'use client';
 
 import { FC, useEffect, useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { MeshTransmissionMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { soundManager } from '@/lib/sound';
 
 export const GlassBox: FC = () => {
+  const { size } = useThree();
+  const isMobile = size.width < 768;
+
   const groupRef = useRef<any>(null);
   const boxRef = useRef<any>(null);
   const geometryRef = useRef<any>(null);
@@ -197,6 +200,8 @@ export const GlassBox: FC = () => {
           clearcoatRoughness={0.0}
           color="#ffffff"
           reflectivity={1.0}
+          resolution={isMobile ? 256 : 512}
+          samples={isMobile ? 3 : 6}
         />
       </mesh>
     </group>

@@ -47,16 +47,17 @@ export default function Manifesto() {
           }
 
           // Use gsap.set() driven by scroll position — CSS transitions handle the easing
+          const isMobile = window.innerWidth < 768;
           textRefs.current.forEach((el, i) => {
             if (!el) return;
             if (i === index) {
               el.style.opacity = '1';
               el.style.transform = 'scale(1)';
-              el.style.filter = 'blur(0px)';
+              el.style.filter = isMobile ? 'none' : 'blur(0px)';
             } else {
               el.style.opacity = '0';
               el.style.transform = 'scale(0.9)';
-              el.style.filter = 'blur(8px)';
+              el.style.filter = isMobile ? 'none' : 'blur(8px)';
             }
           });
         }
@@ -78,8 +79,8 @@ export default function Manifesto() {
            <h2 
              key={i}
              ref={el => { textRefs.current[i] = el; }}
-             className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-[6vw] md:text-[5vw] font-heading font-bold uppercase leading-tight text-black ${i === 0 ? 'opacity-100' : 'opacity-0 scale-90 blur-sm'}`}
-             style={{ transition: 'opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease' }}
+             className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-[6vw] md:text-[5vw] font-heading font-bold uppercase leading-tight text-black ${i === 0 ? 'opacity-100' : 'opacity-0 scale-90 md:blur-sm'}`}
+             style={{ transition: 'opacity 0.35s ease, transform 0.35s ease' + (typeof window !== 'undefined' && window.innerWidth < 768 ? '' : ', filter 0.35s ease') }}
            >
              {text}
            </h2>

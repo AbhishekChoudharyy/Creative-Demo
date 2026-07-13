@@ -66,6 +66,31 @@ export default function Home() {
     setIsMuted(soundManager.getMutedState());
   }, []);
 
+  useEffect(() => {
+    // Generate a static noise pattern on client side to avoid expensive SVG feTurbulence filters which lag scrolling on mobile devices
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      const imgData = ctx.createImageData(128, 128);
+      const data = imgData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const value = Math.floor(Math.random() * 255);
+        data[i] = value;     // R
+        data[i+1] = value;   // G
+        data[i+2] = value;   // B
+        data[i+3] = 16;      // A (subtle opacity)
+      }
+      ctx.putImageData(imgData, 0, 0);
+      const dataUrl = canvas.toDataURL();
+      const overlay = document.querySelector('.noise-overlay') as HTMLElement;
+      if (overlay) {
+        overlay.style.backgroundImage = `url(${dataUrl})`;
+      }
+    }
+  }, []);
+
   const handleToggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     const nextMuted = soundManager.toggleMute();
