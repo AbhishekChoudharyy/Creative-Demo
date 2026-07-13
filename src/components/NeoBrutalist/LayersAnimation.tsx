@@ -198,12 +198,11 @@ export const LayersAnimation: FC = () => {
       ease: 'expo.out'
     }, 0.75);
 
-    // 6. Clip-out the last layer (collapsing upward) to reveal the new content underneath (instant on mobile to prevent lingering)
-    const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
+    // 6. Clip-out the last layer (collapsing upward) to reveal the new content underneath
     const lastItem = layerItems[layerItems.length - 1];
     tl.to(lastItem, {
       clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)',
-      duration: isMobileDevice ? 0 : 0.9,
+      duration: 0.9,
       ease: 'power4.inOut',
       onComplete: () => {
         gsap.set(lastItem, { opacity: 0 });
