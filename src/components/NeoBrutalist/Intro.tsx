@@ -39,7 +39,7 @@ export default function Intro() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-32 md:py-56 bg-[#fe5416] text-black overflow-hidden px-4">
+    <section ref={sectionRef} className="py-32 md:py-56 bg-[#123C73] text-black overflow-hidden px-4">
       <div className="container mx-auto">
         
         <div className="flex flex-col text-[7vw] md:text-[6vw] leading-[1.1] font-heading uppercase font-bold tracking-tight">
@@ -57,7 +57,7 @@ export default function Intro() {
 
           <div className="intro-line-wrap overflow-hidden flex flex-wrap items-baseline gap-4">
              <AsciiScramble text="We" className="char" />
-             <AsciiScramble text="engineer" className="char font-serif italic font-light text-white lowercase" />
+             <AsciiScramble text="engineer" className="char font-serif italic font-light text-[#F7F7F5] lowercase" />
              <AsciiScramble text="Cults." className="char" />
           </div>
 
@@ -66,7 +66,7 @@ export default function Intro() {
         <div className="mt-32 w-full flex justify-end">
           <div className="w-full md:w-1/3 text-lg md:text-xl font-light text-black/85 font-mono leading-relaxed border-l border-black/20 pl-8">
             <p>
-              At <span className="text-white italic font-serif">Creative Agency</span>, we bridge the gap between imagination and technology. We craft high-impact volumetric 3D billboards, spatial designs, and interactive experiences that build enduring brands.
+              At <span className="text-[#F7F7F5] italic font-serif">Floworx Collective</span>, we bridge the gap between imagination and technology. We craft high-impact volumetric 3D billboards, spatial designs, and interactive experiences that build enduring brands.
             </p>
           </div>
         </div>

@@ -86,12 +86,12 @@ export default function EyesCTA() {
             const workSection = document.getElementById("work");
             workSection?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="group mt-12 relative cursor-pointer px-12 sm:px-16 py-3 sm:py-4 rounded-full font-heading font-bold text-sm sm:text-base flex gap-2 text-black justify-center items-center overflow-hidden bg-black/5 border border-black/10 backdrop-blur-md uppercase tracking-wider hover:border-[#fe5416] transition-all duration-300"
+          className="group mt-12 relative cursor-pointer px-12 sm:px-16 py-3 sm:py-4 rounded-full font-heading font-bold text-sm sm:text-base flex gap-2 text-black justify-center items-center overflow-hidden bg-black/5 border border-black/10 backdrop-blur-md uppercase tracking-wider hover:border-[#00A6B2] transition-all duration-300"
         >
-          {/* Wipe animation with Hero Orange */}
+          {/* Wipe animation with Teal Blue accent */}
           <span
             className="
-              absolute inset-0 bg-[#fe5416]
+              absolute inset-0 bg-[#00A6B2]
               -translate-y-full
               transition-transform duration-300 ease-out
               group-hover:translate-y-0
@@ -100,7 +100,7 @@ export default function EyesCTA() {
           />
           <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors duration-300">
             <span className="w-1.5 h-1.5 rounded-full bg-black group-hover:bg-white transition-colors duration-300" />
-            <span>Explore Creative Agency</span>
+            <span>Explore Floworx Collective</span>
             <span className="w-1.5 h-1.5 rounded-full bg-black opacity-0 group-hover:opacity-100 group-hover:bg-white transition-all duration-300" />
           </span>
         </a>

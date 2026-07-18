@@ -35,7 +35,7 @@ export default function ContactForm() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative px-8 md:px-16 lg:px-24 py-24 lg:py-32 bg-[#fe5416] text-black overflow-hidden border-t border-black/10"
+      className="relative px-8 md:px-16 lg:px-24 py-24 lg:py-32 bg-[#123C73] text-black overflow-hidden border-t border-black/10"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full">
         {/* LEFT SIDE */}
@@ -52,11 +52,11 @@ export default function ContactForm() {
             <br />
             <AsciiScramble text="The Next" />
             <br />
-            <span className="text-white"><AsciiScramble text="Dimension." /></span>
+            <span className="text-[#F7F7F5]"><AsciiScramble text="Dimension." /></span>
           </h3>
 
           <p className="text-sm sm:text-base font-mono mt-6 mb-8 max-w-md text-black/80 leading-relaxed">
-            Partner with Creative Agency to design high-fidelity interactive 3D, spatial mapping, and volumetric installations. Let's make something legendary.
+            Partner with Floworx Collective to design high-fidelity interactive 3D, spatial mapping, and volumetric installations. Let's make something legendary.
           </p>
 
           <a

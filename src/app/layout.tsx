@@ -2,29 +2,29 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Creative Agency | Premium Experience & Volumetric 3D Design",
-  description: "Creative Agency is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
-  keywords: ["Creative Agency", "3D Design", "Experience Design", "Volumetric 3D", "Interactive Experiences", "React", "Three.js"],
-  authors: [{ name: "Creative Agency" }],
-  creator: "Creative Agency",
-  publisher: "Creative Agency",
+  title: "Floworx Collective | Premium Experience & Volumetric 3D Design",
+  description: "Floworx Collective is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
+  keywords: ["Floworx Collective", "3D Design", "Experience Design", "Volumetric 3D", "Interactive Experiences", "React", "Three.js"],
+  authors: [{ name: "Floworx Collective" }],
+  creator: "Floworx Collective",
+  publisher: "Floworx Collective",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://creativeagency.com'),
+  metadataBase: new URL('https://floworx.com'),
   openGraph: {
-    title: "Creative Agency | Premium Experience & Volumetric 3D Design",
-    description: "Creative Agency is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
-    url: "https://creativeagency.com",
-    siteName: "Creative Agency",
+    title: "Floworx Collective | Premium Experience & Volumetric 3D Design",
+    description: "Floworx Collective is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
+    url: "https://floworx.com",
+    siteName: "Floworx Collective",
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Creative Agency Logo",
+        alt: "Floworx Collective Logo",
       },
     ],
     locale: "en_US",
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Creative Agency | Premium Experience & Volumetric 3D Design",
-    description: "Creative Agency is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
+    title: "Floworx Collective | Premium Experience & Volumetric 3D Design",
+    description: "Floworx Collective is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
     images: ["/og.png"],
-    creator: "@creativeagency",
+    creator: "@floworxcollective",
   },
   icons: {
     icon: [

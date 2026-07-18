@@ -102,7 +102,7 @@ export default function Services() {
   };
 
   return (
-    <section ref={sectionRef} id="services" className="py-24 bg-[#fe5416] text-black relative z-10 overflow-hidden">
+    <section ref={sectionRef} id="services" className="py-24 bg-[#123C73] text-black relative z-10 overflow-hidden">
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
       <div 

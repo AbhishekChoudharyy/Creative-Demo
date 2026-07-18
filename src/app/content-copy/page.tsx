@@ -9,8 +9,8 @@ const initialDocumentData = [
     id: 'loader',
     title: 'Loading Screen / Loader Overlay',
     items: [
-      { label: 'Heading', text: 'CREATIVE' },
-      { label: 'Sub Heading', text: 'CREATIVE AGENCY' },
+      { label: 'Heading', text: 'FLOWORX' },
+      { label: 'Sub Heading', text: 'FLOWORX COLLECTIVE' },
       { label: 'Loading Indicator Text', text: 'LOADING • [Progress]%' },
       { label: 'Primary Button', text: 'ENTER' }
     ]
@@ -19,8 +19,8 @@ const initialDocumentData = [
     id: 'nav-hud',
     title: 'Navigation & HUD',
     items: [
-      { label: 'Logo Text', text: 'CREATIVE' },
-      { label: 'Sub Heading / Tagline', text: 'CREATIVE AGENCY' },
+      { label: 'Logo Text', text: 'FLOWORX' },
+      { label: 'Sub Heading / Tagline', text: 'FLOWORX COLLECTIVE' },
       {
         label: 'Navigation Category 1',
         text: 'Experience Design\nSub Links: Interactive Spaces | Spatial Design | Sensory Engineering'
@@ -44,7 +44,7 @@ const initialDocumentData = [
     id: 'hero',
     title: 'Hero Section',
     items: [
-      { label: 'Heading', text: 'INNOVATE WITH PURPOSE' },
+      { label: 'Heading', text: 'FLOWORX COLLECTIVE' },
       { label: 'Hero Graphic / Image', text: 'Current Image: (Interactive 3D Ball of Glass / Volumetric graphic background)' }
     ]
   },
@@ -52,7 +52,7 @@ const initialDocumentData = [
     id: 'marquee',
     title: 'Marquee Banner Section',
     items: [
-      { label: 'Marquee Text', text: 'CREATIVE.AGENCY ✦ THE FUTURE OF DESIGN ✦ EXPERIENCE STUDIO ✦' },
+      { label: 'Marquee Text', text: 'FLOWORX.COLLECTIVE ✦ THE FUTURE OF DESIGN ✦ EXPERIENCE STUDIO ✦' },
       { label: 'Marquee Logo Image', text: 'Current Image: (2D Logo image mark - /2d logo.jpeg)' }
     ]
   },
@@ -63,7 +63,7 @@ const initialDocumentData = [
       { label: 'Heading', text: "We don't just build Digital Experiences. We engineer Cults." },
       {
         label: 'Paragraph',
-        text: 'At Creative Agency, we bridge the gap between imagination and technology. We craft high-impact volumetric 3D billboards, spatial designs, and interactive experiences that build enduring brands.'
+        text: 'At Floworx Collective, we bridge the gap between imagination and technology. We craft high-impact volumetric 3D billboards, spatial designs, and interactive experiences that build enduring brands.'
       }
     ]
   },
@@ -384,11 +384,11 @@ export default function ContentCopyPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5] font-sans px-4 py-8 md:px-8 lg:px-12 selection:bg-[#fe5416] selection:text-black">
+    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5] font-sans px-4 py-8 md:px-8 lg:px-12 selection:bg-[#00A6B2] selection:text-black">
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#fe5416] text-black font-bold px-6 py-3 rounded-xl shadow-2xl max-w-md animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#00A6B2] text-black font-bold px-6 py-3 rounded-xl shadow-2xl max-w-md animate-bounce">
           {toastMessage}
         </div>
       )}
@@ -409,7 +409,7 @@ export default function ContentCopyPage() {
                 </Link>
                 <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
                   CLIENT CONTENT COPY
-                  <span className="text-[10px] font-mono uppercase bg-[#fe5416] text-black font-bold px-3 py-1 rounded-full">
+                  <span className="text-[10px] font-mono uppercase bg-[#00A6B2] text-black font-bold px-3 py-1 rounded-full">
                     OFFICIAL
                   </span>
                 </h1>
@@ -449,7 +449,7 @@ export default function ContentCopyPage() {
                 onClick={() => window.print()}
                 className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
               >
-                <Printer className="w-4 h-4 text-[#fe5416]" />
+                <Printer className="w-4 h-4 text-[#00A6B2]" />
                 Print / Save PDF
               </button>
 
@@ -460,7 +460,7 @@ export default function ContentCopyPage() {
                 }}
                 className={`px-4 py-2.5 border rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   isEditable
-                    ? 'bg-[#fe5416] text-black border-[#fe5416] font-bold'
+                    ? 'bg-[#00A6B2] text-black border-[#00A6B2] font-bold'
                     : 'bg-white/5 hover:bg-white/10 border-white/10 text-white'
                 }`}
               >
@@ -495,16 +495,16 @@ export default function ContentCopyPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search any text, heading, section or keyword..."
-              className="w-full bg-[#121215] border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#fe5416] transition-colors"
+              className="w-full bg-[#121215] border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#00A6B2] transition-colors"
             />
           </div>
         </div>
 
         {/* Document Content */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between border-b-2 border-[#fe5416] pb-3">
+          <div className="flex items-center justify-between border-b-2 border-[#00A6B2] pb-3">
             <div className="flex items-center gap-3">
-              <FileText className="w-6 h-6 text-[#fe5416]" />
+              <FileText className="w-6 h-6 text-[#00A6B2]" />
               <h2 className="text-xl font-black uppercase tracking-wider text-white"># HOME PAGE</h2>
             </div>
             <div className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-md">
@@ -514,7 +514,7 @@ export default function ContentCopyPage() {
 
           {isLoading ? (
             <div className="text-center py-16 text-zinc-400 font-mono text-sm flex items-center justify-center gap-3">
-              <RefreshCw className="w-5 h-5 animate-spin text-[#fe5416]" />
+              <RefreshCw className="w-5 h-5 animate-spin text-[#00A6B2]" />
               Connecting to MongoDB Atlas Cloud Database...
             </div>
           ) : (
@@ -524,7 +524,7 @@ export default function ContentCopyPage() {
                 className="bg-[#18181b]/70 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 hover:border-white/20 transition-all shadow-lg"
               >
                 <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                  <h3 className="text-lg md:text-xl font-bold text-[#fe5416]">{section.title}</h3>
+                  <h3 className="text-lg md:text-xl font-bold text-[#00A6B2]">{section.title}</h3>
                   <button
                     onClick={() => handleCopySection(section.title, section.items)}
                     className="px-3 py-1.5 bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-300 hover:text-white rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer"
@@ -549,7 +549,7 @@ export default function ContentCopyPage() {
                         }}
                         className={`p-4 rounded-xl text-sm leading-relaxed whitespace-pre-line border transition-all ${
                           isEditable
-                            ? 'bg-[#121215] border-[#fe5416]/50 text-white outline-none focus:ring-1 focus:ring-[#fe5416] cursor-text'
+                            ? 'bg-[#121215] border-[#00A6B2]/50 text-white outline-none focus:ring-1 focus:ring-[#00A6B2] cursor-text'
                             : 'bg-[#121215]/80 border-zinc-800 text-zinc-200'
                         }`}
                       >

@@ -82,29 +82,31 @@ export const Scene: FC = () => {
 
   return (
     <>
-      <color attach="background" args={["#fe5416"]} />
+      <color attach="background" args={["#123C73"]} />
 
-      {/* Overhead directional light */}
-      <directionalLight position={[0, 6, 0]} intensity={2.2} />
+      {/* Ambient light for overall brightness */}
+      <ambientLight intensity={2.2} />
 
-      {/* Soft overhead area light reflection card
-      <mesh position={[0, 5, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[12, 12]} />
-        <meshBasicMaterial color="#ffffff" toneMapped={false} />
-      </mesh>
-      */}
+      {/* Front key light */}
+      <directionalLight position={[0, 4, 6]} intensity={4.0} color="#ffffff" />
 
-      {/* Long horizontal white emissive light strip for clean glossy reflection across center */}
-      <mesh position={[0, 2.0, 3.2]} rotation={[-Math.PI / 5, 0, 0]}>
-        <planeGeometry args={[22, 0.12]} />
-        <meshBasicMaterial color="#ffffff" toneMapped={false} />
-      </mesh>
+      {/* Top backlight/fill */}
+      <directionalLight position={[0, 8, -2]} intensity={3.0} color="#ffffff" />
+
+      {/* Side teal rim light */}
+      <directionalLight position={[-6, 2, 4]} intensity={3.0} color="#00A6B2" />
+
+      {/* Right side fill light */}
+      <directionalLight position={[6, 2, 4]} intensity={2.5} color="#ffffff" />
+
+      {/* Front point light targeting 3D element */}
+      <pointLight position={[0, 0, 5]} intensity={4.0} color="#ffffff" />
 
       {/* Hero display text rendered inside the WebGL canvas, allowing it to be refracted by the glass chevron */}
       <group scale={[1, 1.35, 1]} position={[0, 0, -1.5]}>
         <Text
           font="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKfsukDQ.ttf"
-          fontSize={isMobile ? viewport.width * 0.23 : viewport.width * 0.135}
+          fontSize={isMobile ? viewport.width * 0.21 : viewport.width * 0.125}
           color="#000000"
           maxWidth={viewport.width * 0.98}
           textAlign="center"
@@ -113,7 +115,7 @@ export const Scene: FC = () => {
           anchorX="center"
           anchorY="middle"
         >
-          {"CREATIVE\nDESIGN\nAGENCY"}
+          {"FLOWORX\nCOLLECTIVE"}
         </Text>
       </group>
 

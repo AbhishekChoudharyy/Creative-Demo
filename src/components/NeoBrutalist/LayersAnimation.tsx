@@ -203,7 +203,7 @@ export const LayersAnimation: FC = () => {
     <div
       ref={containerRef}
       onClick={handleTransition}
-      className="relative w-full min-h-screen bg-[#fe5416] flex items-center justify-center overflow-hidden cursor-pointer select-none border-t border-black/10"
+      className="relative w-full min-h-screen bg-[#123C73] flex items-center justify-center overflow-hidden cursor-pointer select-none border-t border-black/10"
     >
       {/* Background Grid Accent Lines */}
       <div className="absolute inset-0 grid grid-cols-4 grid-rows-1 pointer-events-none opacity-40">
@@ -252,7 +252,7 @@ export const LayersAnimation: FC = () => {
 
       {/* Interactive HUD labels */}
       <div className="absolute top-12 left-8 md:left-16 font-mono text-[10px] tracking-[0.2em] text-black/50 uppercase pointer-events-none">
-        CREATIVE AGENCY // LABS
+        FLOWORX COLLECTIVE // LABS
       </div>
       
       <div className="absolute top-12 right-8 md:right-16 font-mono text-[10px] tracking-[0.2em] text-black/60 uppercase pointer-events-none flex items-center gap-2">

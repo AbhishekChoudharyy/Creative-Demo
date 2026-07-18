@@ -126,9 +126,9 @@ export default function Home() {
   }, [bootState]);
 
   return (
-    <div className="min-h-screen bg-[#fe5416] text-black selection:bg-black/10 relative">
+    <div className="min-h-screen bg-[#123C73] text-black selection:bg-black/10 relative">
       {bootState !== 'booted' && (
-        <div className={`fixed inset-0 bg-[#080808] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
+        <div className={`fixed inset-0 bg-[#0D1B2A] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
           {/* Subtle grid background */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
           
@@ -136,11 +136,11 @@ export default function Home() {
             
             {/* Title and Subtitle */}
             <div className="space-y-2">
-              <h1 className="text-white text-6xl md:text-7xl font-heading font-extrabold tracking-[0.2em] translate-x-[0.1em] transition-all">
-                CREATIVE
+              <h1 className="text-white text-5xl md:text-6xl font-heading font-extrabold tracking-[0.2em] translate-x-[0.1em] transition-all">
+                FLOWORX
               </h1>
-              <p className="text-[9px] text-[#71717a] tracking-[0.4em] uppercase font-bold">
-                CREATIVE AGENCY
+              <p className="text-[9px] text-[#C0C6CF] tracking-[0.4em] uppercase font-bold">
+                FLOWORX COLLECTIVE
               </p>
             </div>
 
@@ -153,7 +153,7 @@ export default function Home() {
                   </span>
                   <div className="w-24 h-[1px] bg-white/10 relative overflow-hidden">
                     <div 
-                      className="absolute top-0 bottom-0 left-0 bg-[#fe5416] transition-all duration-150 ease-out"
+                      className="absolute top-0 bottom-0 left-0 bg-[#00A6B2] transition-all duration-150 ease-out"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -168,7 +168,7 @@ export default function Home() {
                     }, 700);
                   }}
                   onMouseEnter={() => soundManager.playHover()}
-                  className="px-8 py-2.5 border border-white/20 hover:border-white text-white hover:bg-white hover:text-black transition-all duration-300 font-bold uppercase text-[10px] tracking-[0.3em] cursor-pointer focus:outline-none"
+                  className="px-8 py-2.5 border border-white/20 hover:border-white text-white hover:bg-[#00A6B2] hover:text-black transition-all duration-300 font-bold uppercase text-[10px] tracking-[0.3em] cursor-pointer focus:outline-none"
                 >
                   ENTER
                 </button>
@@ -181,32 +181,21 @@ export default function Home() {
 
       <div className="noise-overlay"></div>
       {/* SECTION 1: HERO */}
-      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden px-6 lg:px-8 bg-[#fe5416]">
+      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden px-6 lg:px-8 bg-[#123C73]">
         {/* Ball of Glass Interactive 3D Canvas Background (Z-Index 20) */}
         <div className="absolute inset-0 z-20 w-full h-full">
           <Main />
-          {/* Seamless transparent transition to match the orange flow */}
+          {/* Seamless transparent transition to match the navy flow */}
           <div className="absolute inset-x-0 bottom-0 h-32 bg-transparent pointer-events-none" />
         </div>
-
-        {/* Display Text behind 3D (Z-Index 10) - Commented out as we moved text to WebGL for refraction */}
-        {/*
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 select-none">
-          <h1 className="hero-title">
-            <span>INNOVATE</span>
-            <span>WITH</span>
-            <span>PURPOSE</span>
-          </h1>
-        </div>
-        */}
 
         {/* Flat Immersive Navbar (Z-Index 30) */}
         <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-8 py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
           <span className="font-extrabold cursor-pointer hover:opacity-75 transition-opacity">
-            CREATIVE
+            FLOWORX
           </span>
           <span className="font-extrabold absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em]">
-            CREATIVE AGENCY
+            FLOWORX COLLECTIVE
           </span>
           <div className="flex items-center gap-6 sm:gap-8">
             <button
@@ -231,9 +220,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating orange dot decoration */}
+        {/* Floating teal dot decoration */}
         <div className="absolute left-[8%] top-1/2 -translate-y-1/2 flex items-center justify-center select-none pointer-events-none hidden md:flex z-30">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#fe5416] shadow-[0_0_10px_rgba(254,84,22,0.8)] animate-pulse" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#00A6B2] shadow-[0_0_10px_rgba(0,166,178,0.8)] animate-pulse" />
         </div>
 
         {/* Bottom HUD layout (Z-Index 30) */}
