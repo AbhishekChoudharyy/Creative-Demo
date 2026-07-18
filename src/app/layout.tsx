@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Creativ Agency | Premium Experience & Volumetric 3D Design",
+  title: "Creative Agency | Premium Experience & Volumetric 3D Design",
   description: "Creative Agency is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
   keywords: ["Creative Agency", "3D Design", "Experience Design", "Volumetric 3D", "Interactive Experiences", "React", "Three.js"],
   authors: [{ name: "Creative Agency" }],
