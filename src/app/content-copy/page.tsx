@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, CheckCircle2 } from 'lucide-react';
+import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, CheckCircle2, Save } from 'lucide-react';
 
 const initialDocumentData = [
   {
@@ -265,7 +265,6 @@ export default function ContentCopyPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isEditable, setIsEditable] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isSaved, setIsSaved] = useState(true);
 
   // Load from localStorage on client side mount
   useEffect(() => {
@@ -284,6 +283,16 @@ export default function ContentCopyPage() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
+  const saveToLocalStorage = (currentData = data) => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentData));
+      triggerToast('Changes saved successfully to browser storage!');
+    } catch (e) {
+      console.error('Failed to save to localStorage', e);
+      triggerToast('Error saving changes');
+    }
+  };
+
   const updateItemText = (sectionId: string, itemIdx: number, newText: string) => {
     setData((prevData) => {
       const updated = prevData.map((section) => {
@@ -294,12 +303,7 @@ export default function ContentCopyPage() {
         }
         return section;
       });
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-        setIsSaved(true);
-      } catch (e) {
-        console.error('Failed to save to localStorage', e);
-      }
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
   };
@@ -308,7 +312,6 @@ export default function ContentCopyPage() {
     if (confirm('Are you sure you want to reset all content to the original website copy?')) {
       setData(initialDocumentData);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
-      setIsSaved(true);
       triggerToast('Reset to original website copy!');
     }
   };
@@ -377,13 +380,21 @@ export default function ContentCopyPage() {
                 </p>
                 <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Auto-Saved to Browser
+                  Auto-Saved
                 </div>
               </div>
             </div>
 
             {/* Actions */}
             <div className="flex flex-wrap gap-3 w-full md:w-auto">
+              <button
+                onClick={() => saveToLocalStorage()}
+                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+              >
+                <Save className="w-4 h-4" />
+                Save Changes
+              </button>
+
               <button
                 onClick={() => window.print()}
                 className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
@@ -395,7 +406,7 @@ export default function ContentCopyPage() {
               <button
                 onClick={() => {
                   setIsEditable(!isEditable);
-                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Click any text box to edit & save automatically.');
+                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Click any text box to edit & click Save Changes.');
                 }}
                 className={`px-4 py-2.5 border rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   isEditable
@@ -409,7 +420,7 @@ export default function ContentCopyPage() {
 
               <button
                 onClick={handleCopyFullDoc}
-                className="px-4 py-2.5 bg-[#fe5416] hover:bg-[#ff6a32] text-black font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-[0_0_20px_rgba(254,84,22,0.3)]"
+                className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer border border-white/10"
               >
                 <Copy className="w-4 h-4" />
                 Copy All Text

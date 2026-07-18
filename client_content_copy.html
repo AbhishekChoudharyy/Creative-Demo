@@ -16,6 +16,8 @@
       --muted: #a1a1aa;
       --accent: #fe5416;
       --accent-glow: rgba(254, 84, 22, 0.25);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.3);
       --code-bg: #121215;
       --code-border: #27272a;
       --highlight: #ffffff;
@@ -121,6 +123,15 @@
       border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-1px);
     }
+
+    .btn-save {
+      background: var(--emerald);
+      color: #000;
+      border-color: var(--emerald);
+      font-weight: 800;
+      box-shadow: 0 0 15px var(--emerald-glow);
+    }
+    .btn-save:hover { background: #059669; border-color: #059669; }
 
     .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
     .btn-primary:hover { background: #ff6a32; border-color: #ff6a32; box-shadow: 0 0 20px var(--accent-glow); }
@@ -277,6 +288,10 @@
         </div>
         
         <div class="action-bar">
+          <button class="btn btn-save" onclick="saveAllChangesExplicitly()">
+            💾 Save Changes
+          </button>
+
           <button class="btn btn-primary" onclick="window.print()">
             Print / Save PDF
           </button>
@@ -434,14 +449,8 @@ Sub Links: Brand Activations | Immersive Events | Projection Spectacles</div>
           <h2>Services Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-        <div class="item-group">
-          <div class="label">Heading</div>
-          <div class="content-box" data-key="svc-head">Our Expertise</div>
-        </div>
-        <div class="item-group">
-          <div class="label">Sub Heading</div>
-          <div class="content-box" data-key="svc-sub">Comprehensive design solutions for forward-thinking brands.</div>
-        </div>
+        <div class="item-group"><div class="label">Heading</div><div class="content-box" data-key="svc-head">Our Expertise</div></div>
+        <div class="item-group"><div class="label">Sub Heading</div><div class="content-box" data-key="svc-sub">Comprehensive design solutions for forward-thinking brands.</div></div>
 
         <div class="divider"></div>
 
@@ -724,7 +733,6 @@ Sub Links: Brand Activations | Immersive Events | Projection Spectacles</div>
     let isEditing = false;
     const STORAGE_KEY = 'html_client_content_copy_edits';
 
-    // Load saved edits from localStorage
     window.addEventListener('DOMContentLoaded', () => {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -739,13 +747,20 @@ Sub Links: Brand Activations | Immersive Events | Projection Spectacles</div>
       }
     });
 
-    function saveEdit(key, text) {
+    function saveAllChangesExplicitly() {
       try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-        saved[key] = text;
+        const saved = {};
+        document.querySelectorAll('.content-box').forEach(box => {
+          const key = box.getAttribute('data-key');
+          if (key) {
+            saved[key] = box.innerText;
+          }
+        });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+        showToast("💾 Changes Saved Successfully!");
       } catch (e) {
-        console.error('Failed to save edit', e);
+        console.error('Failed to save', e);
+        showToast("Error saving changes");
       }
     }
 
@@ -763,21 +778,13 @@ Sub Links: Brand Activations | Immersive Events | Projection Spectacles</div>
       
       boxes.forEach(box => {
         box.contentEditable = isEditing ? "true" : "false";
-        if (isEditing) {
-          box.onblur = function() {
-            const key = this.getAttribute('data-key');
-            if (key) {
-              saveEdit(key, this.innerText);
-            }
-          };
-        }
       });
 
       if (isEditing) {
         btn.innerText = "Disable Editing";
         btn.style.borderColor = "#fe5416";
         btn.style.color = "#fe5416";
-        showToast("Live Editing Enabled! Edits save automatically.");
+        showToast("Live Editing Enabled! Make changes & click Save Changes.");
       } else {
         btn.innerText = "Enable Live Editing";
         btn.style.borderColor = "";
