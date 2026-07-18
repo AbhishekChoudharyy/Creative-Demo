@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, Globe, Save, RefreshCw } from 'lucide-react';
+import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, Save, RefreshCw, Database } from 'lucide-react';
 
 const initialDocumentData = [
   {
@@ -258,8 +258,6 @@ const initialDocumentData = [
   }
 ];
 
-const LOCAL_STORAGE_KEY = 'creative_agency_content_copy_data';
-
 export default function ContentCopyPage() {
   const [data, setData] = useState(initialDocumentData);
   const [searchQuery, setSearchQuery] = useState('');
@@ -267,33 +265,32 @@ export default function ContentCopyPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [dataSource, setDataSource] = useState<'mongodb' | 'file' | 'default'>('default');
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // Cache-busting fetch function for live server sync across devices
+  // Zero-cache live MongoDB Atlas fetch
   const loadServerData = useCallback(async (showNotification = false) => {
     setIsLoading(true);
     try {
       const timestamp = Date.now();
       const res = await fetch(`/api/content-copy?t=${timestamp}`, {
         cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0' }
       });
       const json = await res.json();
       if (json.success && json.data) {
         setData(json.data);
-        if (showNotification) triggerToast('✓ Refreshed latest server copy!');
+        setDataSource(json.source || 'mongodb');
+        if (showNotification) triggerToast('✓ Refreshed from MongoDB Atlas Cloud!');
       } else {
-        const localSaved = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (localSaved) {
-          setData(JSON.parse(localSaved));
-        }
+        setData(initialDocumentData);
       }
     } catch (e) {
-      console.error('Failed to load server data:', e);
+      console.error('Failed to load MongoDB Atlas data:', e);
     } finally {
       setIsLoading(false);
     }
@@ -314,17 +311,15 @@ export default function ContentCopyPage() {
       });
       const json = await res.json();
 
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentData));
-
       if (json.success) {
-        triggerToast('✓ Saved to server! Available on all devices.');
+        setDataSource('mongodb');
+        triggerToast('🍃 Saved to MongoDB Atlas Cloud! Synced for all devices.');
       } else {
-        triggerToast('Saved to browser storage.');
+        triggerToast('Error saving to MongoDB Atlas');
       }
     } catch (e) {
-      console.error('Failed to save to server:', e);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentData));
-      triggerToast('Saved to browser storage.');
+      console.error('Failed to save to MongoDB Atlas:', e);
+      triggerToast('Error saving to cloud database');
     } finally {
       setIsSaving(false);
     }
@@ -346,15 +341,15 @@ export default function ContentCopyPage() {
   };
 
   const handleResetData = async () => {
-    if (confirm('Are you sure you want to reset all content to the original website copy for ALL devices?')) {
+    if (confirm('Are you sure you want to reset all content to the original website copy in MongoDB Atlas?')) {
       try {
         await fetch('/api/content-copy', { method: 'DELETE', cache: 'no-store' });
       } catch (e) {
-        console.error('Failed to reset server data:', e);
+        console.error('Failed to reset MongoDB Atlas data:', e);
       }
       setData(initialDocumentData);
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-      triggerToast('Reset to original copy across all devices!');
+      setDataSource('default');
+      triggerToast('Reset to original website copy in MongoDB Cloud!');
     }
   };
 
@@ -421,8 +416,8 @@ export default function ContentCopyPage() {
                   Complete existing website content & image inventory document.
                 </p>
                 <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
-                  <Globe className="w-3.5 h-3.5" />
-                  Live Cross-Device Sync
+                  <Database className="w-3.5 h-3.5" />
+                  MongoDB Atlas Cloud Connected
                 </div>
               </div>
             </div>
@@ -435,16 +430,16 @@ export default function ContentCopyPage() {
                 className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-black font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.3)]"
               >
                 {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                {isSaving ? 'Saving to Server...' : 'Save Changes'}
+                {isSaving ? 'Saving to Cloud...' : 'Save Changes'}
               </button>
 
               <button
                 onClick={() => loadServerData(true)}
-                title="Fetch latest server updates"
+                title="Fetch latest MongoDB Atlas updates"
                 className="px-3 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-                Sync / Refresh
+                Sync MongoDB
               </button>
 
               <button
@@ -458,7 +453,7 @@ export default function ContentCopyPage() {
               <button
                 onClick={() => {
                   setIsEditable(!isEditable);
-                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Edit any text & click Save Changes.');
+                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Edit text & click Save Changes to sync to MongoDB Atlas.');
                 }}
                 className={`px-4 py-2.5 border rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   isEditable
@@ -480,7 +475,7 @@ export default function ContentCopyPage() {
 
               <button
                 onClick={handleResetData}
-                title="Reset back to original copy for all devices"
+                title="Reset back to original copy in MongoDB Atlas"
                 className="px-3 py-2.5 bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/30 text-zinc-400 hover:text-red-400 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -504,15 +499,20 @@ export default function ContentCopyPage() {
 
         {/* Document Content */}
         <div className="space-y-6">
-          <div className="flex items-center gap-3 border-b-2 border-[#fe5416] pb-3">
-            <FileText className="w-6 h-6 text-[#fe5416]" />
-            <h2 className="text-xl font-black uppercase tracking-wider text-white"># HOME PAGE</h2>
+          <div className="flex items-center justify-between border-b-2 border-[#fe5416] pb-3">
+            <div className="flex items-center gap-3">
+              <FileText className="w-6 h-6 text-[#fe5416]" />
+              <h2 className="text-xl font-black uppercase tracking-wider text-white"># HOME PAGE</h2>
+            </div>
+            <div className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-md">
+              Cloud Source: {dataSource === 'mongodb' ? '🍃 MongoDB Atlas Live Database' : 'Server Memory'}
+            </div>
           </div>
 
           {isLoading ? (
             <div className="text-center py-16 text-zinc-400 font-mono text-sm flex items-center justify-center gap-3">
               <RefreshCw className="w-5 h-5 animate-spin text-[#fe5416]" />
-              Syncing latest server data...
+              Connecting to MongoDB Atlas Cloud Database...
             </div>
           ) : (
             filteredSections.map((section) => (
