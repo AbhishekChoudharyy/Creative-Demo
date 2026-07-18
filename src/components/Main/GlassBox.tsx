@@ -189,18 +189,18 @@ export const GlassBox: FC = () => {
           backside
           transmission={1.0}
           roughness={0.005}
-          thickness={isMobile ? 0.35 : 0.8}
+          thickness={isMobile ? 0.35 : 0.65}
           ior={1.42}
-          chromaticAberration={0.06}
+          chromaticAberration={0.08}
           anisotropy={0.5}
           distortion={0.2}
           distortionScale={0.5}
           temporalDistortion={0.0}
           clearcoat={1.0}
           clearcoatRoughness={0.0}
-          color="#ffffff"
-          attenuationColor="#ffffff"
-          attenuationDistance={4.0}
+          color="#f0f7ff"
+          attenuationColor="#e0f2fe"
+          attenuationDistance={3.5}
           reflectivity={1.0}
           resolution={512}
           samples={6}

@@ -126,7 +126,7 @@ export default function Home() {
   }, [bootState]);
 
   return (
-    <div className="min-h-screen bg-[#2162CE] text-black selection:bg-black/10 relative">
+    <div className="min-h-screen bg-[#1E65E5] text-black selection:bg-black/10 relative">
       {bootState !== 'booted' && (
         <div className={`fixed inset-0 bg-[#0D1B2A] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
           {/* Subtle grid background */}
@@ -181,7 +181,7 @@ export default function Home() {
 
       <div className="noise-overlay"></div>
       {/* SECTION 1: HERO */}
-      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden px-6 lg:px-8 bg-[#2162CE]">
+      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden px-6 lg:px-8 bg-[#1E65E5]">
         {/* Ball of Glass Interactive 3D Canvas Background (Z-Index 20) */}
         <div className="absolute inset-0 z-20 w-full h-full">
           <Main />

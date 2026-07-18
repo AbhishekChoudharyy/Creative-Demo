@@ -87,7 +87,7 @@ export default function WorkGallery() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="work" className="relative bg-[#2162CE] text-black pt-24 pb-48 md:pb-72 overflow-hidden">
+    <section ref={sectionRef} id="work" className="relative bg-[#1E65E5] text-black pt-24 pb-48 md:pb-72 overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
         <div className="mb-24 flex flex-col items-center text-center">
             <h2 className="text-[12vw] leading-[0.8] font-heading font-black z-10 text-black">

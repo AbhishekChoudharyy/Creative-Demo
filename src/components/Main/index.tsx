@@ -4,7 +4,6 @@ import { FC, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 
-import * as THREE from 'three';
 import { DeviceOrientationButton } from '../DeviceOrientationButton';
 import { Scene } from './Scene';
 import styles from './styles.module.css';
@@ -32,13 +31,9 @@ export const Main: FC = () => {
       <DeviceOrientationButton />
 
       <Canvas
-        dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [1.0, 1.5] : [1.0, 2.0]}
+        dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.8, 1.2] : [0.8, 1.8]}
         camera={{ fov: 60 }}
         style={{ touchAction: 'pan-y' }}
-        gl={{
-          toneMapping: THREE.NoToneMapping,
-          outputColorSpace: THREE.SRGBColorSpace,
-        }}
       >
         <Suspense fallback={<CanvasLoader />}>
           <Scene />
