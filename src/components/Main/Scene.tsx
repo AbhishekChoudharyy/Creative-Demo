@@ -84,23 +84,26 @@ export const Scene: FC = () => {
     <>
       <color attach="background" args={["#123C73"]} />
 
-      {/* Ambient light for overall brightness */}
-      <ambientLight intensity={2.2} />
+      {/* Ambient light boosted for mobile visibility */}
+      <ambientLight intensity={isMobile ? 3.2 : 2.2} />
 
-      {/* Front key light */}
-      <directionalLight position={[0, 4, 6]} intensity={4.0} color="#ffffff" />
+      {/* Strong front key light */}
+      <directionalLight position={[0, 4, 6]} intensity={isMobile ? 5.0 : 4.0} color="#ffffff" />
 
       {/* Top backlight/fill */}
-      <directionalLight position={[0, 8, -2]} intensity={3.0} color="#ffffff" />
+      <directionalLight position={[0, 8, -2]} intensity={isMobile ? 4.0 : 3.0} color="#ffffff" />
 
-      {/* Side teal rim light */}
-      <directionalLight position={[-6, 2, 4]} intensity={3.0} color="#00A6B2" />
+      {/* Side teal rim light for brand accent glints */}
+      <directionalLight position={[-6, 2, 4]} intensity={isMobile ? 4.0 : 3.0} color="#00A6B2" />
 
       {/* Right side fill light */}
-      <directionalLight position={[6, 2, 4]} intensity={2.5} color="#ffffff" />
+      <directionalLight position={[6, 2, 4]} intensity={isMobile ? 3.5 : 2.5} color="#ffffff" />
+
+      {/* Targeted spotlight directly focused on the crystal element */}
+      <spotLight position={[0, 5, 5]} angle={0.8} penumbra={0.8} intensity={isMobile ? 6.0 : 4.0} color="#ffffff" />
 
       {/* Front point light targeting 3D element */}
-      <pointLight position={[0, 0, 5]} intensity={4.0} color="#ffffff" />
+      <pointLight position={[0, 0, 4.5]} intensity={isMobile ? 5.5 : 4.0} color="#ffffff" />
 
       {/* Hero display text rendered inside the WebGL canvas, allowing it to be refracted by the glass chevron */}
       <group scale={[1, 1.35, 1]} position={[0, 0, -1.5]}>

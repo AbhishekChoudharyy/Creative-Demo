@@ -188,22 +188,22 @@ export const GlassBox: FC = () => {
         <MeshTransmissionMaterial
           backside
           transmission={1.0}
-          roughness={0.01}
-          thickness={0.8}
+          roughness={0.005}
+          thickness={isMobile ? 0.35 : 0.8}
           ior={1.42}
-          chromaticAberration={0.04}
+          chromaticAberration={0.06}
           anisotropy={0.5}
-          distortion={0.25}
+          distortion={0.2}
           distortionScale={0.5}
           temporalDistortion={0.0}
           clearcoat={1.0}
           clearcoatRoughness={0.0}
           color="#ffffff"
           attenuationColor="#ffffff"
-          attenuationDistance={3.0}
+          attenuationDistance={4.0}
           reflectivity={1.0}
-          resolution={isMobile ? 256 : 512}
-          samples={isMobile ? 3 : 6}
+          resolution={512}
+          samples={6}
         />
       </mesh>
     </group>
