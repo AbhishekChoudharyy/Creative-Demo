@@ -4,9 +4,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, Globe, Save, RefreshCw } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 const initialDocumentData = [
   {
     id: 'loader',
