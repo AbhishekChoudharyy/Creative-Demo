@@ -12,7 +12,7 @@ const initialDocumentData = [
       { label: 'Heading', text: 'FLOWORX' },
       { label: 'Sub Heading', text: 'FLOWORX COLLECTIVE' },
       { label: 'Loading Indicator Text', text: 'LOADING • [Progress]%' },
-      { label: 'Primary Button', text: 'ENT' }
+      { label: 'Primary Button', text: 'ENTER' }
     ]
   },
   {
