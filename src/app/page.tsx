@@ -139,7 +139,7 @@ export default function Home() {
               <h1 className="text-white text-5xl md:text-6xl font-heading font-extrabold tracking-[0.2em] translate-x-[0.1em] transition-all">
                 FLOWORX
               </h1>
-              <p className="text-[9px] text-[#C0C6CF] tracking-[0.4em] uppercase font-bold">
+              <p className="text-[9px] text-white/70 tracking-[0.4em] uppercase font-bold">
                 FLOWORX COLLECTIVE
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function Home() {
                   </span>
                   <div className="w-24 h-[1px] bg-white/10 relative overflow-hidden">
                     <div 
-                      className="absolute top-0 bottom-0 left-0 bg-[#00A6B2] transition-all duration-150 ease-out"
+                      className="absolute top-0 bottom-0 left-0 bg-white transition-all duration-150 ease-out"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -168,7 +168,7 @@ export default function Home() {
                     }, 700);
                   }}
                   onMouseEnter={() => soundManager.playHover()}
-                  className="px-8 py-2.5 border border-white/20 hover:border-white text-white hover:bg-[#00A6B2] hover:text-black transition-all duration-300 font-bold uppercase text-[10px] tracking-[0.3em] cursor-pointer focus:outline-none"
+                  className="px-8 py-2.5 border border-white/20 hover:border-white text-white hover:bg-white hover:text-black transition-all duration-300 font-bold uppercase text-[10px] tracking-[0.3em] cursor-pointer focus:outline-none"
                 >
                   ENTER
                 </button>
@@ -220,9 +220,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating teal dot decoration */}
+        {/* Floating black dot decoration */}
         <div className="absolute left-[8%] top-1/2 -translate-y-1/2 flex items-center justify-center select-none pointer-events-none hidden md:flex z-30">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#00A6B2] shadow-[0_0_10px_rgba(0,166,178,0.8)] animate-pulse" />
+          <div className="w-2.5 h-2.5 rounded-full bg-black shadow-[0_0_10px_rgba(0,0,0,0.8)] animate-pulse" />
         </div>
 
         {/* Bottom HUD layout (Z-Index 30) */}

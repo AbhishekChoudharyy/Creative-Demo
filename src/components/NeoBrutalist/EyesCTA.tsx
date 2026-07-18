@@ -86,12 +86,12 @@ export default function EyesCTA() {
             const workSection = document.getElementById("work");
             workSection?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="group mt-12 relative cursor-pointer px-12 sm:px-16 py-3 sm:py-4 rounded-full font-heading font-bold text-sm sm:text-base flex gap-2 text-black justify-center items-center overflow-hidden bg-black/5 border border-black/10 backdrop-blur-md uppercase tracking-wider hover:border-[#00A6B2] transition-all duration-300"
+          className="group mt-12 relative cursor-pointer px-12 sm:px-16 py-3 sm:py-4 rounded-full font-heading font-bold text-sm sm:text-base flex gap-2 text-black justify-center items-center overflow-hidden bg-black/5 border border-black/10 backdrop-blur-md uppercase tracking-wider hover:border-black transition-all duration-300"
         >
-          {/* Wipe animation with Teal Blue accent */}
+          {/* Wipe animation with Black */}
           <span
             className="
-              absolute inset-0 bg-[#00A6B2]
+              absolute inset-0 bg-black
               -translate-y-full
               transition-transform duration-300 ease-out
               group-hover:translate-y-0

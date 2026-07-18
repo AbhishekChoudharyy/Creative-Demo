@@ -94,7 +94,7 @@ export default function Manifesto() {
     <section ref={containerRef} className="h-screen bg-[#1E65E5] text-black overflow-hidden relative flex items-center justify-center">
       {/* Background Ambience */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-[#00A6B2]/30 rounded-full blur-[150px] animate-pulse"></div>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-white/20 rounded-full blur-[150px] animate-pulse"></div>
       </div>
 
       <div className="relative z-10 container mx-auto text-center px-4">
@@ -109,7 +109,7 @@ export default function Manifesto() {
          ))}
       </div>
       
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-xs font-mono tracking-[0.2em] text-[#C0C6CF]">
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-xs font-mono tracking-[0.2em] text-white/60">
         ( THE MANIFESTO )
       </div>
     </section>
