@@ -203,7 +203,7 @@ export const LayersAnimation: FC = () => {
     <div
       ref={containerRef}
       onClick={handleTransition}
-      className="relative w-full min-h-screen bg-[#123C73] flex items-center justify-center overflow-hidden cursor-pointer select-none border-t border-black/10"
+      className="relative w-full min-h-screen bg-[#1E54A8] flex items-center justify-center overflow-hidden cursor-pointer select-none border-t border-black/10"
     >
       {/* Background Grid Accent Lines */}
       <div className="absolute inset-0 grid grid-cols-4 grid-rows-1 pointer-events-none opacity-40">

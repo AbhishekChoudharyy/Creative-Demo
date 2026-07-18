@@ -35,7 +35,7 @@ export default function ContactForm() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative px-8 md:px-16 lg:px-24 py-24 lg:py-32 bg-[#123C73] text-black overflow-hidden border-t border-black/10"
+      className="relative px-8 md:px-16 lg:px-24 py-24 lg:py-32 bg-[#1E54A8] text-black overflow-hidden border-t border-black/10"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full">
         {/* LEFT SIDE */}

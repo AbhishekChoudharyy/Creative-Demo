@@ -82,7 +82,7 @@ export const Scene: FC = () => {
 
   return (
     <>
-      <color attach="background" args={["#123C73"]} />
+      <color attach="background" args={["#1E54A8"]} />
 
       {/* Ambient light boosted for mobile visibility */}
       <ambientLight intensity={isMobile ? 3.2 : 2.2} />
