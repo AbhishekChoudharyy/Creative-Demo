@@ -29,9 +29,15 @@ html, body {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.85; /* Subtle opacity for the generated canvas texture */
+  opacity: 0.05; /* Subtle noise overlay to ensure colors remain bright and vibrant */
   background-repeat: repeat;
   will-change: transform;
+}
+
+@media (max-width: 768px) {
+  .noise-overlay {
+    opacity: 0.03;
+  }
 }
 
 .hero-title {
