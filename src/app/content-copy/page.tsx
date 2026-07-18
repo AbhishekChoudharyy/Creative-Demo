@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, Globe, Save, RefreshCw } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const initialDocumentData = [
   {
@@ -268,51 +271,56 @@ export default function ContentCopyPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch server-saved data on mount
-  useEffect(() => {
-    async function loadServerData() {
-      try {
-        const res = await fetch('/api/content-copy');
-        const json = await res.json();
-        if (json.success && json.data) {
-          setData(json.data);
-        } else {
-          // Fallback to localStorage
-          const localSaved = localStorage.getItem(LOCAL_STORAGE_KEY);
-          if (localSaved) {
-            setData(JSON.parse(localSaved));
-          }
-        }
-      } catch (e) {
-        console.error('Failed to load server data:', e);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadServerData();
-  }, []);
-
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
 
+  // Cache-busting fetch function for live server sync across devices
+  const loadServerData = useCallback(async (showNotification = false) => {
+    setIsLoading(true);
+    try {
+      const timestamp = Date.now();
+      const res = await fetch(`/api/content-copy?t=${timestamp}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+      });
+      const json = await res.json();
+      if (json.success && json.data) {
+        setData(json.data);
+        if (showNotification) triggerToast('✓ Refreshed latest server copy!');
+      } else {
+        const localSaved = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (localSaved) {
+          setData(JSON.parse(localSaved));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load server data:', e);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadServerData();
+  }, [loadServerData]);
+
   const saveToServer = async (currentData = data) => {
     setIsSaving(true);
     try {
-      // 1. Save to Server for cross-device sync
       const res = await fetch('/api/content-copy', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: currentData })
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+        body: JSON.stringify({ data: currentData }),
+        cache: 'no-store'
       });
       const json = await res.json();
 
-      // 2. Also save to localStorage as backup
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentData));
 
       if (json.success) {
-        triggerToast('✓ Saved to server! Synced across all devices.');
+        triggerToast('✓ Saved to server! Available on all devices.');
       } else {
         triggerToast('Saved to browser storage.');
       }
@@ -343,13 +351,13 @@ export default function ContentCopyPage() {
   const handleResetData = async () => {
     if (confirm('Are you sure you want to reset all content to the original website copy for ALL devices?')) {
       try {
-        await fetch('/api/content-copy', { method: 'DELETE' });
+        await fetch('/api/content-copy', { method: 'DELETE', cache: 'no-store' });
       } catch (e) {
         console.error('Failed to reset server data:', e);
       }
       setData(initialDocumentData);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
-      triggerToast('Reset to original website copy across all devices!');
+      triggerToast('Reset to original copy across all devices!');
     }
   };
 
@@ -417,7 +425,7 @@ export default function ContentCopyPage() {
                 </p>
                 <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
                   <Globe className="w-3.5 h-3.5" />
-                  Synced Across All Devices
+                  Live Cross-Device Sync
                 </div>
               </div>
             </div>
@@ -434,6 +442,15 @@ export default function ContentCopyPage() {
               </button>
 
               <button
+                onClick={() => loadServerData(true)}
+                title="Fetch latest server updates"
+                className="px-3 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+                Sync / Refresh
+              </button>
+
+              <button
                 onClick={() => window.print()}
                 className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
               >
@@ -444,7 +461,7 @@ export default function ContentCopyPage() {
               <button
                 onClick={() => {
                   setIsEditable(!isEditable);
-                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Edit any text & click Save Changes to sync across all devices.');
+                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Edit any text & click Save Changes.');
                 }}
                 className={`px-4 py-2.5 border rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   isEditable
@@ -498,7 +515,7 @@ export default function ContentCopyPage() {
           {isLoading ? (
             <div className="text-center py-16 text-zinc-400 font-mono text-sm flex items-center justify-center gap-3">
               <RefreshCw className="w-5 h-5 animate-spin text-[#fe5416]" />
-              Loading latest server data...
+              Syncing latest server data...
             </div>
           ) : (
             filteredSections.map((section) => (
