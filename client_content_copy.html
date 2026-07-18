@@ -23,11 +23,7 @@
       --font-mono: 'JetBrains Mono', monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: var(--font-main);
@@ -41,12 +37,8 @@
       min-height: 100vh;
     }
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-    }
+    .container { max-width: 960px; margin: 0 auto; }
 
-    /* TOP HEADER & ACTION BAR */
     .doc-header {
       background: var(--card-bg);
       backdrop-filter: blur(16px);
@@ -90,18 +82,23 @@
       text-transform: uppercase;
     }
 
-    .doc-title-area p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-top: 6px;
+    .doc-title-area p { color: var(--muted); font-size: 14px; margin-top: 6px; }
+
+    .saved-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #34d399;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-left: 12px;
     }
 
-    /* ACTION BUTTONS */
-    .action-bar {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .action-bar { display: flex; gap: 12px; flex-wrap: wrap; }
 
     .btn {
       font-family: var(--font-main);
@@ -125,24 +122,10 @@
       transform: translateY(-1px);
     }
 
-    .btn-primary {
-      background: var(--accent);
-      color: #000;
-      border-color: var(--accent);
-      font-weight: 700;
-    }
+    .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+    .btn-primary:hover { background: #ff6a32; border-color: #ff6a32; box-shadow: 0 0 20px var(--accent-glow); }
 
-    .btn-primary:hover {
-      background: #ff6a32;
-      border-color: #ff6a32;
-      box-shadow: 0 0 20px var(--accent-glow);
-    }
-
-    /* SEARCH BAR */
-    .search-box {
-      width: 100%;
-      position: relative;
-    }
+    .search-box { width: 100%; position: relative; }
 
     .search-input {
       width: 100%;
@@ -157,22 +140,9 @@
       transition: border-color 0.2s;
     }
 
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); width: 18px; height: 18px; }
 
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      width: 18px;
-      height: 18px;
-    }
-
-    /* PAGE TITLE */
     .page-title {
       font-size: 24px;
       font-weight: 800;
@@ -182,12 +152,8 @@
       padding-bottom: 12px;
       border-bottom: 2px solid var(--accent);
       margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
     }
 
-    /* SECTION CARDS */
     .section-card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -199,9 +165,7 @@
       transition: border-color 0.2s;
     }
 
-    .section-card:hover {
-      border-color: rgba(255, 255, 255, 0.18);
-    }
+    .section-card:hover { border-color: rgba(255, 255, 255, 0.18); }
 
     .section-header-row {
       display: flex;
@@ -212,14 +176,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .section-card h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .section-card h2 { font-size: 20px; font-weight: 700; color: var(--accent); }
 
     .copy-sec-btn {
       font-family: var(--font-mono);
@@ -233,18 +190,10 @@
       transition: all 0.2s;
     }
 
-    .copy-sec-btn:hover {
-      background: rgba(255,255,255,0.15);
-      color: var(--highlight);
-    }
+    .copy-sec-btn:hover { background: rgba(255,255,255,0.15); color: var(--highlight); }
 
-    .item-group {
-      margin-bottom: 20px;
-    }
-
-    .item-group:last-child {
-      margin-bottom: 0;
-    }
+    .item-group { margin-bottom: 20px; }
+    .item-group:last-child { margin-bottom: 0; }
 
     .label {
       font-family: var(--font-mono);
@@ -265,20 +214,15 @@
       color: var(--text);
       white-space: pre-line;
       line-height: 1.6;
-      position: relative;
     }
 
     .content-box[contenteditable="true"] {
-      border-color: rgba(254, 84, 22, 0.5);
+      border-color: rgba(254, 84, 22, 0.6);
       background: #18181c;
       outline: none;
     }
 
-    .divider {
-      height: 1px;
-      background: rgba(255, 255, 255, 0.08);
-      margin: 24px 0;
-    }
+    .divider { height: 1px; background: rgba(255, 255, 255, 0.08); margin: 24px 0; }
 
     .sub-item-card {
       background: rgba(18, 18, 21, 0.8);
@@ -288,11 +232,6 @@
       margin-bottom: 16px;
     }
 
-    .sub-item-card:last-child {
-      margin-bottom: 0;
-    }
-
-    /* TOAST NOTIFICATION */
     .toast {
       position: fixed;
       bottom: 24px;
@@ -310,41 +249,15 @@
       z-index: 9999;
     }
 
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    .toast.show { transform: translateY(0); opacity: 1; }
 
-    /* PRINT STYLES */
     @media print {
-      body {
-        background: #fff;
-        color: #000;
-        padding: 0;
-      }
-      .doc-header, .btn, .search-box, .copy-sec-btn {
-        display: none !important;
-      }
-      .section-card {
-        background: #fff;
-        border: 1px solid #ccc;
-        color: #000;
-        box-shadow: none;
-        break-inside: avoid;
-        margin-bottom: 16px;
-      }
-      .content-box {
-        background: #f4f4f5;
-        border: 1px solid #ddd;
-        color: #111;
-      }
-      .page-title {
-        color: #000;
-        border-color: #fe5416;
-      }
-      .section-card h2 {
-        color: #d93d00;
-      }
+      body { background: #fff; color: #000; padding: 0; }
+      .doc-header, .btn, .search-box, .copy-sec-btn { display: none !important; }
+      .section-card { background: #fff; border: 1px solid #ccc; color: #000; box-shadow: none; break-inside: avoid; margin-bottom: 16px; }
+      .content-box { background: #f4f4f5; border: 1px solid #ddd; color: #111; }
+      .page-title { color: #000; border-color: #fe5416; }
+      .section-card h2 { color: #d93d00; }
     }
   </style>
 </head>
@@ -352,834 +265,454 @@
 
   <div class="container">
     
-    <!-- HEADER & TOOLBAR -->
     <div class="doc-header">
       <div class="header-top">
         <div class="doc-title-area">
           <h1>
             CLIENT CONTENT COPY
-            <span class="badge">OFFICIAL COPY</span>
+            <span class="badge">OFFICIAL</span>
+            <span class="saved-badge">✓ Auto-Saved</span>
           </h1>
-          <p>Creative Agency — Complete Website Copy & Assets inventory document.</p>
+          <p>Creative Agency — Website Copy inventory document.</p>
         </div>
         
         <div class="action-bar">
           <button class="btn btn-primary" onclick="window.print()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
             Print / Save PDF
           </button>
           
           <button class="btn" onclick="toggleEditMode()" id="editToggleBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
             Enable Live Editing
           </button>
 
           <button class="btn" onclick="copyEntireDocument()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             Copy All Text
+          </button>
+
+          <button class="btn" onclick="resetToOriginal()">
+            Reset
           </button>
         </div>
       </div>
 
-      <!-- SEARCH BOX -->
       <div class="search-box">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input type="text" class="search-input" id="searchInput" placeholder="Search any text, heading, section or keyword..." oninput="filterContent()">
       </div>
     </div>
 
-    <!-- MAIN DOCUMENT CONTENT -->
     <div id="documentBody">
 
       <h1 class="page-title"># HOME PAGE</h1>
 
       <!-- 1. LOADING SCREEN -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="loader">
         <div class="section-header-row">
           <h2>Loading Screen / Loader Overlay</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
         <div class="item-group">
           <div class="label">Heading</div>
-          <div class="content-box">CREATIVE</div>
+          <div class="content-box" data-key="loader-0">CREATIVE</div>
         </div>
-
         <div class="item-group">
           <div class="label">Sub Heading</div>
-          <div class="content-box">CREATIVE AGENCY</div>
+          <div class="content-box" data-key="loader-1">CREATIVE AGENCY</div>
         </div>
-
         <div class="item-group">
           <div class="label">Loading Indicator Text</div>
-          <div class="content-box">LOADING • [Progress]%</div>
+          <div class="content-box" data-key="loader-2">LOADING • [Progress]%</div>
         </div>
-
         <div class="item-group">
           <div class="label">Primary Button</div>
-          <div class="content-box">ENTER</div>
+          <div class="content-box" data-key="loader-3">ENTER</div>
         </div>
       </div>
 
       <!-- 2. NAVIGATION & HUD -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="nav">
         <div class="section-header-row">
           <h2>Navigation & HUD</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
         <div class="item-group">
           <div class="label">Logo Text</div>
-          <div class="content-box">CREATIVE</div>
+          <div class="content-box" data-key="nav-0">CREATIVE</div>
         </div>
-
         <div class="item-group">
           <div class="label">Sub Heading / Tagline</div>
-          <div class="content-box">CREATIVE AGENCY</div>
+          <div class="content-box" data-key="nav-1">CREATIVE AGENCY</div>
         </div>
-
         <div class="item-group">
           <div class="label">Navigation Category 1</div>
-          <div class="content-box">Experience Design
+          <div class="content-box" data-key="nav-2">Experience Design
 Sub Links: Interactive Spaces | Spatial Design | Sensory Engineering</div>
         </div>
-
         <div class="item-group">
           <div class="label">Navigation Category 2</div>
-          <div class="content-box">Anamorphic 3D
+          <div class="content-box" data-key="nav-3">Anamorphic 3D
 Sub Links: Digital Billboards | Visual Illusions | CGI Production</div>
         </div>
-
         <div class="item-group">
           <div class="label">Navigation Category 3</div>
-          <div class="content-box">Experiential Marketing
+          <div class="content-box" data-key="nav-4">Experiential Marketing
 Sub Links: Brand Activations | Immersive Events | Projection Spectacles</div>
         </div>
-
         <div class="item-group">
           <div class="label">Sound Control Button</div>
-          <div class="content-box">[ SOUND OFF / ON ]</div>
+          <div class="content-box" data-key="nav-5">[ SOUND OFF / ON ]</div>
         </div>
-
         <div class="item-group">
           <div class="label">Section Counter</div>
-          <div class="content-box">[ 001 ]</div>
+          <div class="content-box" data-key="nav-6">[ 001 ]</div>
         </div>
-
         <div class="item-group">
           <div class="label">Contact Button</div>
-          <div class="content-box">CONTACT</div>
+          <div class="content-box" data-key="nav-7">CONTACT</div>
         </div>
-
         <div class="item-group">
           <div class="label">HUD Scroll Prompt</div>
-          <div class="content-box">SCROLL FOR MORE</div>
+          <div class="content-box" data-key="nav-8">SCROLL FOR MORE</div>
         </div>
-
         <div class="item-group">
           <div class="label">HUD Indicator</div>
-          <div class="content-box">[ AR ]</div>
+          <div class="content-box" data-key="nav-9">[ AR ]</div>
         </div>
       </div>
 
       <!-- 3. HERO SECTION -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="hero">
         <div class="section-header-row">
           <h2>Hero Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
         <div class="item-group">
           <div class="label">Heading</div>
-          <div class="content-box">INNOVATE WITH PURPOSE</div>
+          <div class="content-box" data-key="hero-0">INNOVATE WITH PURPOSE</div>
         </div>
-
         <div class="item-group">
           <div class="label">Hero Graphic / Image</div>
-          <div class="content-box">Current Image: (Interactive 3D Ball of Glass / Volumetric graphic background)</div>
+          <div class="content-box" data-key="hero-1">Current Image: (Interactive 3D Ball of Glass / Volumetric graphic background)</div>
         </div>
       </div>
 
       <!-- 4. MARQUEE BANNER -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="marquee">
         <div class="section-header-row">
           <h2>Marquee Banner Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
         <div class="item-group">
           <div class="label">Marquee Text</div>
-          <div class="content-box">CREATIVE.AGENCY ✦ THE FUTURE OF DESIGN ✦ EXPERIENCE STUDIO ✦</div>
+          <div class="content-box" data-key="mq-0">CREATIVE.AGENCY ✦ THE FUTURE OF DESIGN ✦ EXPERIENCE STUDIO ✦</div>
         </div>
-
         <div class="item-group">
           <div class="label">Marquee Logo Image</div>
-          <div class="content-box">Current Image: (2D Logo image mark - /2d logo.jpeg)</div>
+          <div class="content-box" data-key="mq-1">Current Image: (2D Logo image mark - /2d logo.jpeg)</div>
         </div>
       </div>
 
       <!-- 5. ABOUT SECTION -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="about">
         <div class="section-header-row">
           <h2>About Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
         <div class="item-group">
           <div class="label">Heading</div>
-          <div class="content-box">We don't just build Digital Experiences. We engineer Cults.</div>
+          <div class="content-box" data-key="about-0">We don't just build Digital Experiences. We engineer Cults.</div>
         </div>
-
         <div class="item-group">
           <div class="label">Paragraph</div>
-          <div class="content-box">At Creative Agency, we bridge the gap between imagination and technology. We craft high-impact volumetric 3D billboards, spatial designs, and interactive experiences that build enduring brands.</div>
+          <div class="content-box" data-key="about-1">At Creative Agency, we bridge the gap between imagination and technology. We craft high-impact volumetric 3D billboards, spatial designs, and interactive experiences that build enduring brands.</div>
         </div>
       </div>
 
       <!-- 6. SERVICES SECTION -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="services">
         <div class="section-header-row">
           <h2>Services Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
         <div class="item-group">
           <div class="label">Heading</div>
-          <div class="content-box">Our Expertise</div>
+          <div class="content-box" data-key="svc-head">Our Expertise</div>
         </div>
-
         <div class="item-group">
           <div class="label">Sub Heading</div>
-          <div class="content-box">Comprehensive design solutions for forward-thinking brands.</div>
+          <div class="content-box" data-key="svc-sub">Comprehensive design solutions for forward-thinking brands.</div>
         </div>
 
         <div class="divider"></div>
 
         <div class="sub-item-card">
           <div class="label">Service 1 (01)</div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Strategy & Events</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Experiential Marketing</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">We design high-impact brand activations, immersive corporate exhibitions, and large-scale MICE experiences. Integrating spatial storytelling and structural technology, we build unforgettable environments that connect brands directly to their audiences.</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Experiential marketing & exhibition showcase photo)</div>
-          </div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="s1-cat">Strategy & Events</div></div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="s1-title">Experiential Marketing</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="s1-desc">We design high-impact brand activations, immersive corporate exhibitions, and large-scale MICE experiences. Integrating spatial storytelling and structural technology, we build unforgettable environments that connect brands directly to their audiences.</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="s1-img">Current Image: (Experiential marketing & exhibition showcase photo)</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Service 2 (02)</div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Out of Home</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Anamorphic 3D Displays</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">Engineering state-of-the-art 3D digital billboards and volumetric optical illusions that capture massive public attention. We produce hyper-realistic, forced-perspective CGI content optimized for urban digital screens.</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (3D digital billboard forced-perspective preview graphic)</div>
-          </div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="s2-cat">Out of Home</div></div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="s2-title">Anamorphic 3D Displays</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="s2-desc">Engineering state-of-the-art 3D digital billboards and volumetric optical illusions that capture massive public attention. We produce hyper-realistic, forced-perspective CGI content optimized for urban digital screens.</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="s2-img">Current Image: (3D digital billboard forced-perspective preview graphic)</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Service 3 (03)</div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Interaction</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Experience Design</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">Developing interactive digital-physical worlds and responsive installations. Blending gesture tracking, spatial audio, and sensory triggers, we construct environments that morph dynamically in response to human presence.</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Interactive installation & sensory design artwork)</div>
-          </div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="s3-cat">Interaction</div></div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="s3-title">Experience Design</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="s3-desc">Developing interactive digital-physical worlds and responsive installations. Blending gesture tracking, spatial audio, and sensory triggers, we construct environments that morph dynamically in response to human presence.</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="s3-img">Current Image: (Interactive installation & sensory design artwork)</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Service 4 (04)</div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">CGI & Motion</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Multimedia Production</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">High-fidelity projection mapping spectacles and bespoke visual content production. From conceptual rendering to real-time animation, we shape the sensory layers that transform any physical architecture into a living canvas.</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Projection mapping and CGI motion graphics preview)</div>
-          </div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="s4-cat">CGI & Motion</div></div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="s4-title">Multimedia Production</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="s4-desc">High-fidelity projection mapping spectacles and bespoke visual content production. From conceptual rendering to real-time animation, we shape the sensory layers that transform any physical architecture into a living canvas.</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="s4-img">Current Image: (Projection mapping and CGI motion graphics preview)</div></div>
         </div>
-
       </div>
 
       <!-- 7. MANIFESTO SECTION -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="manifesto">
         <div class="section-header-row">
           <h2>Manifesto Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
-        <div class="item-group">
-          <div class="label">Section Tag</div>
-          <div class="content-box">( THE MANIFESTO )</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Statement 1</div>
-          <div class="content-box">Space is the canvas.</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Statement 2</div>
-          <div class="content-box">Beyond the rectangle.</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Statement 3</div>
-          <div class="content-box">Storytelling in three dimensions.</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Statement 4</div>
-          <div class="content-box">Sensory cognition.</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Statement 5</div>
-          <div class="content-box">Zero limits, zero boundaries.</div>
-        </div>
+        <div class="item-group"><div class="label">Section Tag</div><div class="content-box" data-key="man-tag">( THE MANIFESTO )</div></div>
+        <div class="item-group"><div class="label">Statement 1</div><div class="content-box" data-key="man-1">Space is the canvas.</div></div>
+        <div class="item-group"><div class="label">Statement 2</div><div class="content-box" data-key="man-2">Beyond the rectangle.</div></div>
+        <div class="item-group"><div class="label">Statement 3</div><div class="content-box" data-key="man-3">Storytelling in three dimensions.</div></div>
+        <div class="item-group"><div class="label">Statement 4</div><div class="content-box" data-key="man-4">Sensory cognition.</div></div>
+        <div class="item-group"><div class="label">Statement 5</div><div class="content-box" data-key="man-5">Zero limits, zero boundaries.</div></div>
       </div>
 
       <!-- 8. PORTFOLIO / SELECTED WORKS -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="works">
         <div class="section-header-row">
           <h2>Portfolio / Selected Works Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
-        <div class="item-group">
-          <div class="label">Heading</div>
-          <div class="content-box">SELECTED WORKS</div>
-        </div>
+        <div class="item-group"><div class="label">Heading</div><div class="content-box" data-key="work-head">SELECTED WORKS</div></div>
 
         <div class="divider"></div>
 
         <div class="sub-item-card">
           <div class="label">Project 1</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Arcadia</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Experiential Exhibition</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Year</div>
-            <div class="content-box">2025</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Arcadia project exhibition space photo)</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="w1-title">Arcadia</div></div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="w1-cat">Experiential Exhibition</div></div>
+          <div class="item-group"><div class="label">Year</div><div class="content-box" data-key="w1-year">2025</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="w1-img">Current Image: (Arcadia project exhibition space photo)</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Project 2</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Hyperluminal</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Anamorphic 3D Billboard</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Year</div>
-            <div class="content-box">2025</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Hyperluminal 3D billboard project graphic)</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="w2-title">Hyperluminal</div></div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="w2-cat">Anamorphic 3D Billboard</div></div>
+          <div class="item-group"><div class="label">Year</div><div class="content-box" data-key="w2-year">2025</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="w2-img">Current Image: (Hyperluminal 3D billboard project graphic)</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Project 3</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Synapse</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Projection Mapping Spectacle</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Year</div>
-            <div class="content-box">2026</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Synapse projection mapping spectacle photo)</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="w3-title">Synapse</div></div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="w3-cat">Projection Mapping Spectacle</div></div>
+          <div class="item-group"><div class="label">Year</div><div class="content-box" data-key="w3-year">2026</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="w3-img">Current Image: (Synapse projection mapping spectacle photo)</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Project 4</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Aether</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Physical-Digital Installation</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Year</div>
-            <div class="content-box">2026</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Aether physical-digital installation sculpture image)</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="w4-title">Aether</div></div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="w4-cat">Physical-Digital Installation</div></div>
+          <div class="item-group"><div class="label">Year</div><div class="content-box" data-key="w4-year">2026</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="w4-img">Current Image: (Aether physical-digital installation sculpture image)</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Project 5</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Lumina</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Interactive Sensory Environment</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Year</div>
-            <div class="content-box">2025</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Lumina sensory lighting environment photo)</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="w5-title">Lumina</div></div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="w5-cat">Interactive Sensory Environment</div></div>
+          <div class="item-group"><div class="label">Year</div><div class="content-box" data-key="w5-year">2025</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="w5-img">Current Image: (Lumina sensory lighting environment photo)</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Project 6</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Nexus</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Category</div>
-            <div class="content-box">Experiential Retail Activation</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Year</div>
-            <div class="content-box">2026</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Nexus retail activation venue illuminated photo)</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="w6-title">Nexus</div></div>
+          <div class="item-group"><div class="label">Category</div><div class="content-box" data-key="w6-cat">Experiential Retail Activation</div></div>
+          <div class="item-group"><div class="label">Year</div><div class="content-box" data-key="w6-year">2026</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="w6-img">Current Image: (Nexus retail activation venue illuminated photo)</div></div>
         </div>
-
       </div>
 
       <!-- 9. PROCESS SECTION -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="process">
         <div class="section-header-row">
           <h2>Process Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
-        <div class="item-group">
-          <div class="label">Heading</div>
-          <div class="content-box">THE PROCESS</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Sub Heading</div>
-          <div class="content-box">Our methodology is a blend of rigorous strategy and unbridled creativity.</div>
-        </div>
-
+        <div class="item-group"><div class="label">Heading</div><div class="content-box" data-key="pr-head">THE PROCESS</div></div>
+        <div class="item-group"><div class="label">Sub Heading</div><div class="content-box" data-key="pr-sub">Our methodology is a blend of rigorous strategy and unbridled creativity.</div></div>
         <div class="divider"></div>
 
         <div class="sub-item-card">
           <div class="label">Step (01)</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Discovery</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">We don't start with solutions. We start with questions. We deconstruct your brand to its atomic level, understanding the chaos before we implement the order.</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="p1-title">Discovery</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="p1-desc">We don't start with solutions. We start with questions. We deconstruct your brand to its atomic level, understanding the chaos before we implement the order.</div></div>
         </div>
-
         <div class="sub-item-card">
           <div class="label">Step (02)</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Strategy</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">Chaos needs a container. We build the strategic framework that will hold the vision. Positioning, voice, and visual direction are defined here.</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="p2-title">Strategy</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="p2-desc">Chaos needs a container. We build the strategic framework that will hold the vision. Positioning, voice, and visual direction are defined here.</div></div>
         </div>
-
         <div class="sub-item-card">
           <div class="label">Step (03)</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Execution</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">Where the rubber meets the road. We deploy high-fidelity design, motion, and code. No templates. No shortcuts. Just pure craftsmanship.</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="p3-title">Execution</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="p3-desc">Where the rubber meets the road. We deploy high-fidelity design, motion, and code. No templates. No shortcuts. Just pure craftsmanship.</div></div>
         </div>
-
         <div class="sub-item-card">
           <div class="label">Step (04)</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">Launch</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">The reveal. We manage the deployment, ensure performance across the globe, and hand over the keys to your new digital empire.</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="p4-title">Launch</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="p4-desc">The reveal. We manage the deployment, ensure performance across the globe, and hand over the keys to your new digital empire.</div></div>
         </div>
       </div>
 
       <!-- 10. TEAM SECTION -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="team">
         <div class="section-header-row">
           <h2>Team Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
-        <div class="item-group">
-          <div class="label">Section Badge</div>
-          <div class="content-box">The Minds</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Heading</div>
-          <div class="content-box">Collective Consciousness</div>
-        </div>
-
+        <div class="item-group"><div class="label">Section Badge</div><div class="content-box" data-key="tm-badge">The Minds</div></div>
+        <div class="item-group"><div class="label">Heading</div><div class="content-box" data-key="tm-head">Collective Consciousness</div></div>
         <div class="divider"></div>
 
         <div class="sub-item-card">
           <div class="label">Member 1</div>
-          <div class="item-group">
-            <div class="label">Name</div>
-            <div class="content-box">Abhay Mallick</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Role</div>
-            <div class="content-box">Founder / Developer</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Abhay Mallick portrait image)</div>
-          </div>
+          <div class="item-group"><div class="label">Name</div><div class="content-box" data-key="t1-name">Abhay Mallick</div></div>
+          <div class="item-group"><div class="label">Role</div><div class="content-box" data-key="t1-role">Founder / Developer</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="t1-img">Current Image: (Abhay Mallick portrait image)</div></div>
         </div>
-
         <div class="sub-item-card">
           <div class="label">Member 2</div>
-          <div class="item-group">
-            <div class="label">Name</div>
-            <div class="content-box">Sarah J.</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Role</div>
-            <div class="content-box">Design Lead</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Sarah J. portrait image)</div>
-          </div>
+          <div class="item-group"><div class="label">Name</div><div class="content-box" data-key="t2-name">Sarah J.</div></div>
+          <div class="item-group"><div class="label">Role</div><div class="content-box" data-key="t2-role">Design Lead</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="t2-img">Current Image: (Sarah J. portrait image)</div></div>
         </div>
-
         <div class="sub-item-card">
           <div class="label">Member 3</div>
-          <div class="item-group">
-            <div class="label">Name</div>
-            <div class="content-box">Davide R.</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Role</div>
-            <div class="content-box">Tech Director</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Image</div>
-            <div class="content-box">Current Image: (Davide R. portrait image)</div>
-          </div>
+          <div class="item-group"><div class="label">Name</div><div class="content-box" data-key="t3-name">Davide R.</div></div>
+          <div class="item-group"><div class="label">Role</div><div class="content-box" data-key="t3-role">Tech Director</div></div>
+          <div class="item-group"><div class="label">Image</div><div class="content-box" data-key="t3-img">Current Image: (Davide R. portrait image)</div></div>
         </div>
       </div>
 
       <!-- 11. LABS / FEATURE REVEAL -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="labs">
         <div class="section-header-row">
           <h2>Labs / Feature Reveal Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
-        <div class="item-group">
-          <div class="label">Section Label</div>
-          <div class="content-box">CREATIVE AGENCY // LABS</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Status Badge</div>
-          <div class="content-box">VARIATION_01</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">HUD Prompt</div>
-          <div class="content-box">CLICK ANYWHERE TO REVEAL</div>
-        </div>
-
+        <div class="item-group"><div class="label">Section Label</div><div class="content-box" data-key="lab-lbl">CREATIVE AGENCY // LABS</div></div>
+        <div class="item-group"><div class="label">Status Badge</div><div class="content-box" data-key="lab-st">VARIATION_01</div></div>
+        <div class="item-group"><div class="label">HUD Prompt</div><div class="content-box" data-key="lab-prompt">CLICK ANYWHERE TO REVEAL</div></div>
         <div class="divider"></div>
 
         <div class="sub-item-card">
           <div class="label">Slide 1</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">EXPERIENCE</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">Sensory activations designed to connect human emotion to spatial architecture. We build interactive physical-digital installations that blend architecture, sound, and visual design.</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="l1-title">EXPERIENCE</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="l1-desc">Sensory activations designed to connect human emotion to spatial architecture. We build interactive physical-digital installations that blend architecture, sound, and visual design.</div></div>
         </div>
-
         <div class="sub-item-card">
           <div class="label">Slide 2</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">ILLUSION</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">Volumetric 3D anamorphic billboards that redefine urban spaces and public advertising. We engineer forced-perspective visual content that creates three-dimensional depth on standard flat screens.</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="l2-title">ILLUSION</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="l2-desc">Volumetric 3D anamorphic billboards that redefine urban spaces and public advertising. We engineer forced-perspective visual content that creates three-dimensional depth on standard flat screens.</div></div>
         </div>
-
         <div class="sub-item-card">
           <div class="label">Slide 3</div>
-          <div class="item-group">
-            <div class="label">Title</div>
-            <div class="content-box">MAPPING</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">High-fidelity projection mapping and interactive digital art designed to transform any physical environment. We map complex architectural surfaces to turn structures into storytelling mediums.</div>
-          </div>
+          <div class="item-group"><div class="label">Title</div><div class="content-box" data-key="l3-title">MAPPING</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="l3-desc">High-fidelity projection mapping and interactive digital art designed to transform any physical environment. We map complex architectural surfaces to turn structures into storytelling mediums.</div></div>
         </div>
-
-        <div class="item-group">
-          <div class="label">Background Layer Images</div>
-          <div class="content-box">Current Image: (6 layered slideshow reveal images - /layers/1.jpg to /layers/6.jpg)</div>
-        </div>
+        <div class="item-group"><div class="label">Background Layer Images</div><div class="content-box" data-key="lab-img">Current Image: (6 layered slideshow reveal images - /layers/1.jpg to /layers/6.jpg)</div></div>
       </div>
 
       <!-- 12. CALL TO ACTION (EYES CTA) -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="cta">
         <div class="section-header-row">
           <h2>Call To Action (Eyes CTA)</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
-        <div class="item-group">
-          <div class="label">Heading</div>
-          <div class="content-box">READY TO BUILD THE FUTURE?</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Primary Button</div>
-          <div class="content-box">Explore Creative Agency</div>
-        </div>
+        <div class="item-group"><div class="label">Heading</div><div class="content-box" data-key="cta-head">READY TO BUILD THE FUTURE?</div></div>
+        <div class="item-group"><div class="label">Primary Button</div><div class="content-box" data-key="cta-btn">Explore Creative Agency</div></div>
       </div>
 
       <!-- 13. CONTACT SECTION -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="contact">
         <div class="section-header-row">
           <h2>Contact Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
-        <div class="item-group">
-          <div class="label">Section Label</div>
-          <div class="content-box">CONTACT US</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Heading</div>
-          <div class="content-box">Let's Render The Next Dimension.</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Paragraph</div>
-          <div class="content-box">Partner with Creative Agency to design high-fidelity interactive 3D, spatial mapping, and volumetric installations. Let's make something legendary.</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Primary Button</div>
-          <div class="content-box">Explore Our Work</div>
-        </div>
-
+        <div class="item-group"><div class="label">Section Label</div><div class="content-box" data-key="ct-lbl">CONTACT US</div></div>
+        <div class="item-group"><div class="label">Heading</div><div class="content-box" data-key="ct-head">Let's Render The Next Dimension.</div></div>
+        <div class="item-group"><div class="label">Paragraph</div><div class="content-box" data-key="ct-para">Partner with Creative Agency to design high-fidelity interactive 3D, spatial mapping, and volumetric installations. Let's make something legendary.</div></div>
+        <div class="item-group"><div class="label">Primary Button</div><div class="content-box" data-key="ct-btn">Explore Our Work</div></div>
         <div class="divider"></div>
 
         <div class="sub-item-card">
           <div class="label">Contact Form Fields</div>
-          <div class="item-group">
-            <div class="label">Field 1 Label</div>
-            <div class="content-box">Name</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Field 2 Label</div>
-            <div class="content-box">Brand / Company</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Field 3 Label</div>
-            <div class="content-box">Email</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Field 4 Label</div>
-            <div class="content-box">Phone</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Field 5 Label</div>
-            <div class="content-box">Your Message</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Submit Button</div>
-            <div class="content-box">Send Message</div>
-          </div>
+          <div class="item-group"><div class="label">Field 1 Label</div><div class="content-box" data-key="f1">Name</div></div>
+          <div class="item-group"><div class="label">Field 2 Label</div><div class="content-box" data-key="f2">Brand / Company</div></div>
+          <div class="item-group"><div class="label">Field 3 Label</div><div class="content-box" data-key="f3">Email</div></div>
+          <div class="item-group"><div class="label">Field 4 Label</div><div class="content-box" data-key="f4">Phone</div></div>
+          <div class="item-group"><div class="label">Field 5 Label</div><div class="content-box" data-key="f5">Your Message</div></div>
+          <div class="item-group"><div class="label">Submit Button</div><div class="content-box" data-key="f-sub">Send Message</div></div>
         </div>
 
         <div class="sub-item-card">
           <div class="label">Form Success State Message</div>
-          <div class="item-group">
-            <div class="label">Heading</div>
-            <div class="content-box">Message Sent!</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Paragraph</div>
-            <div class="content-box">Thank you for reaching out. We'll get back to you within 24 hours.</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Button Link</div>
-            <div class="content-box">Send another message</div>
-          </div>
+          <div class="item-group"><div class="label">Heading</div><div class="content-box" data-key="fs-head">Message Sent!</div></div>
+          <div class="item-group"><div class="label">Paragraph</div><div class="content-box" data-key="fs-para">Thank you for reaching out. We'll get back to you within 24 hours.</div></div>
+          <div class="item-group"><div class="label">Button Link</div><div class="content-box" data-key="fs-link">Send another message</div></div>
         </div>
       </div>
 
       <!-- 14. FOOTER SECTION -->
-      <div class="section-card searchable">
+      <div class="section-card searchable" data-sec="footer">
         <div class="section-header-row">
           <h2>Footer Section</h2>
           <button class="copy-sec-btn" onclick="copySection(this)">Copy Section</button>
         </div>
-
-        <div class="item-group">
-          <div class="label">Logo Text</div>
-          <div class="content-box">CREATIVE</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Description</div>
-          <div class="content-box">Creative Agency. Next-generation experiential marketing, anamorphic 3D, and interactive experience design.</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Social Links</div>
-          <div class="content-box">- GitHub (https://github.com)
-- Twitter (https://twitter.com)</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Quick Links</div>
-          <div class="content-box">- Home
+        <div class="item-group"><div class="label">Logo Text</div><div class="content-box" data-key="ft-logo">CREATIVE</div></div>
+        <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="ft-desc">Creative Agency. Next-generation experiential marketing, anamorphic 3D, and interactive experience design.</div></div>
+        <div class="item-group"><div class="label">Social Links</div><div class="content-box" data-key="ft-soc">- GitHub (https://github.com)
+- Twitter (https://twitter.com)</div></div>
+        <div class="item-group"><div class="label">Quick Links</div><div class="content-box" data-key="ft-ql">- Home
 - Services
-- Selected Works</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Core Divisions</div>
-          <div class="content-box">- Experiential Marketing
+- Selected Works</div></div>
+        <div class="item-group"><div class="label">Core Divisions</div><div class="content-box" data-key="ft-cd">- Experiential Marketing
 - Anamorphic 3D Billboards
 - Interactive Installations
-- Projection Mapping</div>
-        </div>
+- Projection Mapping</div></div>
 
         <div class="sub-item-card">
           <div class="label">Newsletter Section</div>
-          <div class="item-group">
-            <div class="label">Heading</div>
-            <div class="content-box">Stay Updated</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Description</div>
-            <div class="content-box">Get the latest creative showcase updates.</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Input Placeholder</div>
-            <div class="content-box">Email address</div>
-          </div>
-          <div class="item-group">
-            <div class="label">Submit Button</div>
-            <div class="content-box">Submit Arrow Button</div>
-          </div>
+          <div class="item-group"><div class="label">Heading</div><div class="content-box" data-key="nl-head">Stay Updated</div></div>
+          <div class="item-group"><div class="label">Description</div><div class="content-box" data-key="nl-desc">Get the latest creative showcase updates.</div></div>
+          <div class="item-group"><div class="label">Input Placeholder</div><div class="content-box" data-key="nl-ph">Email address</div></div>
+          <div class="item-group"><div class="label">Submit Button</div><div class="content-box" data-key="nl-btn">Submit Arrow Button</div></div>
         </div>
 
         <div class="divider"></div>
-
-        <div class="item-group">
-          <div class="label">Copyright Text</div>
-          <div class="content-box">© 2026 Creative Agency. All Rights Reserved.</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Back to Top Action Link</div>
-          <div class="content-box">Back To Top ↑</div>
-        </div>
-
-        <div class="item-group">
-          <div class="label">Legal Links</div>
-          <div class="content-box">- Privacy Policy
-- Terms & Conditions</div>
-        </div>
+        <div class="item-group"><div class="label">Copyright Text</div><div class="content-box" data-key="ft-copy">© 2026 Creative Agency. All Rights Reserved.</div></div>
+        <div class="item-group"><div class="label">Back to Top Action Link</div><div class="content-box" data-key="ft-btt">Back To Top ↑</div></div>
+        <div class="item-group"><div class="label">Legal Links</div><div class="content-box" data-key="ft-leg">- Privacy Policy
+- Terms & Conditions</div></div>
       </div>
 
     </div>
@@ -1189,6 +722,32 @@ Sub Links: Brand Activations | Immersive Events | Projection Spectacles</div>
 
   <script>
     let isEditing = false;
+    const STORAGE_KEY = 'html_client_content_copy_edits';
+
+    // Load saved edits from localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        Object.keys(saved).forEach(key => {
+          const el = document.querySelector(`[data-key="${key}"]`);
+          if (el) {
+            el.innerText = saved[key];
+          }
+        });
+      } catch (e) {
+        console.error('Failed to load saved edits', e);
+      }
+    });
+
+    function saveEdit(key, text) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        saved[key] = text;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      } catch (e) {
+        console.error('Failed to save edit', e);
+      }
+    }
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
@@ -1204,18 +763,33 @@ Sub Links: Brand Activations | Immersive Events | Projection Spectacles</div>
       
       boxes.forEach(box => {
         box.contentEditable = isEditing ? "true" : "false";
+        if (isEditing) {
+          box.onblur = function() {
+            const key = this.getAttribute('data-key');
+            if (key) {
+              saveEdit(key, this.innerText);
+            }
+          };
+        }
       });
 
       if (isEditing) {
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Disable Editing`;
+        btn.innerText = "Disable Editing";
         btn.style.borderColor = "#fe5416";
         btn.style.color = "#fe5416";
-        showToast("Live Editing Enabled! Click any text box to edit.");
+        showToast("Live Editing Enabled! Edits save automatically.");
       } else {
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Enable Live Editing`;
+        btn.innerText = "Enable Live Editing";
         btn.style.borderColor = "";
         btn.style.color = "";
         showToast("Editing Disabled");
+      }
+    }
+
+    function resetToOriginal() {
+      if (confirm('Are you sure you want to reset all edits to original copy?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
       }
     }
 
@@ -1238,11 +812,7 @@ Sub Links: Brand Activations | Immersive Events | Projection Spectacles</div>
       
       cards.forEach(card => {
         const text = card.innerText.toLowerCase();
-        if (text.includes(query)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
+        card.style.display = text.includes(query) ? 'block' : 'none';
       });
     }
   </script>

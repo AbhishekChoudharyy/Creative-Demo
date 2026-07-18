@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Copy, Printer, Edit3, Search, Check, ArrowLeft, FileText } from 'lucide-react';
+import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, CheckCircle2 } from 'lucide-react';
 
-const documentData = [
+const initialDocumentData = [
   {
     id: 'loader',
     title: 'Loading Screen / Loader Overlay',
@@ -258,14 +258,59 @@ const documentData = [
   }
 ];
 
+const LOCAL_STORAGE_KEY = 'creative_agency_content_copy_data';
+
 export default function ContentCopyPage() {
+  const [data, setData] = useState(initialDocumentData);
   const [searchQuery, setSearchQuery] = useState('');
   const [isEditable, setIsEditable] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isSaved, setIsSaved] = useState(true);
+
+  // Load from localStorage on client side mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        setData(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error('Failed to load saved content copy', e);
+    }
+  }, []);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const updateItemText = (sectionId: string, itemIdx: number, newText: string) => {
+    setData((prevData) => {
+      const updated = prevData.map((section) => {
+        if (section.id === sectionId) {
+          const newItems = [...section.items];
+          newItems[itemIdx] = { ...newItems[itemIdx], text: newText };
+          return { ...section, items: newItems };
+        }
+        return section;
+      });
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+        setIsSaved(true);
+      } catch (e) {
+        console.error('Failed to save to localStorage', e);
+      }
+      return updated;
+    });
+  };
+
+  const handleResetData = () => {
+    if (confirm('Are you sure you want to reset all content to the original website copy?')) {
+      setData(initialDocumentData);
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      setIsSaved(true);
+      triggerToast('Reset to original website copy!');
+    }
   };
 
   const copyToClipboard = (text: string, msg: string) => {
@@ -279,13 +324,13 @@ export default function ContentCopyPage() {
   };
 
   const handleCopyFullDoc = () => {
-    const fullText = documentData
+    const fullText = data
       .map(sec => `${sec.title}\n` + sec.items.map(item => `${item.label}: ${item.text}`).join('\n'))
       .join('\n\n==================================================\n\n');
     copyToClipboard(fullText, 'Full document copied to clipboard!');
   };
 
-  const filteredSections = documentData.filter(section => {
+  const filteredSections = data.filter(section => {
     const titleMatch = section.title.toLowerCase().includes(searchQuery.toLowerCase());
     const itemMatch = section.items.some(
       item =>
@@ -326,9 +371,15 @@ export default function ContentCopyPage() {
                   </span>
                 </h1>
               </div>
-              <p className="text-sm text-zinc-400 mt-2 ml-11">
-                Complete existing website content & image inventory document for Creative Agency.
-              </p>
+              <div className="flex items-center gap-4 mt-2 ml-11">
+                <p className="text-sm text-zinc-400">
+                  Complete existing website content & image inventory document.
+                </p>
+                <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Auto-Saved to Browser
+                </div>
+              </div>
             </div>
 
             {/* Actions */}
@@ -344,7 +395,7 @@ export default function ContentCopyPage() {
               <button
                 onClick={() => {
                   setIsEditable(!isEditable);
-                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Click any text box to edit.');
+                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Click any text box to edit & save automatically.');
                 }}
                 className={`px-4 py-2.5 border rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   isEditable
@@ -362,6 +413,15 @@ export default function ContentCopyPage() {
               >
                 <Copy className="w-4 h-4" />
                 Copy All Text
+              </button>
+
+              <button
+                onClick={handleResetData}
+                title="Reset back to original copy"
+                className="px-3 py-2.5 bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/30 text-zinc-400 hover:text-red-400 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Reset
               </button>
             </div>
           </div>
@@ -411,9 +471,13 @@ export default function ContentCopyPage() {
                     <div
                       contentEditable={isEditable}
                       suppressContentEditableWarning={true}
+                      onBlur={(e) => {
+                        const text = e.currentTarget.innerText;
+                        updateItemText(section.id, idx, text);
+                      }}
                       className={`p-4 rounded-xl text-sm leading-relaxed whitespace-pre-line border transition-all ${
                         isEditable
-                          ? 'bg-[#121215] border-[#fe5416]/50 text-white outline-none focus:ring-1 focus:ring-[#fe5416]'
+                          ? 'bg-[#121215] border-[#fe5416]/50 text-white outline-none focus:ring-1 focus:ring-[#fe5416] cursor-text'
                           : 'bg-[#121215]/80 border-zinc-800 text-zinc-200'
                       }`}
                     >
