@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, CheckCircle2, Save } from 'lucide-react';
+import { Copy, Printer, Edit3, Search, ArrowLeft, FileText, RotateCcw, Globe, Save, RefreshCw } from 'lucide-react';
 
 const initialDocumentData = [
   {
@@ -265,17 +265,31 @@ export default function ContentCopyPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isEditable, setIsEditable] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Load from localStorage on client side mount
+  // Fetch server-saved data on mount
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        setData(JSON.parse(saved));
+    async function loadServerData() {
+      try {
+        const res = await fetch('/api/content-copy');
+        const json = await res.json();
+        if (json.success && json.data) {
+          setData(json.data);
+        } else {
+          // Fallback to localStorage
+          const localSaved = localStorage.getItem(LOCAL_STORAGE_KEY);
+          if (localSaved) {
+            setData(JSON.parse(localSaved));
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load server data:', e);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (e) {
-      console.error('Failed to load saved content copy', e);
     }
+    loadServerData();
   }, []);
 
   const triggerToast = (msg: string) => {
@@ -283,13 +297,31 @@ export default function ContentCopyPage() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  const saveToLocalStorage = (currentData = data) => {
+  const saveToServer = async (currentData = data) => {
+    setIsSaving(true);
     try {
+      // 1. Save to Server for cross-device sync
+      const res = await fetch('/api/content-copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: currentData })
+      });
+      const json = await res.json();
+
+      // 2. Also save to localStorage as backup
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentData));
-      triggerToast('Changes saved successfully to browser storage!');
+
+      if (json.success) {
+        triggerToast('✓ Saved to server! Synced across all devices.');
+      } else {
+        triggerToast('Saved to browser storage.');
+      }
     } catch (e) {
-      console.error('Failed to save to localStorage', e);
-      triggerToast('Error saving changes');
+      console.error('Failed to save to server:', e);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentData));
+      triggerToast('Saved to browser storage.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -303,16 +335,21 @@ export default function ContentCopyPage() {
         }
         return section;
       });
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      saveToServer(updated);
       return updated;
     });
   };
 
-  const handleResetData = () => {
-    if (confirm('Are you sure you want to reset all content to the original website copy?')) {
+  const handleResetData = async () => {
+    if (confirm('Are you sure you want to reset all content to the original website copy for ALL devices?')) {
+      try {
+        await fetch('/api/content-copy', { method: 'DELETE' });
+      } catch (e) {
+        console.error('Failed to reset server data:', e);
+      }
       setData(initialDocumentData);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
-      triggerToast('Reset to original website copy!');
+      triggerToast('Reset to original website copy across all devices!');
     }
   };
 
@@ -379,8 +416,8 @@ export default function ContentCopyPage() {
                   Complete existing website content & image inventory document.
                 </p>
                 <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Auto-Saved
+                  <Globe className="w-3.5 h-3.5" />
+                  Synced Across All Devices
                 </div>
               </div>
             </div>
@@ -388,11 +425,12 @@ export default function ContentCopyPage() {
             {/* Actions */}
             <div className="flex flex-wrap gap-3 w-full md:w-auto">
               <button
-                onClick={() => saveToLocalStorage()}
-                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                onClick={() => saveToServer()}
+                disabled={isSaving}
+                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-black font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.3)]"
               >
-                <Save className="w-4 h-4" />
-                Save Changes
+                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                {isSaving ? 'Saving to Server...' : 'Save Changes'}
               </button>
 
               <button
@@ -406,7 +444,7 @@ export default function ContentCopyPage() {
               <button
                 onClick={() => {
                   setIsEditable(!isEditable);
-                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Click any text box to edit & click Save Changes.');
+                  triggerToast(isEditable ? 'Live Editing Disabled' : 'Live Editing Enabled! Edit any text & click Save Changes to sync across all devices.');
                 }}
                 className={`px-4 py-2.5 border rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   isEditable
@@ -428,7 +466,7 @@ export default function ContentCopyPage() {
 
               <button
                 onClick={handleResetData}
-                title="Reset back to original copy"
+                title="Reset back to original copy for all devices"
                 className="px-3 py-2.5 bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/30 text-zinc-400 hover:text-red-400 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -457,50 +495,57 @@ export default function ContentCopyPage() {
             <h2 className="text-xl font-black uppercase tracking-wider text-white"># HOME PAGE</h2>
           </div>
 
-          {filteredSections.map((section) => (
-            <div
-              key={section.id}
-              className="bg-[#18181b]/70 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 hover:border-white/20 transition-all shadow-lg"
-            >
-              <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                <h3 className="text-lg md:text-xl font-bold text-[#fe5416]">{section.title}</h3>
-                <button
-                  onClick={() => handleCopySection(section.title, section.items)}
-                  className="px-3 py-1.5 bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-300 hover:text-white rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  Copy Section
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {section.items.map((item, idx) => (
-                  <div key={idx} className="space-y-1.5">
-                    <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
-                      {item.label}
-                    </label>
-                    <div
-                      contentEditable={isEditable}
-                      suppressContentEditableWarning={true}
-                      onBlur={(e) => {
-                        const text = e.currentTarget.innerText;
-                        updateItemText(section.id, idx, text);
-                      }}
-                      className={`p-4 rounded-xl text-sm leading-relaxed whitespace-pre-line border transition-all ${
-                        isEditable
-                          ? 'bg-[#121215] border-[#fe5416]/50 text-white outline-none focus:ring-1 focus:ring-[#fe5416] cursor-text'
-                          : 'bg-[#121215]/80 border-zinc-800 text-zinc-200'
-                      }`}
-                    >
-                      {item.text}
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {isLoading ? (
+            <div className="text-center py-16 text-zinc-400 font-mono text-sm flex items-center justify-center gap-3">
+              <RefreshCw className="w-5 h-5 animate-spin text-[#fe5416]" />
+              Loading latest server data...
             </div>
-          ))}
+          ) : (
+            filteredSections.map((section) => (
+              <div
+                key={section.id}
+                className="bg-[#18181b]/70 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 hover:border-white/20 transition-all shadow-lg"
+              >
+                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                  <h3 className="text-lg md:text-xl font-bold text-[#fe5416]">{section.title}</h3>
+                  <button
+                    onClick={() => handleCopySection(section.title, section.items)}
+                    className="px-3 py-1.5 bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-300 hover:text-white rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    Copy Section
+                  </button>
+                </div>
 
-          {filteredSections.length === 0 && (
+                <div className="space-y-4">
+                  {section.items.map((item, idx) => (
+                    <div key={idx} className="space-y-1.5">
+                      <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
+                        {item.label}
+                      </label>
+                      <div
+                        contentEditable={isEditable}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => {
+                          const text = e.currentTarget.innerText;
+                          updateItemText(section.id, idx, text);
+                        }}
+                        className={`p-4 rounded-xl text-sm leading-relaxed whitespace-pre-line border transition-all ${
+                          isEditable
+                            ? 'bg-[#121215] border-[#fe5416]/50 text-white outline-none focus:ring-1 focus:ring-[#fe5416] cursor-text'
+                            : 'bg-[#121215]/80 border-zinc-800 text-zinc-200'
+                        }`}
+                      >
+                        {item.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+
+          {!isLoading && filteredSections.length === 0 && (
             <div className="text-center py-16 text-zinc-500 font-mono text-sm">
               No content matching &quot;{searchQuery}&quot; found.
             </div>
