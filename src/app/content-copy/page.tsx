@@ -266,13 +266,13 @@ export default function ContentCopyPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [dataSource, setDataSource] = useState<'mongodb' | 'file' | 'default'>('default');
+  const [envWarning, setEnvWarning] = useState<string | null>(null);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Zero-cache live MongoDB Atlas fetch
   const loadServerData = useCallback(async (showNotification = false) => {
     setIsLoading(true);
     try {
@@ -285,8 +285,11 @@ export default function ContentCopyPage() {
       if (json.success && json.data) {
         setData(json.data);
         setDataSource(json.source || 'mongodb');
-        if (showNotification) triggerToast('✓ Refreshed from MongoDB Atlas Cloud!');
+        if (showNotification) triggerToast('✓ Synced latest content from Cloud Database!');
       } else {
+        if (json.warning) {
+          setEnvWarning(json.warning);
+        }
         setData(initialDocumentData);
       }
     } catch (e) {
@@ -313,13 +316,13 @@ export default function ContentCopyPage() {
 
       if (json.success) {
         setDataSource('mongodb');
-        triggerToast('🍃 Saved to MongoDB Atlas Cloud! Synced for all devices.');
+        triggerToast('🍃 Saved to MongoDB Atlas Cloud! Available on all devices.');
       } else {
-        triggerToast('Error saving to MongoDB Atlas');
+        triggerToast(`⚠️ ${json.error || 'Please add MONGODB_URI to Netlify Environment Variables'}`);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error('Failed to save to MongoDB Atlas:', e);
-      triggerToast('Error saving to cloud database');
+      triggerToast('⚠️ Error saving to database');
     } finally {
       setIsSaving(false);
     }
@@ -385,7 +388,7 @@ export default function ContentCopyPage() {
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#fe5416] text-black font-bold px-6 py-3 rounded-xl shadow-2xl animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#fe5416] text-black font-bold px-6 py-3 rounded-xl shadow-2xl animate-bounce max-w-sm">
           {toastMessage}
         </div>
       )}
@@ -505,7 +508,7 @@ export default function ContentCopyPage() {
               <h2 className="text-xl font-black uppercase tracking-wider text-white"># HOME PAGE</h2>
             </div>
             <div className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-md">
-              Cloud Source: {dataSource === 'mongodb' ? '🍃 MongoDB Atlas Live Database' : 'Server Memory'}
+              Cloud Source: {dataSource === 'mongodb' ? '🍃 MongoDB Atlas Live Database' : 'Server Storage'}
             </div>
           </div>
 
