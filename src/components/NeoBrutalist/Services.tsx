@@ -143,19 +143,22 @@ export default function Services() {
               onClick={() => {
                 soundManager.playClick();
                 setOpenIndex(openIndex === idx ? null : idx);
+                setTimeout(() => {
+                  ScrollTrigger.refresh();
+                }, 520);
               }}
             >
-              <div className="relative z-10 flex justify-between items-center py-12 px-4 group-hover:px-8 transition-all duration-500">
-                <div className="flex items-baseline gap-8">
-                  <span className="text-xs font-mono text-black/50 group-hover:text-white transition-colors">0{service.id}</span>
-                  <h3 className="text-3xl md:text-5xl group-hover:text-white transition-colors group-hover:translate-x-4 duration-500">{service.title}</h3>
+              <div className="relative z-10 flex justify-between items-center py-8 sm:py-12 px-3 sm:px-4 group-hover:px-6 sm:group-hover:px-8 transition-all duration-500">
+                <div className="flex items-baseline gap-4 sm:gap-8 min-w-0 pr-2">
+                  <span className="text-xs font-mono text-black/50 group-hover:text-white transition-colors shrink-0">0{service.id}</span>
+                  <h3 className="text-xl sm:text-2xl md:text-5xl font-heading group-hover:text-white transition-colors group-hover:translate-x-2 sm:group-hover:translate-x-4 duration-500 break-words">{service.title}</h3>
                 </div>
                 
-                <div className="flex items-center gap-4">
-                  <span className="text-xs uppercase tracking-widest opacity-0 md:opacity-100 group-hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-500 delay-75">
+                <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                  <span className="text-xs uppercase tracking-widest opacity-0 md:opacity-100 group-hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-500 delay-75 hidden sm:inline">
                     {service.category}
                   </span>
-                  <ArrowUpRight className={`w-8 h-8 text-black/50 transition-all duration-500 ${openIndex === idx ? 'text-white rotate-90' : 'group-hover:text-white group-hover:rotate-45'}`} />
+                  <ArrowUpRight className={`w-6 h-6 sm:w-8 sm:h-8 text-black/50 transition-all duration-500 ${openIndex === idx ? 'text-white rotate-90' : 'group-hover:text-white group-hover:rotate-45'}`} />
                 </div>
               </div>
 

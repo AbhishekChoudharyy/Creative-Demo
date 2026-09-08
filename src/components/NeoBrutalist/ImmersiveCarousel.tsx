@@ -214,10 +214,14 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onUp);
+    window.addEventListener('blur', onUp);
+    document.addEventListener('visibilitychange', onUp);
     return () => {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onUp);
+      window.removeEventListener('blur', onUp);
+      document.removeEventListener('visibilitychange', onUp);
       soundManager.stopDrag();
       unlockScroll();
     };
@@ -320,9 +324,26 @@ function StudioLights() {
 export default function ImmersiveCarousel() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null!);
   const storyRef = useRef<HTMLDivElement>(null!);
+
+  /* Pause WebGL render loop when section is scrolled out of viewport */
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   /* Direct jump on stage click */
   const goToSlide = (c: number) => {
@@ -402,6 +423,7 @@ export default function ImmersiveCarousel() {
       ══════════════════════════════════════════════ */}
       <div className="absolute inset-0 z-10 w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing">
         <Canvas
+          frameloop={isVisible ? 'always' : 'never'}
           dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.8, 1.2] : [0.8, 1.8]}
           camera={{ fov: 48, position: [0, 0, 5] }}
           style={{ touchAction: 'pan-y' }}

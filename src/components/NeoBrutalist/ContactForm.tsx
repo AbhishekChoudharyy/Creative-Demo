@@ -123,14 +123,14 @@ export default function ContactForm() {
                 type="submit"
                 disabled={status === 'sending'}
                 onMouseEnter={() => soundManager.playHover()}
-                className="w-full bg-transparent text-black font-heading uppercase font-bold py-4 px-6 border-2 border-black hover:bg-black hover:text-white transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 active:translate-x-[2px] active:translate-y-[2px]"
+                className="w-full min-h-[48px] bg-transparent text-black font-heading uppercase font-bold py-3.5 px-6 border-2 border-black hover:bg-black hover:text-white transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 active:translate-x-[2px] active:translate-y-[2px]"
               >
                 <span>{status === 'sending' ? 'Sending...' : 'Send Message'}</span>
                 <Send className="h-4 w-4" />
               </button>
 
               {status === 'error' && (
-                <p className="text-red-400 text-xs font-mono">Something went wrong. Please try again.</p>
+                <p className="text-red-600 text-xs font-mono font-semibold">Something went wrong. Please try again.</p>
               )}
             </form>
           )}
@@ -165,6 +165,8 @@ function FormInput({
         value={value}
         onChange={onChange}
         required={required}
+        aria-required={required}
+        aria-label={label}
         placeholder={label}
         autoComplete="off"
         onFocus={() => soundManager.playClick()}
@@ -172,6 +174,7 @@ function FormInput({
         className="
           peer
           w-full
+          min-h-[44px]
           bg-transparent
           border-b border-black/20
           py-3

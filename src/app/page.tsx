@@ -190,8 +190,8 @@ export default function Home() {
         </div>
 
         {/* Flat Immersive Navbar (Z-Index 30) */}
-        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 sm:px-8 py-6 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
-          <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity">
+        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-8 py-4 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
+          <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity min-h-[44px]">
             <img
               src="/Logo Design - final -V2-01.png"
               alt="Origo Atelier"
@@ -201,11 +201,11 @@ export default function Home() {
           <span className="font-extrabold absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em]">
             ORIGO ATELIER
           </span>
-          <div className="flex items-center gap-6 sm:gap-8">
+          <div className="flex items-center gap-4 sm:gap-8">
             <button
               onClick={handleToggleMute}
               onMouseEnter={() => soundManager.playHover()}
-              className="hover:opacity-75 transition-opacity cursor-pointer font-medium"
+              className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-medium px-1"
             >
               [ SOUND {isMuted ? 'OFF' : 'ON'} ]
             </button>
@@ -217,7 +217,7 @@ export default function Home() {
                 contactSection?.scrollIntoView({ behavior: "smooth" });
               }}
               onMouseEnter={() => soundManager.playHover()}
-              className="hover:opacity-75 transition-opacity cursor-pointer font-bold"
+              className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-bold px-1"
             >
               CONTACT
             </button>
@@ -230,8 +230,8 @@ export default function Home() {
         </div>
 
         {/* Bottom HUD layout (Z-Index 30) */}
-        <div className="absolute bottom-8 left-0 right-0 z-30 flex items-center justify-between px-8 pointer-events-auto text-[10px] md:text-xs font-mono tracking-widest text-black uppercase">
-          <div className="flex-1 hidden md:block text-black/80 font-medium">
+        <div className="absolute bottom-4 md:bottom-8 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-8 pointer-events-auto text-[9.5px] md:text-xs font-mono tracking-widest text-black uppercase">
+          <div className="flex-1 hidden md:block text-black/80 font-medium truncate pr-2">
             FROM ORIGIN TO EXCELLENCE
           </div>
 
@@ -242,7 +242,7 @@ export default function Home() {
               workSection?.scrollIntoView({ behavior: "smooth" });
             }}
             onMouseEnter={() => soundManager.playHover()}
-            className="flex-1 flex flex-col items-center gap-1 cursor-pointer hover:opacity-75 transition-opacity text-center font-bold"
+            className="flex-1 min-h-[44px] flex flex-col justify-center items-center gap-1 cursor-pointer hover:opacity-75 transition-opacity text-center font-bold px-2"
           >
             <span>EXPLORE OUR WORK ↓</span>
           </div>

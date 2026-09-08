@@ -120,6 +120,8 @@ const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
         <img 
           src={project.img} 
           alt={project.title} 
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/10 group-hover:opacity-0 transition-opacity duration-500"></div>
@@ -144,6 +146,13 @@ export default function WorkGallery() {
   const filteredProjects = React.useMemo(() => {
     if (activeCategory === "ALL") return projects;
     return projects.filter((p) => p.cat === activeCategory);
+  }, [activeCategory]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 120);
+    return () => clearTimeout(timer);
   }, [activeCategory]);
 
   useEffect(() => {
@@ -199,7 +208,7 @@ export default function WorkGallery() {
                 setActiveCategory(cat);
               }}
               onMouseEnter={() => soundManager.playHover()}
-              className={`px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs font-mono uppercase tracking-wider transition-all duration-300 border ${
+              className={`min-h-[38px] px-3.5 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs font-mono uppercase tracking-wider transition-all duration-300 border cursor-pointer ${
                 activeCategory === cat
                   ? 'bg-black text-white border-black font-bold shadow-md'
                   : 'bg-transparent text-black/70 border-black/20 hover:border-black hover:text-black'

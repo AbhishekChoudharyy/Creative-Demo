@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, Suspense } from 'react';
+import { FC, Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 
@@ -26,11 +26,30 @@ const CanvasLoader: FC = () => {
 };
 
 export const Main: FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className={styles.scene}>
+    <div ref={containerRef} className={styles.scene}>
       <DeviceOrientationButton />
 
       <Canvas
+        frameloop={isVisible ? 'always' : 'never'}
         dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.8, 1.2] : [0.8, 1.8]}
         camera={{ fov: 60 }}
         style={{ touchAction: 'pan-y' }}

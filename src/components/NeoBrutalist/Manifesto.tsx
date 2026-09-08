@@ -97,12 +97,13 @@ export default function Manifesto() {
          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-white/20 rounded-full blur-[150px] animate-pulse"></div>
       </div>
 
-      <div className="relative z-10 container mx-auto text-center px-4">
+      <div className="relative z-10 container mx-auto text-center px-4 max-w-5xl">
          {statements.map((text, i) => (
            <h2 
              key={i}
              ref={el => { textRefs.current[i] = el; }}
-             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-[6vw] md:text-[5vw] font-heading font-bold uppercase leading-tight text-black"
+             style={{ fontSize: 'clamp(24px, 5.5vw, 68px)' }}
+             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full font-heading font-bold uppercase leading-tight text-black px-4"
            >
              {text}
            </h2>

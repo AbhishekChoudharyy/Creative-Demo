@@ -50,29 +50,29 @@ export default function Footer() {
             <h4 className="font-mono font-medium text-[10px] text-black/60 mb-3 uppercase tracking-widest">
               Quick Links
             </h4>
-            <ul className="space-y-2.5 text-sm font-mono">
+            <ul className="space-y-1 text-sm font-mono">
               <li>
-                <Link href="/" className="text-black/80 hover:text-white transition-colors duration-200">
+                <Link href="/" className="text-black/80 hover:text-white transition-colors duration-200 py-1 inline-block">
                   Home
                 </Link>
               </li>
               <li>
-                <a href="#services" className="text-black/80 hover:text-white transition-colors duration-200">
+                <a href="#services" className="text-black/80 hover:text-white transition-colors duration-200 py-1 inline-block">
                   What We Do
                 </a>
               </li>
               <li>
-                <a href="#approach" className="text-black/80 hover:text-white transition-colors duration-200">
+                <a href="#approach" className="text-black/80 hover:text-white transition-colors duration-200 py-1 inline-block">
                   Our Approach
                 </a>
               </li>
               <li>
-                <a href="#work" className="text-black/80 hover:text-white transition-colors duration-200">
+                <a href="#work" className="text-black/80 hover:text-white transition-colors duration-200 py-1 inline-block">
                   Selected Works
                 </a>
               </li>
               <li>
-                <a href="#contact" className="text-black/80 hover:text-white transition-colors duration-200">
+                <a href="#contact" className="text-black/80 hover:text-white transition-colors duration-200 py-1 inline-block">
                   Contact
                 </a>
               </li>
@@ -84,12 +84,12 @@ export default function Footer() {
             <h4 className="font-mono font-medium text-[10px] text-black/60 mb-3 uppercase tracking-widest">
               Core Capabilities
             </h4>
-            <ul className="space-y-2.5 text-sm font-mono text-black/80">
-              <li className="hover:text-white transition-colors cursor-pointer">Experiential Solutions</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Brand Activation</li>
-              <li className="hover:text-white transition-colors cursor-pointer">MICE & Conferences</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Campaign & Content</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Retail Marketing</li>
+            <ul className="space-y-1 text-sm font-mono text-black/80">
+              <li className="hover:text-white transition-colors cursor-pointer py-1">Experiential Solutions</li>
+              <li className="hover:text-white transition-colors cursor-pointer py-1">Brand Activation</li>
+              <li className="hover:text-white transition-colors cursor-pointer py-1">MICE & Conferences</li>
+              <li className="hover:text-white transition-colors cursor-pointer py-1">Campaign & Content</li>
+              <li className="hover:text-white transition-colors cursor-pointer py-1">Retail Marketing</li>
             </ul>
           </div>
  
@@ -112,12 +112,13 @@ export default function Footer() {
               <input
                 type="email"
                 required
+                aria-label="Email address for newsletter"
                 placeholder="Email address"
-                className="w-full bg-transparent border border-black/20 font-mono px-4 py-2.5 pr-12 text-sm text-black placeholder:text-black/50 focus:outline-none focus:border-white transition-colors duration-300"
+                className="w-full min-h-[44px] bg-transparent border border-black/20 font-mono px-4 py-2.5 pr-12 text-sm text-black placeholder:text-black/50 focus:outline-none focus:border-white transition-colors duration-300"
               />
               <button
                 type="submit"
-                className="absolute right-1 inset-y-1 flex items-center justify-center aspect-square bg-black hover:bg-white text-white hover:text-black transition-colors duration-250 cursor-pointer"
+                className="absolute right-1 inset-y-1 flex items-center justify-center aspect-square min-w-[40px] bg-black hover:bg-white text-white hover:text-black transition-colors duration-250 cursor-pointer"
                 aria-label="Submit email"
               >
                 <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -133,12 +134,13 @@ export default function Footer() {
         {/* BOTTOM BAR */}
         <div className="pb-4 flex font-mono flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between text-xs text-black/60 max-w-6xl mx-auto">
           <p>© {new Date().getFullYear()} Origo Atelier. All Rights Reserved.</p>
-          <p
+          <button
+            type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="cursor-pointer hover:text-white transition-colors duration-200 uppercase tracking-widest"
+            className="cursor-pointer hover:text-white transition-colors duration-200 uppercase tracking-widest text-left sm:text-center font-mono text-xs bg-transparent border-none p-0 text-black/60"
           >
             Back To Top ↑
-          </p>
+          </button>
           <p className="space-x-2">
             <span className="hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
             <span>|</span>
