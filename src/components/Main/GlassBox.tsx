@@ -12,7 +12,6 @@ export const GlassBox: FC = () => {
 
   const groupRef = useRef<any>(null);
   const boxRef = useRef<any>(null);
-  const geometryRef = useRef<any>(null);
 
   // Drag rotation state
   const isDragging = useRef(false);
@@ -20,44 +19,8 @@ export const GlassBox: FC = () => {
   const targetRotation = useRef({ x: 0, y: 0 });
   const currentRotation = useRef({ x: 0, y: 0 });
 
-  // Custom chevron shape pointing right with small corner radii
-  const chevronShape = useMemo(() => {
-    const shape = new THREE.Shape();
-    // Draw a bold chevron arrow pointing to the right with rounded corners
-    shape.moveTo(-0.41, 0.75);
-    shape.lineTo(0.08, 0.75);
-    shape.quadraticCurveTo(0.12, 0.75, 0.15, 0.71);
-    shape.lineTo(0.67, 0.06);
-    shape.quadraticCurveTo(0.72, 0.0, 0.67, -0.06);
-    shape.lineTo(0.15, -0.71);
-    shape.quadraticCurveTo(0.12, -0.75, 0.08, -0.75);
-    shape.lineTo(-0.41, -0.75);
-    shape.quadraticCurveTo(-0.45, -0.75, -0.45, -0.71);
-    shape.lineTo(0.11, -0.05);
-    shape.quadraticCurveTo(0.15, 0.0, 0.11, 0.05);
-    shape.lineTo(-0.45, 0.71);
-    shape.quadraticCurveTo(-0.45, 0.75, -0.41, 0.75);
-    shape.closePath();
-    return shape;
-  }, []);
-
-  // Extrude settings with smooth beveling (thicker and chunkier)
-  const extrudeSettings = useMemo(() => ({
-    steps: 1,
-    depth: 0.4,
-    bevelEnabled: true,
-    bevelThickness: 0.08,
-    bevelSize: 0.05,
-    bevelOffset: 0,
-    bevelSegments: 5,
-  }), []);
-
-  // Center the geometry once loaded so it rotates around its geometric center
-  useEffect(() => {
-    if (geometryRef.current) {
-      geometryRef.current.center();
-    }
-  }, []);
+  // Torus geometry for circular glass ring (matching reference)
+  const torusArgs: [number, number, number, number] = useMemo(() => [0.96, 0.42, 64, 128], []);
 
 
 
@@ -182,13 +145,13 @@ export const GlassBox: FC = () => {
       ref={groupRef}
       onPointerDown={handlePointerDown}
     >
-      {/* 3D Polished Glass Chevron */}
+      {/* 3D Polished Glass Torus Circle Ring */}
       <mesh ref={boxRef}>
-        <extrudeGeometry ref={geometryRef} args={[chevronShape, extrudeSettings]} />
+        <torusGeometry args={torusArgs} />
         <MeshTransmissionMaterial
           backside
           transmission={1.0}
-          roughness={0.005}
+          roughness={0.045}
           thickness={isMobile ? 0.35 : 0.65}
           ior={1.42}
           chromaticAberration={0.08}
@@ -196,12 +159,12 @@ export const GlassBox: FC = () => {
           distortion={0.2}
           distortionScale={0.5}
           temporalDistortion={0.0}
-          clearcoat={1.0}
-          clearcoatRoughness={0.0}
+          clearcoat={0.7}
+          clearcoatRoughness={0.08}
           color="#f0f7ff"
           attenuationColor="#e0f2fe"
           attenuationDistance={3.5}
-          reflectivity={1.0}
+          reflectivity={0.8}
           resolution={512}
           samples={6}
         />

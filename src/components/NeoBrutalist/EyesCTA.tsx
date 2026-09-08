@@ -100,7 +100,7 @@ export default function EyesCTA() {
           />
           <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors duration-300">
             <span className="w-1.5 h-1.5 rounded-full bg-black group-hover:bg-white transition-colors duration-300" />
-            <span>Explore Floworx Collective</span>
+            <span>Explore Origo Atelier</span>
             <span className="w-1.5 h-1.5 rounded-full bg-black opacity-0 group-hover:opacity-100 group-hover:bg-white transition-all duration-300" />
           </span>
         </a>

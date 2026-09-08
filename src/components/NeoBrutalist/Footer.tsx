@@ -5,17 +5,22 @@ import { soundManager } from "@/lib/sound";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-[#1E65E5] via-[#1A59CF] to-[#154AA3] text-black relative select-none">
+    <footer className="bg-gradient-to-b from-[#1E90FF] via-[#1A7FE5] to-[#1265C4] text-black relative select-none">
       <div className="px-6 sm:px-10 lg:px-16 pt-12 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 max-w-6xl mx-auto">
           {/* BRAND */}
           <div>
-            <a href="/" className="flex items-center">
-              <span className="font-heading font-black text-xl tracking-widest uppercase text-black">FLOWORX</span>
+            <a href="/" className="flex items-center gap-3">
+              <img
+                src="/Logo Design - final -V2-01.png"
+                alt="Origo Atelier"
+                className="h-9 w-auto object-contain rounded-sm"
+              />
+              <span className="font-heading font-black text-xl tracking-widest uppercase text-black">ORIGO ATELIER</span>
             </a>
 
             <p className="text-xs mt-3 font-mono text-black/85 leading-relaxed">
-              Floworx Collective. Next-generation experiential marketing, anamorphic 3D, and interactive experience design.
+              From Origin to Excellence. We transform ideas into immersive brand experiences that inspire, engage and endure.
             </p>
 
             <hr className="my-4 border-black/15 max-w-xs" />
@@ -52,8 +57,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#work" className="text-black/80 hover:text-white transition-colors duration-200">
-                  Services
+                <a href="#services" className="text-black/80 hover:text-white transition-colors duration-200">
+                  What We Do
+                </a>
+              </li>
+              <li>
+                <a href="#approach" className="text-black/80 hover:text-white transition-colors duration-200">
+                  Our Approach
                 </a>
               </li>
               <li>
@@ -61,19 +71,25 @@ export default function Footer() {
                   Selected Works
                 </a>
               </li>
+              <li>
+                <a href="#contact" className="text-black/80 hover:text-white transition-colors duration-200">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
  
-          {/* TECHNOLOGY */}
+          {/* TECHNOLOGY / DIVISIONS */}
           <div>
             <h4 className="font-mono font-medium text-[10px] text-black/60 mb-3 uppercase tracking-widest">
-              Core Divisions
+              Core Capabilities
             </h4>
             <ul className="space-y-2.5 text-sm font-mono text-black/80">
-              <li className="hover:text-white transition-colors cursor-pointer">Experiential Marketing</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Anamorphic 3D Billboards</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Interactive Installations</li>
-              <li className="hover:text-white transition-colors cursor-pointer">Projection Mapping</li>
+              <li className="hover:text-white transition-colors cursor-pointer">Experiential Solutions</li>
+              <li className="hover:text-white transition-colors cursor-pointer">Brand Activation</li>
+              <li className="hover:text-white transition-colors cursor-pointer">MICE & Conferences</li>
+              <li className="hover:text-white transition-colors cursor-pointer">Campaign & Content</li>
+              <li className="hover:text-white transition-colors cursor-pointer">Retail Marketing</li>
             </ul>
           </div>
  
@@ -116,7 +132,7 @@ export default function Footer() {
 
         {/* BOTTOM BAR */}
         <div className="pb-4 flex font-mono flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between text-xs text-black/60 max-w-6xl mx-auto">
-          <p>© {new Date().getFullYear()} Floworx Collective. All Rights Reserved.</p>
+          <p>© {new Date().getFullYear()} Origo Atelier. All Rights Reserved.</p>
           <p
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="cursor-pointer hover:text-white transition-colors duration-200 uppercase tracking-widest"
@@ -133,7 +149,7 @@ export default function Footer() {
 
       {/* Giant background text overlay */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden pointer-events-none opacity-[0.03] -z-10">
-        <h1 className="text-[22vw] leading-[0.7] font-black text-center font-heading select-none text-black">FLOWORX COLLECTIVE</h1>
+        <h1 className="text-[20vw] leading-[0.7] font-black text-center font-heading select-none text-black">ORIGO ATELIER</h1>
       </div>
     </footer>
   );

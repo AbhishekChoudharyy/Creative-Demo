@@ -9,8 +9,8 @@ const initialDocumentData = [
     id: 'loader',
     title: 'Loading Screen / Loader Overlay',
     items: [
-      { label: 'Heading', text: 'FLOWORX' },
-      { label: 'Sub Heading', text: 'FLOWORX COLLECTIVE' },
+      { label: 'Heading', text: 'ORIGO' },
+      { label: 'Sub Heading', text: 'ORIGO ATELIER' },
       { label: 'Loading Indicator Text', text: 'LOADING • [Progress]%' },
       { label: 'Primary Button', text: 'ENTER' }
     ]
@@ -19,75 +19,82 @@ const initialDocumentData = [
     id: 'nav-hud',
     title: 'Navigation & HUD',
     items: [
-      { label: 'Logo Text', text: 'FLOWORX' },
-      { label: 'Sub Heading / Tagline', text: 'FLOWORX COLLECTIVE' },
+      { label: 'Logo Text', text: 'ORIGO' },
+      { label: 'Sub Heading / Tagline', text: 'ORIGO ATELIER' },
       {
         label: 'Navigation Category 1',
-        text: 'Experience Design\nSub Links: Interactive Spaces | Spatial Design | Sensory Engineering'
+        text: 'Experiential Solutions\nSub Links: Immersive Spaces | Interactive Environments'
       },
       {
         label: 'Navigation Category 2',
-        text: 'Anamorphic 3D\nSub Links: Digital Billboards | Visual Illusions | CGI Production'
+        text: 'Brand Activation\nSub Links: Exhibitions | Product Launches'
       },
       {
         label: 'Navigation Category 3',
-        text: 'Experiential Marketing\nSub Links: Brand Activations | Immersive Events | Projection Spectacles'
+        text: 'MICE & Retail\nSub Links: Conferences | Retail Marketing'
       },
       { label: 'Sound Control Button', text: '[ SOUND OFF / ON ]' },
       { label: 'Section Counter', text: '[ 001 ]' },
       { label: 'Contact Button', text: 'CONTACT' },
-      { label: 'HUD Scroll Prompt', text: 'SCROLL FOR MORE' },
-      { label: 'HUD Indicator', text: '[ AR ]' }
+      { label: 'HUD Tagline', text: 'FROM ORIGIN TO EXCELLENCE' },
+      { label: 'HUD CTA', text: 'EXPLORE OUR WORK ↓' },
+      { label: 'HUD Indicator', text: '[ 3D ]' }
     ]
   },
   {
     id: 'hero',
     title: 'Hero Section',
     items: [
-      { label: 'Heading', text: 'FLOWORX COLLECTIVE' },
-      { label: 'Hero Graphic / Image', text: 'Current Image: (Interactive 3D Ball of Glass / Volumetric graphic background)' }
+      { label: 'Hero Display Text', text: 'FROM ORIGIN TO EXPERIENCE.' },
+      { label: 'Supporting Text', text: 'We transform ideas into immersive brand experiences.' },
+      { label: 'Primary CTA', text: 'EXPLORE OUR WORK' },
+      { label: 'Hero Graphic / 3D Model', text: 'Interactive Refractive Glass Ring (Origin of Form)' }
     ]
   },
   {
     id: 'marquee',
     title: 'Marquee Banner Section',
     items: [
-      { label: 'Marquee Text', text: 'FLOWORX.COLLECTIVE ✦ THE FUTURE OF DESIGN ✦ EXPERIENCE STUDIO ✦' },
+      { label: 'Marquee Text', text: 'ORIGO ATELIER ✦ ○ △ □ ✦ FROM ORIGIN TO EXCELLENCE ✦ EXPERIENTIAL SOLUTIONS ✦ EVERY EXPERIENCE BEGINS WITH AN IDEA ✦' },
       { label: 'Marquee Logo Image', text: 'Current Image: (2D Logo image mark - /2d logo.jpeg)' }
     ]
   },
   {
     id: 'about',
-    title: 'About Section',
+    title: 'Brand Belief / What We Believe',
     items: [
-      { label: 'Heading', text: "We don't just build Digital Experiences. We engineer Cults." },
+      { label: 'Heading', text: "Every experience begins with an idea. From origin to excellence." },
       {
-        label: 'Paragraph',
-        text: 'At Floworx Collective, we bridge the gap between imagination and technology. We craft high-impact volumetric 3D billboards, spatial designs, and interactive experiences that build enduring brands.'
+        label: 'Supporting Copy',
+        text: '“Origo” means Origin — the starting point from which every idea, form and creation begins. Every great design begins with a simple origin and evolves into something extraordinary.\nWe believe in finding the origin of that idea and building from there. The objective is not simply to create something visually impressive, but to create experiences that connect, engage, inspire and endure.'
       }
     ]
   },
   {
     id: 'services',
-    title: 'Services Section (Our Expertise)',
+    title: 'What We Do / Services Section',
     items: [
-      { label: 'Heading', text: 'Our Expertise' },
-      { label: 'Sub Heading', text: 'Comprehensive design solutions for forward-thinking brands.' },
+      { label: 'Heading', text: 'What We Do' },
+      { label: 'Sub Heading', text: 'Experiential solutions that inspire, engage and endure.' },
       {
-        label: 'Service 1 (01)',
-        text: 'Category: Strategy & Events\nTitle: Experiential Marketing\nDescription: We design high-impact brand activations, immersive corporate exhibitions, and large-scale MICE experiences. Integrating spatial storytelling and structural technology, we build unforgettable environments that connect brands directly to their audiences.\nImage: Current Image: (Experiential marketing & exhibition showcase photo)'
+        label: '01 — Experiential Solutions',
+        text: "Bringing brands to life through immersive experiences that people don't just see, but feel and remember."
       },
       {
-        label: 'Service 2 (02)',
-        text: 'Category: Out of Home\nTitle: Anamorphic 3D Displays\nDescription: Engineering state-of-the-art 3D digital billboards and volumetric optical illusions that capture massive public attention. We produce hyper-realistic, forced-perspective CGI content optimized for urban digital screens.\nImage: Current Image: (3D digital billboard forced-perspective preview graphic)'
+        label: '02 — Brand Activation',
+        text: 'Creating bold and memorable brand experiences that spark attention, engagement and connection.'
       },
       {
-        label: 'Service 3 (03)',
-        text: 'Category: Interaction\nTitle: Experience Design\nDescription: Developing interactive digital-physical worlds and responsive installations. Blending gesture tracking, spatial audio, and sensory triggers, we construct environments that morph dynamically in response to human presence.\nImage: Current Image: (Interactive installation & sensory design artwork)'
+        label: '03 — MICE',
+        text: 'Creating experiences for conferences, fashion shows, exhibitions and events that inspire, engage and connect.'
       },
       {
-        label: 'Service 4 (04)',
-        text: 'Category: CGI & Motion\nTitle: Multimedia Production\nDescription: High-fidelity projection mapping spectacles and bespoke visual content production. From conceptual rendering to real-time animation, we shape the sensory layers that transform any physical architecture into a living canvas.\nImage: Current Image: (Projection mapping and CGI motion graphics preview)'
+        label: '04 — Campaign & Content Designing',
+        text: 'Turning powerful ideas into purposeful stories through design, content and campaigns that connect, engage and inspire action.'
+      },
+      {
+        label: '05 — Retail Marketing',
+        text: 'Creating retail experiences that attract attention, engage shoppers and turn interactions into action.'
       }
     ]
   },
@@ -96,11 +103,49 @@ const initialDocumentData = [
     title: 'Manifesto Section',
     items: [
       { label: 'Section Tag', text: '( THE MANIFESTO )' },
-      { label: 'Statement 1', text: 'Space is the canvas.' },
-      { label: 'Statement 2', text: 'Beyond the rectangle.' },
-      { label: 'Statement 3', text: 'Storytelling in three dimensions.' },
-      { label: 'Statement 4', text: 'Sensory cognition.' },
-      { label: 'Statement 5', text: 'Zero limits, zero boundaries.' }
+      { label: 'Statement 1', text: 'Every experience begins with an idea.' },
+      { label: 'Statement 2', text: 'From origin to excellence.' },
+      { label: 'Statement 3', text: 'We find the origin and build from there.' },
+      { label: 'Statement 4', text: 'Connect. Engage. Inspire. Endure.' },
+      { label: 'Statement 5', text: 'Transforming ideas into extraordinary experiences.' }
+    ]
+  },
+  {
+    id: 'carousel',
+    title: 'Brand Concept / 3D Geometry Section',
+    items: [
+      { label: 'Section Heading', text: 'ORIGO // ORIGIN OF DESIGN' },
+      { label: '01 — Circle', text: 'Eternal. Whole. Continuous. Represents motion, wholeness, unity and the continuous flow of ideas.' },
+      { label: '02 — Square', text: 'Stability. Structure. Foundation. Represents order, reliability, structure and the foundation that holds everything together.' },
+      { label: '03 — Triangle', text: 'Direction. Balance. Transformation. Represents purpose, progress, balance, strength and the drive to evolve.' }
+    ]
+  },
+  {
+    id: 'approach',
+    title: 'Our Approach (5 Steps)',
+    items: [
+      { label: 'Heading', text: 'OUR APPROACH' },
+      { label: 'Sub Heading', text: 'Every experience begins with an idea. We believe in finding the origin of that idea and building from there.' },
+      {
+        label: '01 — CONTEXT',
+        text: 'Understand before we create. We immerse ourselves in the brief, the people, the purpose and the possibilities.'
+      },
+      {
+        label: '02 — CONCEPT',
+        text: 'Turn thought into direction. We create meaningful concepts that bring clarity and direction.'
+      },
+      {
+        label: '03 — CREATE',
+        text: 'Transform concepts into experiences. We turn concepts into immersive and impactful experiences.'
+      },
+      {
+        label: '04 — DETAIL',
+        text: 'Refine every element. We refine every element with precision, purpose and attention to detail.'
+      },
+      {
+        label: '05 — DELIVER EXPERIENCE',
+        text: 'Bring the idea to life. From events and exhibitions to immersive environments, we create experiences that inspire, endure and create memories.'
+      }
     ]
   },
   {
@@ -108,107 +153,34 @@ const initialDocumentData = [
     title: 'Portfolio / Selected Works Section',
     items: [
       { label: 'Heading', text: 'SELECTED WORKS' },
-      {
-        label: 'Project 1',
-        text: 'Title: Arcadia\nCategory: Experiential Exhibition\nYear: 2025\nImage: Current Image: (Arcadia project exhibition space photo)'
-      },
-      {
-        label: 'Project 2',
-        text: 'Title: Hyperluminal\nCategory: Anamorphic 3D Billboard\nYear: 2025\nImage: Current Image: (Hyperluminal 3D billboard project graphic)'
-      },
-      {
-        label: 'Project 3',
-        text: 'Title: Synapse\nCategory: Projection Mapping Spectacle\nYear: 2026\nImage: Current Image: (Synapse projection mapping spectacle photo)'
-      },
-      {
-        label: 'Project 4',
-        text: 'Title: Aether\nCategory: Physical-Digital Installation\nYear: 2026\nImage: Current Image: (Aether physical-digital installation sculpture image)'
-      },
-      {
-        label: 'Project 5',
-        text: 'Title: Lumina\nCategory: Interactive Sensory Environment\nYear: 2025\nImage: Current Image: (Lumina sensory lighting environment photo)'
-      },
-      {
-        label: 'Project 6',
-        text: 'Title: Nexus\nCategory: Experiential Retail Activation\nYear: 2026\nImage: Current Image: (Nexus retail activation venue illuminated photo)'
-      }
-    ]
-  },
-  {
-    id: 'process',
-    title: 'Process Section',
-    items: [
-      { label: 'Heading', text: 'THE PROCESS' },
-      { label: 'Sub Heading', text: 'Our methodology is a blend of rigorous strategy and unbridled creativity.' },
-      {
-        label: 'Step (01)',
-        text: "Title: Discovery\nDescription: We don't start with solutions. We start with questions. We deconstruct your brand to its atomic level, understanding the chaos before we implement the order."
-      },
-      {
-        label: 'Step (02)',
-        text: 'Title: Strategy\nDescription: Chaos needs a container. We build the strategic framework that will hold the vision. Positioning, voice, and visual direction are defined here.'
-      },
-      {
-        label: 'Step (03)',
-        text: 'Title: Execution\nDescription: Where the rubber meets the road. We deploy high-fidelity design, motion, and code. No templates. No shortcuts. Just pure craftsmanship.'
-      },
-      {
-        label: 'Step (04)',
-        text: 'Title: Launch\nDescription: The reveal. We manage the deployment, ensure performance across the globe, and hand over the keys to your new digital empire.'
-      }
-    ]
-  },
-  {
-    id: 'team',
-    title: 'Team Section',
-    items: [
-      { label: 'Section Badge', text: 'The Minds' },
-      { label: 'Heading', text: 'Collective Consciousness' },
-      {
-        label: 'Member 1',
-        text: 'Name: Abhay Mallick\nRole: Founder / Developer\nImage: Current Image: (Abhay Mallick portrait image)'
-      },
-      {
-        label: 'Member 2',
-        text: 'Name: Sarah J.\nRole: Design Lead\nImage: Current Image: (Sarah J. portrait image)'
-      },
-      {
-        label: 'Member 3',
-        text: 'Name: Davide R.\nRole: Tech Director\nImage: Current Image: (Davide R. portrait image)'
-      }
+      { label: 'Categories', text: 'EVENTS & ACTIVATIONS | EXHIBITIONS & BRAND EXPERIENCES | AUTOMOTIVE EXPERIENCES | SHOWROOM DESIGN | SOCIAL MEDIA & CONTENT | PRINT & OOH' },
+      { label: 'Featured Work 1', text: 'Jeep Meridian — Launch 2024 (Automotive Experiences)' },
+      { label: 'Featured Work 2', text: 'Neuron Energy — Bharat Mobility Expo 2025 (Exhibitions & Brand Experiences)' },
+      { label: 'Featured Work 3', text: 'VH1 Supersonic — Nexa Lounge (Events & Activations)' },
+      { label: 'Featured Work 4', text: 'Teknofeet — Showroom Design (Showroom Design)' },
+      { label: 'Featured Work 5', text: 'Citroën Basalt — Mall Activation (Automotive Experiences)' },
+      { label: 'Featured Work 6', text: 'Glen Appliances — 25 Years Celebration (Events & Activations)' }
     ]
   },
   {
     id: 'labs',
     title: 'Labs / Feature Reveal Section',
     items: [
-      { label: 'Section Label', text: 'CREATIVE AGENCY // LABS' },
+      { label: 'Section Label', text: 'ORIGO ATELIER // IMMERSIVE LABS' },
       { label: 'Status Badge', text: 'VARIATION_01' },
       { label: 'HUD Prompt', text: 'CLICK ANYWHERE TO REVEAL' },
       {
         label: 'Slide 1',
-        text: 'Title: EXPERIENCE\nDescription: Sensory activations designed to connect human emotion to spatial architecture. We build interactive physical-digital installations that blend architecture, sound, and visual design.'
+        text: 'Title: EXPERIENCE\nDescription: We transform ideas into immersive brand experiences. From concept to execution, we craft environments that connect, engage, inspire and endure.'
       },
       {
         label: 'Slide 2',
-        text: 'Title: ILLUSION\nDescription: Volumetric 3D anamorphic billboards that redefine urban spaces and public advertising. We engineer forced-perspective visual content that creates three-dimensional depth on standard flat screens.'
+        text: 'Title: EXCELLENCE\nDescription: “Origo” means Origin — the starting point from which every idea begins. From simple origins, we engineer extraordinary brand activations.'
       },
       {
         label: 'Slide 3',
-        text: 'Title: MAPPING\nDescription: High-fidelity projection mapping and interactive digital art designed to transform any physical environment. We map complex architectural surfaces to turn structures into storytelling mediums.'
-      },
-      {
-        label: 'Background Layer Images',
-        text: 'Current Image: (6 layered slideshow reveal images - /layers/1.jpg to /layers/6.jpg)'
+        text: 'Title: PRECISION\nDescription: Every element refined with precision, purpose and attention to detail. Creating experiences that spark attention, engagement and lasting memories.'
       }
-    ]
-  },
-  {
-    id: 'cta',
-    title: 'Call To Action (Eyes CTA)',
-    items: [
-      { label: 'Heading', text: 'READY TO BUILD THE FUTURE?' },
-      { label: 'Primary Button', text: 'Explore Creative Agency' }
     ]
   },
   {
@@ -216,44 +188,30 @@ const initialDocumentData = [
     title: 'Contact Section',
     items: [
       { label: 'Section Label', text: 'CONTACT US' },
-      { label: 'Heading', text: "Let's Render The Next Dimension." },
+      { label: 'Heading', text: "Let's Create From The Origin." },
       {
         label: 'Paragraph',
-        text: "Partner with Creative Agency to design high-fidelity interactive 3D, spatial mapping, and volumetric installations. Let's make something legendary."
+        text: "Partner with Origo Atelier to transform ideas into immersive brand experiences, activations, and exhibitions. From origin to excellence."
       },
-      { label: 'Primary Button', text: 'Explore Our Work' },
-      {
-        label: 'Contact Form Fields',
-        text: 'Field 1: Name\nField 2: Brand / Company\nField 3: Email\nField 4: Phone\nField 5: Your Message\nSubmit Button: Send Message'
-      },
-      {
-        label: 'Form Success State Message',
-        text: "Heading: Message Sent!\nParagraph: Thank you for reaching out. We'll get back to you within 24 hours.\nButton Link: Send another message"
-      }
+      { label: 'Primary Button', text: 'Explore Our Work' }
     ]
   },
   {
     id: 'footer',
     title: 'Footer Section',
     items: [
-      { label: 'Logo Text', text: 'CREATIVE' },
+      { label: 'Logo Text', text: 'ORIGO ATELIER' },
       {
         label: 'Description',
-        text: 'Creative Agency. Next-generation experiential marketing, anamorphic 3D, and interactive experience design.'
+        text: 'Origo Atelier. From Origin to Excellence. We transform ideas into immersive brand experiences that inspire, engage and endure.'
       },
-      { label: 'Social Links', text: '- GitHub (https://github.com)\n- Twitter (https://twitter.com)' },
-      { label: 'Quick Links', text: '- Home\n- Services\n- Selected Works' },
+      { label: 'Quick Links', text: '- Home\n- What We Do\n- Our Approach\n- Selected Works\n- Contact' },
       {
         label: 'Core Divisions',
-        text: '- Experiential Marketing\n- Anamorphic 3D Billboards\n- Interactive Installations\n- Projection Mapping'
+        text: '- Experiential Solutions\n- Brand Activation\n- MICE & Conferences\n- Campaign & Content Designing\n- Retail Marketing'
       },
-      {
-        label: 'Newsletter Section',
-        text: 'Heading: Stay Updated\nDescription: Get the latest creative showcase updates.\nInput Placeholder: Email address\nSubmit Button: Submit Arrow Button'
-      },
-      { label: 'Copyright Text', text: '© 2026 Creative Agency. All Rights Reserved.' },
-      { label: 'Back to Top Action Link', text: 'Back To Top ↑' },
-      { label: 'Legal Links', text: '- Privacy Policy\n- Terms & Conditions' }
+      { label: 'Copyright Text', text: '© 2026 Origo Atelier. All Rights Reserved.' },
+      { label: 'Back to Top Action Link', text: 'Back To Top ↑' }
     ]
   }
 ];

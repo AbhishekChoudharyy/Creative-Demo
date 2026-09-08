@@ -12,31 +12,38 @@ gsap.registerPlugin(ScrollTrigger);
 const services = [
   { 
     id: 1, 
-    title: 'Experiential Marketing', 
-    category: 'Strategy & Events', 
+    title: 'EXPERIENTIAL SOLUTIONS', 
+    category: 'Immersive Experiences', 
     img: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2000',
-    desc: 'We design high-impact brand activations, immersive corporate exhibitions, and large-scale MICE experiences. Integrating spatial storytelling and structural technology, we build unforgettable environments that connect brands directly to their audiences.'
+    desc: "Bringing brands to life through immersive experiences that people don't just see, but feel and remember."
   },
   { 
     id: 2, 
-    title: 'Anamorphic 3D Displays', 
-    category: 'Out of Home', 
+    title: 'BRAND ACTIVATION', 
+    category: 'Engagement & Impact', 
     img: 'https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2000',
-    desc: 'Engineering state-of-the-art 3D digital billboards and volumetric optical illusions that capture massive public attention. We produce hyper-realistic, forced-perspective CGI content optimized for urban digital screens.'
+    desc: 'Creating bold and memorable brand experiences that spark attention, engagement and connection.'
   },
   { 
     id: 3, 
-    title: 'Experience Design', 
-    category: 'Interaction', 
+    title: 'MICE', 
+    category: 'Conferences & Events', 
     img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000',
-    desc: 'Developing interactive digital-physical worlds and responsive installations. Blending gesture tracking, spatial audio, and sensory triggers, we construct environments that morph dynamically in response to human presence.'
+    desc: 'Creating experiences for conferences, fashion shows, exhibitions and events that inspire, engage and connect.'
   },
   { 
     id: 4, 
-    title: 'Multimedia Production', 
-    category: 'CGI & Motion', 
+    title: 'CAMPAIGN & CONTENT DESIGNING', 
+    category: 'Design & Campaigns', 
     img: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000',
-    desc: 'High-fidelity projection mapping spectacles and bespoke visual content production. From conceptual rendering to real-time animation, we shape the sensory layers that transform any physical architecture into a living canvas.'
+    desc: 'Turning powerful ideas into purposeful stories through design, content and campaigns that connect, engage and inspire action.'
+  },
+  { 
+    id: 5, 
+    title: 'RETAIL MARKETING', 
+    category: 'Retail Environments', 
+    img: 'https://images.unsplash.com/photo-1515462277126-2dd0c162007a?q=80&w=2000',
+    desc: 'Creating retail experiences that attract attention, engage shoppers and turn interactions into action.'
   },
 ];
 
@@ -102,7 +109,7 @@ export default function Services() {
   };
 
   return (
-    <section ref={sectionRef} id="services" className="py-24 bg-[#1E65E5] text-black relative z-10 overflow-hidden">
+    <section ref={sectionRef} id="services" className="py-24 bg-[#1E90FF] text-black relative z-10 overflow-hidden">
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
       <div 
@@ -116,10 +123,10 @@ export default function Services() {
       <div className="container mx-auto px-4 md:px-8 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start mb-20">
           <h2 className="text-6xl md:text-8xl font-bold mb-8 md:mb-0 font-heading">
-            <AsciiScramble text="Our" /><br /><AsciiScramble text="Expertise" />
+            <AsciiScramble text="What" /><br /><AsciiScramble text="We Do" />
           </h2>
           <p className="max-w-xs text-sm uppercase tracking-wide text-black/70 pt-4 font-mono">
-            Comprehensive design solutions for forward-thinking brands.
+            Experiential solutions that inspire, engage and endure.
           </p>
         </div>
 

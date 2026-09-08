@@ -7,12 +7,10 @@ import { soundManager } from "@/lib/sound";
 
 import Intro from "@/components/NeoBrutalist/Intro";
 import WorkGallery from "@/components/NeoBrutalist/WorkGallery";
-import Process from "@/components/NeoBrutalist/Process";
 import Manifesto from "@/components/NeoBrutalist/Manifesto";
+import ImmersiveCarousel from "@/components/NeoBrutalist/ImmersiveCarousel";
 import Team from "@/components/NeoBrutalist/Team";
 import Services from "@/components/NeoBrutalist/Services";
-import MarqueeSection from "@/components/NeoBrutalist/Marquee";
-import { LayersAnimation } from "@/components/NeoBrutalist/LayersAnimation";
 import ContactForm from "@/components/NeoBrutalist/ContactForm";
 import Footer from "@/components/NeoBrutalist/Footer";
 
@@ -126,7 +124,7 @@ export default function Home() {
   }, [bootState]);
 
   return (
-    <div className="min-h-screen bg-[#1E65E5] text-black selection:bg-black/10 relative">
+    <div className="min-h-screen bg-[#1E90FF] text-black selection:bg-black/10 relative">
       {bootState !== 'booted' && (
         <div className={`fixed inset-0 bg-[#080808] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
           {/* Subtle grid background */}
@@ -135,12 +133,14 @@ export default function Home() {
           <div className="flex flex-col items-center max-w-xs w-full px-4 text-center z-10 space-y-12">
             
             {/* Title and Subtitle */}
-            <div className="space-y-2">
-              <h1 className="text-white text-5xl md:text-6xl font-heading font-extrabold tracking-[0.2em] translate-x-[0.1em] transition-all">
-                FLOWORX
-              </h1>
+            <div className="space-y-3 flex flex-col items-center">
+              <img
+                src="/Logo Design - final -V2-05.png"
+                alt="Origo Atelier"
+                className="w-28 md:w-32 h-auto object-contain"
+              />
               <p className="text-[9px] text-white/70 tracking-[0.4em] uppercase font-bold">
-                FLOWORX COLLECTIVE
+                FROM ORIGIN TO EXCELLENCE
               </p>
             </div>
 
@@ -181,7 +181,7 @@ export default function Home() {
 
       <div className="noise-overlay"></div>
       {/* SECTION 1: HERO */}
-      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden px-6 lg:px-8 bg-[#1E65E5]">
+      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden px-6 lg:px-8 bg-[#1E90FF]">
         {/* Ball of Glass Interactive 3D Canvas Background (Z-Index 20) */}
         <div className="absolute inset-0 z-20 w-full h-full">
           <Main />
@@ -190,12 +190,16 @@ export default function Home() {
         </div>
 
         {/* Flat Immersive Navbar (Z-Index 30) */}
-        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-8 py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
-          <span className="font-extrabold cursor-pointer hover:opacity-75 transition-opacity">
-            FLOWORX
-          </span>
+        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 sm:px-8 py-6 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
+          <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity">
+            <img
+              src="/Logo Design - final -V2-01.png"
+              alt="Origo Atelier"
+              className="h-8 md:h-10 w-auto object-contain rounded-sm shadow-sm"
+            />
+          </div>
           <span className="font-extrabold absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em]">
-            FLOWORX COLLECTIVE
+            ORIGO ATELIER
           </span>
           <div className="flex items-center gap-6 sm:gap-8">
             <button
@@ -227,22 +231,24 @@ export default function Home() {
 
         {/* Bottom HUD layout (Z-Index 30) */}
         <div className="absolute bottom-8 left-0 right-0 z-30 flex items-center justify-between px-8 pointer-events-auto text-[10px] md:text-xs font-mono tracking-widest text-black uppercase">
-          <div className="flex-1" />
+          <div className="flex-1 hidden md:block text-black/80 font-medium">
+            FROM ORIGIN TO EXCELLENCE
+          </div>
 
           <div
             onClick={() => {
               soundManager.playClick();
-              const contactSection = document.getElementById("contact");
-              contactSection?.scrollIntoView({ behavior: "smooth" });
+              const workSection = document.getElementById("work");
+              workSection?.scrollIntoView({ behavior: "smooth" });
             }}
             onMouseEnter={() => soundManager.playHover()}
             className="flex-1 flex flex-col items-center gap-1 cursor-pointer hover:opacity-75 transition-opacity text-center font-bold"
           >
-            <span>SCROLL FOR MORE</span>
+            <span>EXPLORE OUR WORK ↓</span>
           </div>
 
           <div className="flex-1 text-right font-medium">
-            [ AR ]
+            [ 3D ]
           </div>
         </div>
       </section>
@@ -254,10 +260,8 @@ export default function Home() {
       <Intro />
       <Services />
       <Manifesto />
+      <ImmersiveCarousel />
       <WorkGallery />
-
-      {/* Layers Animation Reveal Section (Codrops Variation 1) */}
-      <LayersAnimation />
 
       {/* Contact Form Section */}
       <ContactForm />

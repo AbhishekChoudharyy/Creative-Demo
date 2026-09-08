@@ -39,34 +39,40 @@ export default function Intro() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-32 md:py-56 bg-[#1E65E5] text-black overflow-hidden px-4">
+    <section ref={sectionRef} className="py-32 md:py-56 bg-[#1E90FF] text-black overflow-hidden px-4">
       <div className="container mx-auto">
         
         <div className="flex flex-col text-[7vw] md:text-[6vw] leading-[1.1] font-heading uppercase font-bold tracking-tight">
           
           <div className="intro-line-wrap overflow-hidden flex flex-wrap items-baseline gap-4">
-             <AsciiScramble text="We" className="char" />
-             <AsciiScramble text="don't just" className="char font-serif italic font-light text-black/60 lowercase" />
-             <AsciiScramble text="build" className="char" />
+             <AsciiScramble text="Every" className="char" />
+             <AsciiScramble text="experience" className="char font-serif italic font-light text-black/60 lowercase" />
+             <AsciiScramble text="begins" className="char" />
           </div>
 
-          <div className="intro-line-wrap overflow-hidden flex flex-wrap items-baseline gap-4 pl-[5vw]">
-             <AsciiScramble text="Digital" className="char text-transparent" style={{ WebkitTextStroke: "1px #000" }} />
-             <AsciiScramble text="Experiences." className="char" />
+          <div className="intro-line-wrap overflow-hidden flex flex-wrap items-baseline gap-4 pl-[4vw]">
+             <AsciiScramble text="With An" className="char text-transparent" style={{ WebkitTextStroke: "1px #000" }} />
+             <AsciiScramble text="Idea." className="char" />
           </div>
 
           <div className="intro-line-wrap overflow-hidden flex flex-wrap items-baseline gap-4">
-             <AsciiScramble text="We" className="char" />
-             <AsciiScramble text="engineer" className="char font-serif italic font-light text-[#F7F7F5] lowercase" />
-             <AsciiScramble text="Cults." className="char" />
+             <AsciiScramble text="From" className="char" />
+             <AsciiScramble text="origin to" className="char font-serif italic font-light text-[#F7F7F5] lowercase" />
+             <AsciiScramble text="Excellence." className="char" />
           </div>
 
         </div>
 
-        <div className="mt-32 w-full flex justify-end">
-          <div className="w-full md:w-1/3 text-lg md:text-xl font-light text-black/85 font-mono leading-relaxed border-l border-black/20 pl-8">
+        <div className="mt-28 md:mt-32 w-full flex justify-end">
+          <div className="w-full md:w-5/12 text-base md:text-lg font-light text-black/90 font-mono leading-relaxed border-l border-black/20 pl-8 space-y-4">
+            <span className="text-xs uppercase tracking-[0.3em] font-bold text-black/60 block">
+              // WHAT WE BELIEVE
+            </span>
             <p>
-              At <span className="text-[#F7F7F5] italic font-serif">Floworx Collective</span>, we bridge the gap between imagination and technology. We craft high-impact volumetric 3D billboards, spatial designs, and interactive experiences that build enduring brands.
+              <strong className="font-bold text-black">“Origo” means Origin</strong> — the starting point from which every idea, form and creation begins. Every great design begins with a simple origin and evolves into something extraordinary.
+            </p>
+            <p className="text-black/80">
+              We believe in finding the origin of that idea and building from there. The objective is not simply to create something visually impressive, but to create experiences that connect, engage, inspire and endure.
             </p>
           </div>
         </div>

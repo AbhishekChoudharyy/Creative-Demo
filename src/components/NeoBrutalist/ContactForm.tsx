@@ -35,7 +35,7 @@ export default function ContactForm() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative px-8 md:px-16 lg:px-24 py-24 lg:py-32 bg-[#1E65E5] text-black overflow-hidden border-t border-black/10"
+      className="relative px-8 md:px-16 lg:px-24 py-24 lg:py-32 bg-[#1E90FF] text-black overflow-hidden border-t border-black/10"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full">
         {/* LEFT SIDE */}
@@ -48,15 +48,15 @@ export default function ContactForm() {
           </div>
 
           <h3 className="text-black font-heading font-black text-3xl sm:text-4xl lg:text-5xl leading-tight uppercase tracking-tight">
-            <AsciiScramble text="Let's " /><span className="text-transparent" style={{ WebkitTextStroke: "1px #000" }}><AsciiScramble text="Render" /></span>
+            <AsciiScramble text="Let's " /><span className="text-transparent" style={{ WebkitTextStroke: "1px #000" }}><AsciiScramble text="Create" /></span>
             <br />
-            <AsciiScramble text="The Next" />
+            <AsciiScramble text="From The" />
             <br />
-            <span className="text-[#F7F7F5]"><AsciiScramble text="Dimension." /></span>
+            <span className="text-[#F7F7F5]"><AsciiScramble text="Origin." /></span>
           </h3>
 
           <p className="text-sm sm:text-base font-mono mt-6 mb-8 max-w-md text-black/80 leading-relaxed">
-            Partner with Floworx Collective to design high-fidelity interactive 3D, spatial mapping, and volumetric installations. Let's make something legendary.
+            Partner with Origo Atelier to transform ideas into immersive brand experiences, activations, and exhibitions. From origin to excellence.
           </p>
 
           <a

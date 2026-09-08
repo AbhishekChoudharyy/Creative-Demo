@@ -7,15 +7,15 @@ import { soundManager } from '@/lib/sound';
 const SLIDES = [
   {
     title: "EXPERIENCE",
-    desc: "Sensory activations designed to connect human emotion to spatial architecture. We build interactive physical-digital installations that blend architecture, sound, and visual design."
+    desc: "We transform ideas into immersive brand experiences. From concept to execution, we craft environments that connect, engage, inspire and endure."
   },
   {
-    title: "ILLUSION",
-    desc: "Volumetric 3D anamorphic billboards that redefine urban spaces and public advertising. We engineer forced-perspective visual content that creates three-dimensional depth on standard flat screens."
+    title: "EXCELLENCE",
+    desc: "“Origo” means Origin — the starting point from which every idea begins. From simple origins, we engineer extraordinary brand activations."
   },
   {
-    title: "MAPPING",
-    desc: "High-fidelity projection mapping and interactive digital art designed to transform any physical environment. We map complex architectural surfaces to turn structures into storytelling mediums."
+    title: "PRECISION",
+    desc: "Every element refined with precision, purpose and attention to detail. Creating experiences that spark attention, engagement and lasting memories."
   }
 ];
 
@@ -203,7 +203,7 @@ export const LayersAnimation: FC = () => {
     <div
       ref={containerRef}
       onClick={handleTransition}
-      className="relative w-full min-h-screen bg-[#1E65E5] flex items-center justify-center overflow-hidden cursor-pointer select-none border-t border-black/10"
+      className="relative w-full min-h-screen bg-[#1E90FF] flex items-center justify-center overflow-hidden cursor-pointer select-none border-t border-black/10"
     >
       {/* Background Grid Accent Lines */}
       <div className="absolute inset-0 grid grid-cols-4 grid-rows-1 pointer-events-none opacity-40">
@@ -252,7 +252,7 @@ export const LayersAnimation: FC = () => {
 
       {/* Interactive HUD labels */}
       <div className="absolute top-12 left-8 md:left-16 font-mono text-[10px] tracking-[0.2em] text-black/50 uppercase pointer-events-none">
-        FLOWORX COLLECTIVE // LABS
+        ORIGO ATELIER // IMMERSIVE LABS
       </div>
       
       <div className="absolute top-12 right-8 md:right-16 font-mono text-[10px] tracking-[0.2em] text-black/60 uppercase pointer-events-none flex items-center gap-2">

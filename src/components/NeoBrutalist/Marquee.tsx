@@ -25,10 +25,9 @@ export default function Marquee() {
       <div className="marquee-inner flex whitespace-nowrap w-fit items-center">
         {[...Array(8)].map((_, i) => (
           <div key={i} className="flex items-center gap-16 px-8">
-            {/* White OG logo merged into the black marquee background */}
             <img 
-              src="/2d logo.jpeg" 
-              alt="OG logo" 
+              src="/Logo Design - final -V2-05.png" 
+              alt="Origo Atelier" 
               className="h-10 md:h-16 object-contain" 
             />
             

@@ -2,29 +2,29 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Floworx Collective | Premium Experience & Volumetric 3D Design",
-  description: "Floworx Collective is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
-  keywords: ["Floworx Collective", "3D Design", "Experience Design", "Volumetric 3D", "Interactive Experiences", "React", "Three.js"],
-  authors: [{ name: "Floworx Collective" }],
-  creator: "Floworx Collective",
-  publisher: "Floworx Collective",
+  title: "Origo Atelier | From Origin to Excellence",
+  description: "Origo Atelier is a premium experiential design studio. Every experience begins with an idea. We believe in finding the origin of that idea and building from there.",
+  keywords: ["Origo Atelier", "Experiential Design", "Brand Activation", "MICE", "Retail Marketing", "From Origin to Excellence", "Spatial Design"],
+  authors: [{ name: "Origo Atelier" }],
+  creator: "Origo Atelier",
+  publisher: "Origo Atelier",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://floworx.com'),
+  metadataBase: new URL('https://origoatelier.com'),
   openGraph: {
-    title: "Floworx Collective | Premium Experience & Volumetric 3D Design",
-    description: "Floworx Collective is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
-    url: "https://floworx.com",
-    siteName: "Floworx Collective",
+    title: "Origo Atelier | From Origin to Excellence",
+    description: "Every experience begins with an idea. We believe in finding the origin of that idea and building from there.",
+    url: "https://origoatelier.com",
+    siteName: "Origo Atelier",
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Floworx Collective Logo",
+        alt: "Origo Atelier Logo",
       },
     ],
     locale: "en_US",
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Floworx Collective | Premium Experience & Volumetric 3D Design",
-    description: "Floworx Collective is a premium design studio crafting state-of-the-art interactive experiences and volumetric 3D graphics.",
+    title: "Origo Atelier | From Origin to Excellence",
+    description: "Every experience begins with an idea. We believe in finding the origin of that idea and building from there.",
     images: ["/og.png"],
-    creator: "@floworxcollective",
+    creator: "@origoatelier",
   },
   icons: {
     icon: [
