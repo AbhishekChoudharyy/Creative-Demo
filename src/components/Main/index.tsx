@@ -2,7 +2,7 @@
 
 import { FC, Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
+import { Html, Preload } from '@react-three/drei';
 
 import { DeviceOrientationButton } from '../DeviceOrientationButton';
 import { Scene } from './Scene';
@@ -18,7 +18,7 @@ const CanvasLoader: FC = () => {
         
         {/* Pulsing load label */}
         <span className="text-[10px] font-mono text-[#a1a1aa] tracking-[0.2em] uppercase animate-pulse">
-          OG CUBE LOADING
+          ORIGO 3D LOADING
         </span>
       </div>
     </Html>
@@ -50,12 +50,14 @@ export const Main: FC = () => {
 
       <Canvas
         frameloop={isVisible ? 'always' : 'never'}
-        dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.8, 1.2] : [0.8, 1.8]}
+        dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.75, 1.0] : [0.8, 1.8]}
+        gl={{ powerPreference: 'high-performance', antialias: false, alpha: true, stencil: false }}
         camera={{ fov: 60 }}
         style={{ touchAction: 'pan-y' }}
       >
         <Suspense fallback={<CanvasLoader />}>
           <Scene />
+          <Preload all />
         </Suspense>
       </Canvas>
     </div>

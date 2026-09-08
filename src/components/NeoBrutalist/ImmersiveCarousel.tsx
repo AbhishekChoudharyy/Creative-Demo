@@ -1,6 +1,7 @@
 'use client';
 
 import React, {
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -8,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { MeshTransmissionMaterial } from '@react-three/drei';
+import { MeshTransmissionMaterial, Preload } from '@react-three/drei';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -62,6 +63,9 @@ const SLIDES = [
    - 03: Rounded Triangle Frame (Primal Polygon Vertex)
 ───────────────────────────────────────────────────────────── */
 function ShapeMesh({ shape }: { shape: string }) {
+  const { size } = useThree();
+  const isMobile = size.width < 768;
+
   const geom = useMemo(() => {
     if (shape === 'rectangle') {
       const s = new THREE.Shape();
@@ -99,7 +103,7 @@ function ShapeMesh({ shape }: { shape: string }) {
         bevelEnabled: true,
         bevelThickness: 0.04,
         bevelSize: 0.03,
-        bevelSegments: 2,
+        bevelSegments: isMobile ? 1 : 2,
       });
       g.computeVertexNormals();
       g.center();
@@ -130,17 +134,22 @@ function ShapeMesh({ shape }: { shape: string }) {
         bevelEnabled: true,
         bevelThickness: 0.035,
         bevelSize: 0.025,
-        bevelSegments: 2,
+        bevelSegments: isMobile ? 1 : 2,
       });
       g.computeVertexNormals();
       g.center();
       return g;
     }
 
-    const g = new THREE.TorusGeometry(0.85, 0.36, 48, 128);
+    const g = new THREE.TorusGeometry(
+      0.85,
+      0.36,
+      isMobile ? 32 : 48,
+      isMobile ? 64 : 128
+    );
     g.computeVertexNormals();
     return g;
-  }, [shape]);
+  }, [shape, isMobile]);
 
   return <primitive object={geom} attach="geometry" />;
 }
@@ -274,6 +283,8 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
           ref={(el) => {
             meshRefs.current[idx] = el;
           }}
+          visible={idx === slideIndex}
+          scale={idx === slideIndex ? [1, 1, 1] : [0.001, 0.001, 0.001]}
         >
           <ShapeMesh shape={s.shape} />
           {/* Pure transparent glass matching Hero GlassBox */}
@@ -281,11 +292,11 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
             backside
             transmission={1.0}
             roughness={0.045}
-            thickness={isMobile ? 0.35 : 0.65}
+            thickness={isMobile ? 0.28 : 0.65}
             ior={1.42}
-            chromaticAberration={0.08}
-            anisotropy={0.5}
-            distortion={0.2}
+            chromaticAberration={isMobile ? 0.03 : 0.08}
+            anisotropy={isMobile ? 0.1 : 0.5}
+            distortion={isMobile ? 0.1 : 0.2}
             distortionScale={0.5}
             temporalDistortion={0.0}
             clearcoat={0.7}
@@ -294,8 +305,8 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
             attenuationColor="#e0f2fe"
             attenuationDistance={3.5}
             reflectivity={0.8}
-            resolution={512}
-            samples={6}
+            resolution={isMobile ? 256 : 512}
+            samples={isMobile ? 1 : 6}
           />
         </mesh>
       ))}
@@ -424,16 +435,26 @@ export default function ImmersiveCarousel() {
       <div className="absolute inset-0 z-10 w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing">
         <Canvas
           frameloop={isVisible ? 'always' : 'never'}
-          dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.8, 1.2] : [0.8, 1.8]}
+          dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.75, 1.0] : [0.8, 1.8]}
+          gl={{
+            powerPreference: 'high-performance',
+            antialias: false,
+            alpha: true,
+            stencil: false,
+            depth: true,
+          }}
           camera={{ fov: 48, position: [0, 0, 5] }}
           style={{ touchAction: 'pan-y' }}
         >
           <color attach="background" args={['#1E90FF']} />
           <StudioLights />
-          <GlassHeroObject
-            slideIndex={slideIndex}
-            onFirstDrag={() => setHasInteracted(true)}
-          />
+          <Suspense fallback={null}>
+            <GlassHeroObject
+              slideIndex={slideIndex}
+              onFirstDrag={() => setHasInteracted(true)}
+            />
+            <Preload all />
+          </Suspense>
         </Canvas>
       </div>
 

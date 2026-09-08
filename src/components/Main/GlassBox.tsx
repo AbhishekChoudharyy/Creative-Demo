@@ -19,8 +19,11 @@ export const GlassBox: FC = () => {
   const targetRotation = useRef({ x: 0, y: 0 });
   const currentRotation = useRef({ x: 0, y: 0 });
 
-  // Torus geometry for circular glass ring (matching reference)
-  const torusArgs: [number, number, number, number] = useMemo(() => [0.96, 0.42, 64, 128], []);
+  // Torus geometry for circular glass ring (optimized for mobile 60fps)
+  const torusArgs: [number, number, number, number] = useMemo(
+    () => (isMobile ? [0.96, 0.42, 32, 64] : [0.96, 0.42, 48, 96]),
+    [isMobile]
+  );
 
 
 
@@ -140,11 +143,11 @@ export const GlassBox: FC = () => {
           backside
           transmission={1.0}
           roughness={0.045}
-          thickness={isMobile ? 0.35 : 0.65}
+          thickness={isMobile ? 0.28 : 0.65}
           ior={1.42}
-          chromaticAberration={0.08}
-          anisotropy={0.5}
-          distortion={0.2}
+          chromaticAberration={isMobile ? 0.03 : 0.08}
+          anisotropy={isMobile ? 0.1 : 0.5}
+          distortion={isMobile ? 0.1 : 0.2}
           distortionScale={0.5}
           temporalDistortion={0.0}
           clearcoat={0.7}
@@ -153,8 +156,8 @@ export const GlassBox: FC = () => {
           attenuationColor="#e0f2fe"
           attenuationDistance={3.5}
           reflectivity={0.8}
-          resolution={512}
-          samples={6}
+          resolution={isMobile ? 256 : 512}
+          samples={isMobile ? 1 : 6}
         />
       </mesh>
     </group>
