@@ -117,7 +117,7 @@ export const GlassBox: FC = () => {
     if (!group) return;
     const t = state.clock.getElapsedTime();
 
-    // Smooth floating animation (reduced for stability)
+    // Smooth floating animation (gentle and serene)
     group.position.y = Math.sin(t * 1.0) * 0.03;
 
     // Smooth lerp to target dragging rotation
@@ -126,22 +126,6 @@ export const GlassBox: FC = () => {
 
     group.rotation.x = currentRotation.current.x;
     group.rotation.y = currentRotation.current.y;
-
-    // Organic breathing warp scaling (greatly reduced for stable crystal look)
-    const speed = 1.0;
-    const amp = 0.05;
-
-    const boxScaleX = 1 + Math.sin(t * speed) * amp;
-    const boxScaleY = 1 + Math.cos(t * speed * 1.25) * amp;
-    const boxScaleZ = 1.0;
-
-    const lerpFactor = 0.08;
-
-    if (boxRef.current) {
-      boxRef.current.scale.x += (boxScaleX - boxRef.current.scale.x) * lerpFactor;
-      boxRef.current.scale.y += (boxScaleY - boxRef.current.scale.y) * lerpFactor;
-      boxRef.current.scale.z += (boxScaleZ - boxRef.current.scale.z) * lerpFactor;
-    }
   });
 
   return (
