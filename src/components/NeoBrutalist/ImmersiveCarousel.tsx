@@ -57,99 +57,155 @@ const SLIDES = [
 ];
 
 /* ─────────────────────────────────────────────────────────────
-   3D Geometries:
+   3D Tubular Glass Geometries (Parametric Watertight Tori):
    - 01: Circle Torus (Infinite Loop)
-   - 02: Rounded Rectangle Frame (Spatial Matrix)
-   - 03: Rounded Triangle Frame (Primal Polygon Vertex)
+   - 02: Square / Quad Torus (Spatial Matrix)
+   - 03: Triangle Torus (Primal Polygon Vertex — straight edges with rounded corners)
+   All three shapes are continuous closed tori with matching
+   tubular curvature, outward normals, pure transparency, and identical color.
 ───────────────────────────────────────────────────────────── */
-function ShapeMesh({ shape }: { shape: string }) {
-  const { size } = useThree();
-  const isMobile = size.width < 768;
+function createTorusFrom2DPath(
+  path2D: (t: number) => THREE.Vector2,
+  tubeRadius: number,
+  radialSegments = 32,
+  tubularSegments = 64
+) {
+  const geom = new THREE.BufferGeometry();
+  const vertices: number[] = [];
+  const normals: number[] = [];
+  const indices: number[] = [];
 
+  const points: THREE.Vector2[] = [];
+  for (let i = 0; i <= tubularSegments; i++) {
+    const t = i / tubularSegments;
+    points.push(path2D(t));
+  }
+
+  const frames: { p: THREE.Vector2; N: THREE.Vector2 }[] = [];
+  for (let i = 0; i <= tubularSegments; i++) {
+    const pPrev = points[(i - 1 + tubularSegments) % tubularSegments];
+    const pNext = points[(i + 1) % tubularSegments];
+    const T = new THREE.Vector2().subVectors(pNext, pPrev).normalize();
+    // CCW in-plane normal pointing outward
+    const N = new THREE.Vector2(T.y, -T.x);
+    frames.push({ p: points[i], N });
+  }
+
+  for (let j = 0; j <= radialSegments; j++) {
+    for (let i = 0; i <= tubularSegments; i++) {
+      const v = (j / radialSegments) * Math.PI * 2;
+      const { p, N } = frames[i];
+
+      const cosV = Math.cos(v);
+      const sinV = Math.sin(v);
+
+      const vx = p.x + tubeRadius * cosV * N.x;
+      const vy = p.y + tubeRadius * cosV * N.y;
+      const vz = tubeRadius * sinV;
+
+      vertices.push(vx, vy, vz);
+
+      const nx = cosV * N.x;
+      const ny = cosV * N.y;
+      const nz = sinV;
+
+      normals.push(nx, ny, nz);
+    }
+  }
+
+  // Exact Three.js TorusGeometry index builder (guarantees 100% outward normals)
+  for (let j = 1; j <= radialSegments; j++) {
+    for (let i = 1; i <= tubularSegments; i++) {
+      const a = (tubularSegments + 1) * j + i - 1;
+      const b = (tubularSegments + 1) * (j - 1) + i - 1;
+      const c = (tubularSegments + 1) * (j - 1) + i;
+      const d = (tubularSegments + 1) * j + i;
+
+      indices.push(a, b, d);
+      indices.push(b, c, d);
+    }
+  }
+
+  geom.setIndex(indices);
+  geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geom.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+  return geom;
+}
+
+// Rounded Square Path (Superellipse)
+function squarePath(t: number) {
+  const p = 2 / 5;
+  const angle = t * Math.PI * 2;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const sgnC = cos < 0 ? -1 : 1;
+  const sgnS = sin < 0 ? -1 : 1;
+  return new THREE.Vector2(
+    0.85 * sgnC * Math.pow(Math.abs(cos), p),
+    0.85 * sgnS * Math.pow(Math.abs(sin), p)
+  );
+}
+
+// Real Equilateral Triangle Path with 3 straight edges & rounded corners (NOT delta)
+function trianglePath(t: number) {
+  const R = 1.15;
+  const cornerRadius = 0.22;
+  const v1 = new THREE.Vector2(0, R); // top
+  const v2 = new THREE.Vector2(R * 0.866, -R * 0.5); // bottom right
+  const v3 = new THREE.Vector2(-R * 0.866, -R * 0.5); // bottom left
+
+  const d32 = new THREE.Vector2().subVectors(v2, v3).normalize();
+  const d21 = new THREE.Vector2().subVectors(v1, v2).normalize();
+  const d13 = new THREE.Vector2().subVectors(v3, v1).normalize();
+
+  const p3_out = new THREE.Vector2().copy(v3).addScaledVector(d32, cornerRadius);
+  const p2_in = new THREE.Vector2().copy(v2).addScaledVector(d32, -cornerRadius);
+
+  const p2_out = new THREE.Vector2().copy(v2).addScaledVector(d21, cornerRadius);
+  const p1_in = new THREE.Vector2().copy(v1).addScaledVector(d21, -cornerRadius);
+
+  const p1_out = new THREE.Vector2().copy(v1).addScaledVector(d13, cornerRadius);
+  const p3_in = new THREE.Vector2().copy(v3).addScaledVector(d13, -cornerRadius);
+
+  const curves = [
+    (f: number) => new THREE.Vector2().lerpVectors(p3_out, p2_in, f),
+    (f: number) => {
+      const pA = new THREE.Vector2().lerpVectors(p2_in, v2, f);
+      const pB = new THREE.Vector2().lerpVectors(v2, p2_out, f);
+      return new THREE.Vector2().lerpVectors(pA, pB, f);
+    },
+    (f: number) => new THREE.Vector2().lerpVectors(p2_out, p1_in, f),
+    (f: number) => {
+      const pA = new THREE.Vector2().lerpVectors(p1_in, v1, f);
+      const pB = new THREE.Vector2().lerpVectors(v1, p1_out, f);
+      return new THREE.Vector2().lerpVectors(pA, pB, f);
+    },
+    (f: number) => new THREE.Vector2().lerpVectors(p1_out, p3_in, f),
+    (f: number) => {
+      const pA = new THREE.Vector2().lerpVectors(p3_in, v3, f);
+      const pB = new THREE.Vector2().lerpVectors(v3, p3_out, f);
+      return new THREE.Vector2().lerpVectors(pA, pB, f);
+    },
+  ];
+
+  const s = (t % 1) * 6;
+  const idx = Math.min(5, Math.floor(s));
+  const f = s - idx;
+  return curves[idx](f);
+}
+
+function ShapeMesh({ shape }: { shape: string }) {
   const geom = useMemo(() => {
     if (shape === 'rectangle') {
-      const s = new THREE.Shape();
-      const w = 0.96;
-      const h = 0.72;
-      const r = 0.08; // crisp, sharp corners
-      s.moveTo(-w + r, -h);
-      s.lineTo(w - r, -h);
-      s.quadraticCurveTo(w, -h, w, -h + r);
-      s.lineTo(w, h - r);
-      s.quadraticCurveTo(w, h, w - r, h);
-      s.lineTo(-w + r, h);
-      s.quadraticCurveTo(-w, h, -w, h - r);
-      s.lineTo(-w, -h + r);
-      s.quadraticCurveTo(-w, -h, -w + r, -h);
-
-      const hole = new THREE.Path();
-      const iw = 0.52;
-      const ih = 0.38;
-      const ir = 0.05;
-      hole.moveTo(-iw + ir, -ih);
-      hole.lineTo(iw - ir, -ih);
-      hole.quadraticCurveTo(iw, -ih, iw, -ih + ir);
-      hole.lineTo(iw, ih - ir);
-      hole.quadraticCurveTo(iw, ih, iw - ir, ih);
-      hole.lineTo(-iw + ir, ih);
-      hole.quadraticCurveTo(-iw, ih, -iw, ih - ir);
-      hole.lineTo(-iw, -ih + ir);
-      hole.quadraticCurveTo(-iw, -ih, -iw + ir, -ih);
-      s.holes.push(hole);
-
-      const g = new THREE.ExtrudeGeometry(s, {
-        steps: 1,
-        depth: 0.36,
-        bevelEnabled: true,
-        bevelThickness: 0.04,
-        bevelSize: 0.03,
-        bevelSegments: isMobile ? 1 : 2,
-      });
-      g.computeVertexNormals();
-      g.center();
-      return g;
+      return createTorusFrom2DPath(squarePath, 0.35, 32, 64);
     }
-
     if (shape === 'triangle') {
-      const s = new THREE.Shape();
-      const r = 1.15;
-      // Sharp equilateral triangle
-      s.moveTo(0, r);
-      s.lineTo(-r * 0.866, -r * 0.5);
-      s.lineTo(r * 0.866, -r * 0.5);
-      s.closePath();
-
-      // Sharp inner triangular aperture
-      const hole = new THREE.Path();
-      const hr = 0.56;
-      hole.moveTo(0, hr);
-      hole.lineTo(-hr * 0.866, -hr * 0.5);
-      hole.lineTo(hr * 0.866, -hr * 0.5);
-      hole.closePath();
-      s.holes.push(hole);
-
-      const g = new THREE.ExtrudeGeometry(s, {
-        steps: 1,
-        depth: 0.36,
-        bevelEnabled: true,
-        bevelThickness: 0.035,
-        bevelSize: 0.025,
-        bevelSegments: isMobile ? 1 : 2,
-      });
-      g.computeVertexNormals();
-      g.center();
-      return g;
+      return createTorusFrom2DPath(trianglePath, 0.35, 32, 64);
     }
-
-    const g = new THREE.TorusGeometry(
-      0.85,
-      0.36,
-      isMobile ? 32 : 48,
-      isMobile ? 64 : 128
-    );
+    const g = new THREE.TorusGeometry(0.85, 0.35, 48, 128);
     g.computeVertexNormals();
     return g;
-  }, [shape, isMobile]);
+  }, [shape]);
 
   return <primitive object={geom} attach="geometry" />;
 }
@@ -291,22 +347,22 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
           <MeshTransmissionMaterial
             backside
             transmission={1.0}
-            roughness={0.045}
-            thickness={isMobile ? 0.28 : 0.65}
-            ior={1.42}
-            chromaticAberration={isMobile ? 0.03 : 0.08}
-            anisotropy={isMobile ? 0.1 : 0.5}
-            distortion={isMobile ? 0.1 : 0.2}
-            distortionScale={0.5}
+            roughness={0.0}
+            thickness={0.42}
+            ior={1.38}
+            chromaticAberration={0.0}
+            anisotropy={0.0}
+            distortion={0.08}
+            distortionScale={0.3}
             temporalDistortion={0.0}
-            clearcoat={0.7}
-            clearcoatRoughness={0.08}
-            color="#f0f7ff"
-            attenuationColor="#e0f2fe"
-            attenuationDistance={3.5}
-            reflectivity={0.8}
-            resolution={isMobile ? 256 : 512}
-            samples={isMobile ? 1 : 6}
+            clearcoat={1.0}
+            clearcoatRoughness={0.02}
+            color="#ffffff"
+            attenuationColor="#ffffff"
+            attenuationDistance={20.0}
+            reflectivity={0.45}
+            resolution={512}
+            samples={6}
           />
         </mesh>
       ))}
@@ -314,17 +370,19 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
   );
 }
 
+
+
 function StudioLights() {
   const { size } = useThree();
   const isMobile = size.width < 768;
 
   return (
     <>
-      <ambientLight intensity={isMobile ? 2.6 : 2.0} />
-      <directionalLight position={[0, 4, 6]} intensity={isMobile ? 3.2 : 2.5} color="#ffffff" />
-      <directionalLight position={[0, 8, -2]} intensity={isMobile ? 2.8 : 2.2} color="#ffffff" />
-      <directionalLight position={[-6, 2, 4]} intensity={isMobile ? 2.8 : 2.2} color="#00A6B2" />
-      <directionalLight position={[6, 2, 4]} intensity={isMobile ? 2.4 : 1.8} color="#ffffff" />
+      <ambientLight intensity={isMobile ? 2.2 : 1.8} />
+      <directionalLight position={[0, 4, 6]} intensity={isMobile ? 2.4 : 2.0} color="#ffffff" />
+      <directionalLight position={[0, 8, -2]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
+      <directionalLight position={[-6, 2, 4]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
+      <directionalLight position={[6, 2, 4]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
     </>
   );
 }
@@ -435,13 +493,11 @@ export default function ImmersiveCarousel() {
       <div className="absolute inset-0 z-10 w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing">
         <Canvas
           frameloop={isVisible ? 'always' : 'never'}
-          dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.75, 1.0] : [0.8, 1.8]}
+          dpr={[1, 2]}
           gl={{
             powerPreference: 'high-performance',
-            antialias: false,
+            antialias: true,
             alpha: true,
-            stencil: false,
-            depth: true,
           }}
           camera={{ fov: 48, position: [0, 0, 5] }}
           style={{ touchAction: 'pan-y' }}

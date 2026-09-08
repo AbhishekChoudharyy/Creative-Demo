@@ -50,8 +50,8 @@ export const Main: FC = () => {
 
       <Canvas
         frameloop={isVisible ? 'always' : 'never'}
-        dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [0.75, 1.0] : [0.8, 1.8]}
-        gl={{ powerPreference: 'high-performance', antialias: false, alpha: true, stencil: false }}
+        dpr={[1, 2]}
+        gl={{ powerPreference: 'high-performance', antialias: true, alpha: true }}
         camera={{ fov: 60 }}
         style={{ touchAction: 'pan-y' }}
       >

@@ -16,26 +16,14 @@ export const Scene: FC = () => {
     <>
       <color attach="background" args={["#1E90FF"]} />
 
-      {/* Ambient light for natural fill */}
-      <ambientLight intensity={isMobile ? 2.6 : 2.0} />
+      {/* Ambient light for clean even illumination */}
+      <ambientLight intensity={isMobile ? 2.0 : 1.6} />
 
-      {/* Balanced front key light */}
-      <directionalLight position={[0, 4, 6]} intensity={isMobile ? 3.2 : 2.5} color="#ffffff" />
-
-      {/* Top backlight/fill */}
-      <directionalLight position={[0, 8, -2]} intensity={isMobile ? 2.8 : 2.2} color="#ffffff" />
-
-      {/* Side teal rim light for brand accent glints */}
-      <directionalLight position={[-6, 2, 4]} intensity={isMobile ? 2.8 : 2.2} color="#00A6B2" />
-
-      {/* Right side fill light */}
-      <directionalLight position={[6, 2, 4]} intensity={isMobile ? 2.4 : 1.8} color="#ffffff" />
-
-      {/* Soft spotlight on the glass crystal */}
-      <spotLight position={[0, 5, 5]} angle={0.8} penumbra={0.8} intensity={isMobile ? 2.6 : 2.0} color="#ffffff" />
-
-      {/* Soft front point light */}
-      <pointLight position={[0, 0, 4.5]} intensity={isMobile ? 2.4 : 1.8} color="#ffffff" />
+      {/* Balanced studio directional lights */}
+      <directionalLight position={[0, 4, 6]} intensity={isMobile ? 2.2 : 1.8} color="#ffffff" />
+      <directionalLight position={[0, 8, -2]} intensity={isMobile ? 1.8 : 1.4} color="#ffffff" />
+      <directionalLight position={[-6, 2, 4]} intensity={isMobile ? 1.8 : 1.4} color="#ffffff" />
+      <directionalLight position={[6, 2, 4]} intensity={isMobile ? 1.6 : 1.2} color="#ffffff" />
 
       {/* Hero display text rendered inside the WebGL canvas, allowing it to be refracted by the glass ring */}
       <group scale={[1, 1.35, 1]} position={[0, 0, -1.5]}>

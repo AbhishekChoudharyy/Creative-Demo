@@ -1,15 +1,12 @@
 'use client';
 
 import { FC, useEffect, useMemo, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { MeshTransmissionMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { soundManager } from '@/lib/sound';
 
 export const GlassBox: FC = () => {
-  const { size } = useThree();
-  const isMobile = size.width < 768;
-
   const groupRef = useRef<any>(null);
   const boxRef = useRef<any>(null);
 
@@ -19,13 +16,11 @@ export const GlassBox: FC = () => {
   const targetRotation = useRef({ x: 0, y: 0 });
   const currentRotation = useRef({ x: 0, y: 0 });
 
-  // Torus geometry for circular glass ring (optimized for mobile 60fps)
+  // Torus geometry for circular glass ring (high quality crystal finish)
   const torusArgs: [number, number, number, number] = useMemo(
-    () => (isMobile ? [0.96, 0.42, 32, 64] : [0.96, 0.42, 48, 96]),
-    [isMobile]
+    () => [0.96, 0.42, 48, 96],
+    []
   );
-
-
 
   const lockScroll = () => {
     document.documentElement.style.overflow = 'hidden';
@@ -113,8 +108,6 @@ export const GlassBox: FC = () => {
     };
   }, []);
 
-
-
   useFrame((state) => {
     const group = groupRef.current;
     if (!group) return;
@@ -142,22 +135,22 @@ export const GlassBox: FC = () => {
         <MeshTransmissionMaterial
           backside
           transmission={1.0}
-          roughness={0.045}
-          thickness={isMobile ? 0.28 : 0.65}
-          ior={1.42}
-          chromaticAberration={isMobile ? 0.03 : 0.08}
-          anisotropy={isMobile ? 0.1 : 0.5}
-          distortion={isMobile ? 0.1 : 0.2}
-          distortionScale={0.5}
+          roughness={0.0}
+          thickness={0.42}
+          ior={1.38}
+          chromaticAberration={0.0}
+          anisotropy={0.0}
+          distortion={0.08}
+          distortionScale={0.3}
           temporalDistortion={0.0}
-          clearcoat={0.7}
-          clearcoatRoughness={0.08}
-          color="#f0f7ff"
-          attenuationColor="#e0f2fe"
-          attenuationDistance={3.5}
-          reflectivity={0.8}
-          resolution={isMobile ? 256 : 512}
-          samples={isMobile ? 1 : 6}
+          clearcoat={1.0}
+          clearcoatRoughness={0.02}
+          color="#ffffff"
+          attenuationColor="#ffffff"
+          attenuationDistance={20.0}
+          reflectivity={0.45}
+          resolution={512}
+          samples={6}
         />
       </mesh>
     </group>
