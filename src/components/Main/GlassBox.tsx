@@ -16,23 +16,21 @@ export const GlassBox: FC = () => {
   const targetRotation = useRef({ x: 0, y: 0 });
   const currentRotation = useRef({ x: 0, y: 0 });
 
-  // Extruded beveled circle geometry matching the metal circle in the carousel
+  // Extruded beveled solid circular lens/disc (filled center, no hole)
   const circleGeom = useMemo(() => {
     const s = new THREE.Shape();
     s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
-    const hole = new THREE.Path();
-    hole.absarc(0, 0, 0.70, 0, Math.PI * 2, true);
-    s.holes.push(hole);
 
     const g = new THREE.ExtrudeGeometry(s, {
-      depth: 0.28,
+      depth: 0.22,
       bevelEnabled: true,
-      bevelThickness: 0.07,
-      bevelSize: 0.06,
-      bevelSegments: 4,
-      curveSegments: 64,
+      bevelThickness: 0.10,
+      bevelSize: 0.08,
+      bevelSegments: 24,
+      curveSegments: 128,
     });
     g.center();
+    g.computeVertexNormals();
     return g;
   }, []);
 
@@ -143,28 +141,28 @@ export const GlassBox: FC = () => {
       ref={groupRef}
       onPointerDown={handlePointerDown}
     >
-      {/* 3D Transparent Beveled Circle Ring matching the Carousel shape */}
+      {/* 3D Transparent Beveled Optical Crystal Glass Ring */}
       <mesh ref={boxRef}>
         <primitive object={circleGeom} attach="geometry" />
         <MeshTransmissionMaterial
           backside
-          transmission={0.99}
-          roughness={0.015}
-          thickness={0.35}
-          ior={1.48}
-          chromaticAberration={0.08}
-          anisotropy={0.15}
-          distortion={0.08}
-          distortionScale={0.3}
+          transmission={1.0}
+          roughness={0.0}
+          thickness={0.22}
+          ior={1.44}
+          chromaticAberration={0.03}
+          anisotropy={0.0}
+          distortion={0.0}
+          distortionScale={0.0}
           temporalDistortion={0.0}
           clearcoat={1.0}
-          clearcoatRoughness={0.01}
+          clearcoatRoughness={0.0}
           color="#ffffff"
-          attenuationColor="#ffffff"
-          attenuationDistance={14.0}
-          reflectivity={0.85}
-          resolution={512}
-          samples={6}
+          attenuationColor="#e0f2fe"
+          attenuationDistance={20.0}
+          reflectivity={0.90}
+          resolution={1024}
+          samples={12}
         />
       </mesh>
     </group>

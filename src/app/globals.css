@@ -62,104 +62,69 @@ html, body {
   will-change: transform;
 }
 
-/* Cinematic Cloud-like Atmospheric Dissolve: Hero Electric Blue into Intro Paper White */
+/* Cinematic Atmospheric Dissolve: Hero Electric Blue into Intro Paper White */
 .hero-atmospheric-fade {
   position: absolute;
   left: 0;
   right: 0;
   bottom: -1px;
-  height: 28%;
-  min-height: 220px;
+  height: 24%;
+  min-height: 160px;
   pointer-events: none;
   z-index: 25;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background-image:
-    /* Dense rolling cumulus cloud banks at the base */
-    radial-gradient(ellipse 48% 65% at 18% 100%, #F5F5F3 0%, rgba(245, 245, 243, 0.92) 45%, transparent 80%),
-    radial-gradient(ellipse 55% 70% at 52% 100%, #F5F5F3 0%, rgba(245, 245, 243, 0.95) 48%, transparent 85%),
-    radial-gradient(ellipse 48% 65% at 84% 100%, #F5F5F3 0%, rgba(245, 245, 243, 0.92) 45%, transparent 80%),
-    /* Mid-altitude billowing cloud puffs with soft white luminous highlights */
-    radial-gradient(ellipse 38% 50% at 32% 82%, rgba(255, 255, 255, 0.85) 0%, rgba(245, 245, 243, 0.50) 45%, transparent 78%),
-    radial-gradient(ellipse 42% 52% at 68% 80%, rgba(255, 255, 255, 0.82) 0%, rgba(245, 245, 243, 0.48) 45%, transparent 78%),
-    radial-gradient(ellipse 32% 42% at 6% 75%, rgba(255, 255, 255, 0.70) 0%, rgba(245, 245, 243, 0.35) 45%, transparent 75%),
-    radial-gradient(ellipse 32% 42% at 94% 75%, rgba(255, 255, 255, 0.70) 0%, rgba(245, 245, 243, 0.35) 45%, transparent 75%),
-    /* High-altitude ethereal cirrus wisps drifting into the blue sky */
-    radial-gradient(ellipse 65% 38% at 48% 60%, rgba(255, 255, 255, 0.42) 0%, rgba(245, 245, 243, 0.18) 40%, transparent 72%),
-    radial-gradient(ellipse 52% 32% at 20% 50%, rgba(255, 255, 255, 0.30) 0%, transparent 68%),
-    radial-gradient(ellipse 52% 32% at 80% 50%, rgba(255, 255, 255, 0.30) 0%, transparent 68%),
-    /* Ambient atmospheric sky-to-cloud density gradient */
-    linear-gradient(
-      to bottom,
-      rgba(245, 245, 243, 0) 0%,
-      rgba(245, 245, 243, 0.04) 25%,
-      rgba(245, 245, 243, 0.22) 50%,
-      rgba(245, 245, 243, 0.55) 72%,
-      rgba(245, 245, 243, 0.80) 88%,
-      rgba(245, 245, 243, 0.90) 100%
-    );
+  background: linear-gradient(
+    to bottom,
+    rgba(245, 245, 243, 0) 0%,
+    rgba(245, 245, 243, 0.02) 12%,
+    rgba(245, 245, 243, 0.06) 24%,
+    rgba(245, 245, 243, 0.15) 38%,
+    rgba(245, 245, 243, 0.30) 52%,
+    rgba(245, 245, 243, 0.50) 66%,
+    rgba(245, 245, 243, 0.72) 79%,
+    rgba(245, 245, 243, 0.89) 90%,
+    rgba(245, 245, 243, 0.98) 96%,
+    #F5F5F3 100%
+  );
 }
 
-/* Cloud-like Wisps and Atmospheric Mist in Top of Intro Section */
-.intro-top-blend {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 260px;
-  pointer-events: none;
-  z-index: 1;
-  background-image:
-    /* Gentle floating blue sky pockets between cloud formations */
-    radial-gradient(ellipse 42% 65% at 22% 0%, rgba(30, 144, 255, 0.14) 0%, rgba(30, 144, 255, 0.04) 50%, transparent 75%),
-    radial-gradient(ellipse 48% 60% at 76% 0%, rgba(30, 144, 255, 0.15) 0%, rgba(30, 144, 255, 0.05) 50%, transparent 75%),
-    radial-gradient(ellipse 36% 48% at 48% 8%, rgba(30, 144, 255, 0.09) 0%, transparent 65%),
-    linear-gradient(
-      to bottom,
-      rgba(30, 144, 255, 0.10) 0%,
-      rgba(30, 144, 255, 0.05) 35%,
-      rgba(30, 144, 255, 0.015) 70%,
-      transparent 100%
-    );
-}
-
-/* Cinematic Cloud-like Atmospheric Dissolve: Intro Paper White into Works Electric Blue */
-.white-to-blue-fade {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  height: 240px;
-  pointer-events: none;
-  z-index: 10;
-  background-image:
-    /* Cloud banks receding into the blue world of Works */
-    radial-gradient(ellipse 48% 65% at 20% 0%, #F5F5F3 0%, rgba(245, 245, 243, 0.90) 45%, transparent 80%),
-    radial-gradient(ellipse 55% 70% at 50% 0%, #F5F5F3 0%, rgba(245, 245, 243, 0.94) 48%, transparent 85%),
-    radial-gradient(ellipse 48% 65% at 82% 0%, #F5F5F3 0%, rgba(245, 245, 243, 0.90) 45%, transparent 80%),
-    radial-gradient(ellipse 38% 50% at 35% 18%, rgba(255, 255, 255, 0.75) 0%, rgba(245, 245, 243, 0.40) 45%, transparent 75%),
-    radial-gradient(ellipse 42% 52% at 65% 20%, rgba(255, 255, 255, 0.75) 0%, rgba(245, 245, 243, 0.40) 45%, transparent 75%),
-    radial-gradient(ellipse 60% 35% at 50% 40%, rgba(255, 255, 255, 0.35) 0%, transparent 70%),
-    linear-gradient(
-      to bottom,
-      #F5F5F3 0%,
-      rgba(245, 245, 243, 0.92) 10%,
-      rgba(245, 245, 243, 0.65) 30%,
-      rgba(245, 245, 243, 0.30) 58%,
-      rgba(245, 245, 243, 0.08) 82%,
-      rgba(245, 245, 243, 0) 100%
-    );
-}
-
-/* Works Section Atmospheric Blend of Mix (Only in Works Section) */
+/* Works Section Atmospheric Sky Gradient with Seamless Top & Bottom Blends */
 .works-blend-bg {
+  position: relative;
   background-color: #1E90FF;
   background-image: 
-    radial-gradient(110% 75% at 50% 35%, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.09) 45%, transparent 75%),
-    radial-gradient(900px circle at 85% 20%, rgba(255, 255, 255, 0.18) 0%, transparent 60%),
-    radial-gradient(750px circle at 15% 65%, rgba(255, 255, 255, 0.14) 0%, transparent 55%),
-    linear-gradient(180deg, #1E90FF 0%, #2596FF 25%, #1E90FF 75%, #1E90FF 100%);
-  position: relative;
+    /* Soft corner atmospheric vapor arches */
+    radial-gradient(ellipse 48% 36% at 0% 28%, rgba(255, 255, 255, 0.40) 0%, transparent 70%),
+    radial-gradient(ellipse 48% 36% at 100% 28%, rgba(255, 255, 255, 0.40) 0%, transparent 70%),
+    /* Radiant center sky diffusion */
+    radial-gradient(ellipse 85% 45% at 50% 34%, rgba(255, 255, 255, 0.22) 0%, transparent 65%),
+    /* Smooth vertical progression using exact Hero Electric Blue (#1E90FF) palette:
+       - 0% to 26%: Soft blend descending down from Intro's #F5F5F3 into Works ("blend thoda niche tkk ane de then uska bg start kr")
+       - 26% to 75%: Hero's vibrant electric blue (#1E90FF) dissolving through airy sky tints
+       - 75% to 84%: Reduced white area below the gallery ("g se niche ka white part kam krke")
+       - 84% to 100%: Smooth blend into the next section's electric blue #1E90FF ("next me fir blend krde")
+    */
+    linear-gradient(
+      180deg,
+      #F5F5F3 0%,
+      #EDF5FE 4%,
+      #D3E9FE 10%,
+      #A3D1FD 17%,
+      #64B3FE 24%,
+      #1E90FF 31%,
+      #3DA1FF 38%,
+      #6DB8FF 48%,
+      #9FCEFE 58%,
+      #CEE5FE 68%,
+      #EFF6FE 76%,
+      #FFFFFF 81%,
+      #FFFFFF 84%,
+      #ECF5FE 87%,
+      #BEDEFE 91%,
+      #68B5FE 95%,
+      #2D97FF 98%,
+      #1E90FF 100%
+    );
+  background-repeat: no-repeat;
 }
 
 .hero-title {

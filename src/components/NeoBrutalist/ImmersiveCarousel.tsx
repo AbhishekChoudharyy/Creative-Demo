@@ -63,7 +63,7 @@ const SLIDES = [
 ───────────────────────────────────────────────────────────── */
 function ShapeMesh({ shape }: { shape: string }) {
   const geom = useMemo(() => {
-    // 1. Rectangle / Square Frame
+    // 1. Solid Rectangle / Square Plate with Bevel
     if (shape === 'rectangle') {
       const s = new THREE.Shape();
       const w = 1.05;
@@ -74,28 +74,19 @@ function ShapeMesh({ shape }: { shape: string }) {
       s.lineTo(-w, h);
       s.closePath();
 
-      const hole = new THREE.Path();
-      const hw = 0.62;
-      const hh = 0.62;
-      hole.moveTo(-hw, -hh);
-      hole.lineTo(hw, -hh);
-      hole.lineTo(hw, hh);
-      hole.lineTo(-hw, hh);
-      hole.closePath();
-      s.holes.push(hole);
-
       const g = new THREE.ExtrudeGeometry(s, {
         depth: 0.28,
         bevelEnabled: true,
-        bevelThickness: 0.07,
-        bevelSize: 0.06,
-        bevelSegments: 4,
+        bevelThickness: 0.08,
+        bevelSize: 0.07,
+        bevelSegments: 8,
       });
       g.center();
+      g.computeVertexNormals();
       return g;
     }
 
-    // 2. Triangle Frame
+    // 2. Solid Triangle Prism with Bevel
     if (shape === 'triangle') {
       const s = new THREE.Shape();
       const R_out = 1.42;
@@ -104,41 +95,32 @@ function ShapeMesh({ shape }: { shape: string }) {
       s.lineTo(R_out * Math.cos(7 * Math.PI / 6), R_out * Math.sin(7 * Math.PI / 6));
       s.closePath();
 
-      const hole = new THREE.Path();
-      const R_in = 0.82;
-      hole.moveTo(0, R_in);
-      hole.lineTo(R_in * Math.cos(-Math.PI / 6), R_in * Math.sin(-Math.PI / 6));
-      hole.lineTo(R_in * Math.cos(7 * Math.PI / 6), R_in * Math.sin(7 * Math.PI / 6));
-      hole.closePath();
-      s.holes.push(hole);
-
       const g = new THREE.ExtrudeGeometry(s, {
         depth: 0.28,
         bevelEnabled: true,
-        bevelThickness: 0.07,
-        bevelSize: 0.06,
-        bevelSegments: 4,
+        bevelThickness: 0.08,
+        bevelSize: 0.07,
+        bevelSegments: 8,
       });
       g.center();
+      g.computeVertexNormals();
       return g;
     }
 
-    // 3. Circle Frame
+    // 3. Solid Circle Disc with Bevel
     const s = new THREE.Shape();
     s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
-    const hole = new THREE.Path();
-    hole.absarc(0, 0, 0.70, 0, Math.PI * 2, true);
-    s.holes.push(hole);
 
     const g = new THREE.ExtrudeGeometry(s, {
       depth: 0.28,
       bevelEnabled: true,
-      bevelThickness: 0.07,
-      bevelSize: 0.06,
-      bevelSegments: 4,
-      curveSegments: 64,
+      bevelThickness: 0.08,
+      bevelSize: 0.07,
+      bevelSegments: 16,
+      curveSegments: 96,
     });
     g.center();
+    g.computeVertexNormals();
     return g;
   }, [shape]);
 
@@ -451,35 +433,44 @@ export default function ImmersiveCarousel() {
           <color attach="background" args={['#1E90FF']} />
           <StudioLights />
 
-          {/* HDR Studio Reflections + Custom Rectangular Key & Rim Lightformers */}
+          {/* 100% Image-Free Pure Studio & Icy Lightformers for Chrome Metal */}
           <Suspense fallback={null}>
-            <Environment files="/env/warehouse.hdr" environmentIntensity={1.2}>
+            <Environment resolution={512}>
               {/* KEY LIGHT: Large soft rectangular light positioned above and in front */}
               <Lightformer
                 form="rect"
-                intensity={5.5}
+                intensity={6.0}
                 position={[0, 5, 2.5]}
                 scale={[14, 3, 1]}
                 target={[0, 0, 0]}
                 color="#ffffff"
               />
-              {/* FILL: Very subtle cool fill light from opposite side */}
+              {/* FILL: Very subtle cool fill light from below */}
               <Lightformer
                 form="rect"
-                intensity={1.0}
-                position={[6, -3, 2]}
-                scale={[5, 4, 1]}
+                intensity={1.8}
+                position={[0, -4, 2]}
+                scale={[10, 2.5, 1]}
                 target={[0, 0, 0]}
                 color="#e0f2fe"
               />
               {/* RIM / EDGE LIGHT: Subtle cool white/blue rim reflection */}
               <Lightformer
                 form="rect"
-                intensity={3.2}
-                position={[-6, -2, 2.5]}
-                scale={[4, 10, 1]}
+                intensity={4.2}
+                position={[-6, 0, 2.5]}
+                scale={[3, 12, 1]}
                 target={[0, 0, 0]}
                 color="#38bdf8"
+              />
+              {/* RIM / OPPOSITE: Crisp silver rim reflection */}
+              <Lightformer
+                form="rect"
+                intensity={4.2}
+                position={[6, 0, 2.5]}
+                scale={[3, 12, 1]}
+                target={[0, 0, 0]}
+                color="#ffffff"
               />
             </Environment>
 

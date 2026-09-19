@@ -403,22 +403,32 @@ export default function WorkGallery() {
       uWobble: { value: 1 },
       uCardSize: { value: new THREE.Vector2(1, 1) },
       uRadius: { value: CONFIG.cardRadius },
-      uBgColor: { value: new THREE.Color('#1E90FF') },
+      uBgColor: { value: new THREE.Color('#D8ECFD') },
     };
 
-    function createTexture(source: HTMLCanvasElement | HTMLImageElement) {
-      const texture = new THREE.Texture(source);
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.setCrossOrigin('');
+
+    const slots = filteredProjects.map((proj, i) => {
+      // Direct TextureLoader for local images with SRGBColorSpace
+      const texture = textureLoader.load(
+        proj.img,
+        (loadedTex) => {
+          loadedTex.colorSpace = THREE.SRGBColorSpace;
+          loadedTex.minFilter = THREE.LinearFilter;
+          loadedTex.magFilter = THREE.LinearFilter;
+          loadedTex.wrapS = loadedTex.wrapT = THREE.ClampToEdgeWrapping;
+          loadedTex.needsUpdate = true;
+          if (loadedTex.image && loadedTex.image.naturalWidth) {
+            material.uniforms.uImageAspect.value = loadedTex.image.naturalWidth / loadedTex.image.naturalHeight;
+          }
+        }
+      );
+      texture.colorSpace = THREE.SRGBColorSpace;
       texture.minFilter = THREE.LinearFilter;
       texture.magFilter = THREE.LinearFilter;
       texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
       texture.generateMipmaps = false;
-      texture.needsUpdate = true;
-      return texture;
-    }
-
-    const slots = filteredProjects.map((proj, i) => {
-      const placeholder = drawPlaceholderPlate(i + 4);
-      const texture = createTexture(placeholder);
 
       const material = new THREE.ShaderMaterial({
         vertexShader: VERTEX_SHADER,
@@ -441,14 +451,21 @@ export default function WorkGallery() {
         },
       });
 
+      // Same-origin Image loader (no crossOrigin header) ensures local files always render
       const img = new Image();
-      img.crossOrigin = 'anonymous';
       img.onload = () => {
         texture.image = img;
         texture.needsUpdate = true;
-        material.uniforms.uImageAspect.value = img.naturalWidth / img.naturalHeight;
+        if (img.naturalWidth && img.naturalHeight) {
+          material.uniforms.uImageAspect.value = img.naturalWidth / img.naturalHeight;
+        }
       };
       img.src = proj.img;
+      if (img.complete && img.naturalWidth > 0) {
+        texture.image = img;
+        texture.needsUpdate = true;
+        material.uniforms.uImageAspect.value = img.naturalWidth / img.naturalHeight;
+      }
 
       return { texture, material };
     });
@@ -596,14 +613,28 @@ export default function WorkGallery() {
     <section
       ref={sectionRef}
       id="work"
-      className="relative works-blend-bg text-black pt-20 md:pt-28 pb-20 md:pb-28 overflow-hidden select-none"
+      className="relative bg-[#F5F5F3] text-black pt-16 md:pt-24 pb-16 md:pb-24 overflow-hidden select-none"
     >
-      {/* Cinematic Atmospheric Fade: Intro Paper White dissolving into Works Electric Blue */}
-      <div className="white-to-blue-fade" aria-hidden="true" />
+      {/* Attached Panoramic Sky Background Image */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0 bg-cover bg-top"
+        style={{
+          backgroundImage: 'url(/works-carousel-bg.png)',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+
+      {/* Top Atmospheric Dissolve: Intro (#F5F5F3) gently dissolving into the sky right as you reach the heading */}
+      <div
+        className="absolute top-0 left-0 right-0 h-28 sm:h-36 md:h-44 pointer-events-none z-[1]"
+        style={{
+          background: 'linear-gradient(to bottom, #F5F5F3 0%, rgba(245, 245, 243, 0.92) 20%, rgba(245, 245, 243, 0.50) 55%, rgba(245, 245, 243, 0) 100%)',
+        }}
+      />
 
       <div className="w-full relative z-10">
         
-        {/* Brutalist Section Header */}
+        {/* Brutalist Section Header — Blending begins right here */}
         <div className="mb-10 md:mb-14 flex flex-col items-center text-center px-4">
           <h2 className="text-[12vw] leading-[0.8] font-heading font-black z-10 text-black tracking-tight">
             SELECTED
@@ -638,19 +669,25 @@ export default function WorkGallery() {
         </div>
 
         {/* ══════════════════════════════════════════════
-            ORIGO GEOMETRIC UNWOVEN LOOM
-            - Shatters into Circle (○), Rectangle (□), and Triangle (△)
-            - 16:9 Ratio, pure and clean
+            ORIGO GEOMETRIC UNWOVEN LOOM (Cards Carousel)
         ══════════════════════════════════════════════ */}
-        <div className="relative w-full">
+        <div className="relative w-full overflow-hidden my-4 py-8 sm:py-12 md:py-14">
           <div
             ref={stageRef}
-            className="w-full h-[260px] sm:h-[340px] md:h-[420px] cursor-grab touch-pan-y"
+            className="relative z-10 w-full h-[260px] sm:h-[340px] md:h-[420px] cursor-grab touch-pan-y"
             style={{ willChange: 'transform' }}
           />
         </div>
 
       </div>
+
+      {/* Bottom Atmospheric Dissolve: Sky smoothly dissolving into ImmersiveCarousel (#1E90FF) */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 sm:h-32 md:h-40 pointer-events-none z-[1]"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(30, 144, 255, 0) 0%, rgba(30, 144, 255, 0.20) 35%, rgba(30, 144, 255, 0.65) 75%, #1E90FF 100%)',
+        }}
+      />
     </section>
   );
 }

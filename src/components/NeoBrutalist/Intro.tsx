@@ -374,9 +374,6 @@ export default function Intro() {
         }}
       />
 
-      {/* ── Soft Stretched Atmospheric Blue Blend from Hero (Few shades only) ── */}
-      <div className="intro-top-blend" aria-hidden="true" />
-
       {/* ══════════════════════════════════════════════
           MAIN EDITORIAL TYPOGRAPHY POSTER
           - Starting Point aligned exactly with user reference:
