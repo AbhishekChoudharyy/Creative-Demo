@@ -117,6 +117,13 @@ class SoundManager {
     return this.isMuted;
   }
 
+  public setMuted(muted: boolean) {
+    this.isMuted = muted;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('og_engine_sfx_muted', String(this.isMuted));
+    }
+  }
+
   public getMutedState(): boolean {
     return this.isMuted;
   }

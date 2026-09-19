@@ -17,44 +17,68 @@ import { soundManager } from '@/lib/sound';
 gsap.registerPlugin(ScrollTrigger);
 
 /* ─────────────────────────────────────────────────────────────
-   Origo Story Data — Preserved exactly as originally structured:
-   - 01: Circle
-   - 02: Square
-   - 03: Triangle
+   Origo Story & Services Data matching KODE Immersive structure:
+   - 001: IDEATE (Circle)
+   - 002: CREATE (Square)
+   - 003: ELEVATE (Triangle)
 ───────────────────────────────────────────────────────────── */
 const SLIDES = [
   {
     index: '01',
-    numLabel: 'STAGE 01 // SINGULARITY',
-    title: '○ CIRCLE',
-    subtitle: 'Eternal. Whole. Continuous.',
+    num: '001',
+    word: 'IDEATE',
     shape: 'circle',
-    story:
-      'Represents motion, wholeness, unity and the continuous flow of ideas. The circle is the unbroken loop of thought — the singular origin where every creative idea begins.',
-    meta: 'GEOMETRY: CIRCLE // ETERNAL FLOW',
-    role: 'THE ORIGIN OF UNITY & FLOW',
+    manifesto: [
+      'WE',
+      'DEFINE OBJECTIVES',
+      'SHARE IDEAS',
+      'EXPLORE THE POSSIBILITIES WITH TECH',
+      'AND AGREE A CONCEPT',
+    ],
+    services: [
+      'VIRTUAL, MIXED & AUGMENTED REALITY',
+      'SPATIAL COMPUTING & GENERATIVE AI',
+      'HOLOGRAPHIC & PROJECTION MAPPING',
+      'LOCATION-BASED BRAND EXPERIENCES',
+    ],
   },
   {
     index: '02',
-    numLabel: 'STAGE 02 // DIMENSION',
-    title: '□ SQUARE',
-    subtitle: 'Stability. Structure. Foundation.',
+    num: '002',
+    word: 'CREATE',
     shape: 'rectangle',
-    story:
-      'Represents order, reliability, structure and the foundation that holds everything together. The square establishes spatial presence and structural discipline.',
-    meta: 'GEOMETRY: QUAD // STRUCTURAL MATRIX',
-    role: 'THE ORIGIN OF SPATIAL STRUCTURE',
+    manifesto: [
+      'WE',
+      'SHAPE THE ARCHITECTURE',
+      'FORM THE FOUNDATION',
+      'DISCIPLINE THE MATRIX',
+      'AND BUILD THE SYSTEM',
+    ],
+    services: [
+      'INTERACTIVE 3D & REAL-TIME WEBGL',
+      'SPATIAL ENVIRONMENTS & ARCHITECTURE',
+      'PHYSICAL-DIGITAL PRODUCT INTEGRATION',
+      'MULTISENSORY BRAND INSTALLATIONS',
+    ],
   },
   {
     index: '03',
-    numLabel: 'STAGE 03 // ELEVATION',
-    title: '△ TRIANGLE',
-    subtitle: 'Direction. Balance. Transformation.',
+    num: '003',
+    word: 'DELIVER',
     shape: 'triangle',
-    story:
-      'Represents purpose, progress, balance, strength and the drive to evolve. The dynamic apex elevates foundational concepts into enduring, impactful experiences.',
-    meta: 'GEOMETRY: DELTA // TRANSFORMATION',
-    role: 'THE ORIGIN OF PURPOSE & PROGRESS',
+    manifesto: [
+      'WE',
+      'DEPLOY THE EXPERIENCE',
+      'SCALE WITH PRECISION',
+      'LAUNCH THE UNFORGETTABLE',
+      'AND DELIVER EXCELLENCE',
+    ],
+    services: [
+      'GLOBAL BRAND ACTIVATIONS & MICE',
+      'FLAGSHIP IMMERSIVE ENVIRONMENTS',
+      'TRANSFORMATIVE LIVE EXPERIENCES',
+      'ENDURING OMNICHANNEL EXCELLENCE',
+    ],
   },
 ];
 
@@ -128,8 +152,7 @@ function ShapeMesh({ shape }: { shape: string }) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Interactive Chrome Metal 3D Model
-   Pure, unobstructed in the center, freely rotatable with physics
+   Interactive Chrome Metal 3D Model (100% Preserved)
 ───────────────────────────────────────────────────────────── */
 interface ShapeProps {
   slideIndex: number;
@@ -213,17 +236,14 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
 
-    // Position lowered on mobile so it sits cleanly between the top story and bottom controls
-    const baseY = isMobile ? -0.26 : 0;
+    const baseY = isMobile ? -0.15 : 0;
     groupRef.current.position.y = baseY + Math.sin(t * 1.0) * 0.035;
 
-    // Smooth inertia interpolation
     currentRot.current.x += (targetRot.current.x - currentRot.current.x) * 0.08;
     currentRot.current.y += (targetRot.current.y - currentRot.current.y) * 0.08;
     groupRef.current.rotation.x = currentRot.current.x;
     groupRef.current.rotation.y = currentRot.current.y;
 
-    // Smoothly scale active mesh and hide inactive meshes
     meshRefs.current.forEach((mesh, i) => {
       if (!mesh) return;
       const isActive = i === slideIndex;
@@ -246,8 +266,7 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     }
   };
 
-  // Preserved exactly as existing scale
-  const scale = isMobile ? 0.72 : 1.35;
+  const scale = isMobile ? 0.55 : 0.95;
 
   return (
     <group ref={groupRef} scale={scale} onPointerDown={handlePointerDown}>
@@ -261,7 +280,6 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
           scale={idx === slideIndex ? [1, 1, 1] : [0.001, 0.001, 0.001]}
         >
           <ShapeMesh shape={s.shape} />
-          {/* Polished mirror chrome: metallic 1.0, low roughness, cold silver reflection */}
           <meshPhysicalMaterial
             color="#ffffff"
             metalness={1.0}
@@ -284,84 +302,67 @@ function StudioLights() {
   return (
     <>
       <ambientLight intensity={isMobile ? 1.0 : 0.8} />
-      {/* KEY LIGHT: Large bright directional light above and slightly in front */}
-      <directionalLight
-        position={[0, 8, 7]}
-        intensity={isMobile ? 3.4 : 3.0}
-        color="#ffffff"
-      />
-      {/* RIM / EDGE LIGHT: Subtle cool white/blue rim reflection along edges */}
-      <directionalLight
-        position={[-7, -3, 4]}
-        intensity={isMobile ? 2.8 : 2.4}
-        color="#38bdf8"
-      />
-      {/* FILL LIGHT: Very subtle cool fill from opposite side */}
-      <directionalLight
-        position={[7, 2, 4]}
-        intensity={isMobile ? 1.4 : 1.2}
-        color="#e0f2fe"
-      />
-      {/* Back rim light for separation */}
-      <directionalLight
-        position={[0, 6, -5]}
-        intensity={isMobile ? 2.0 : 1.6}
-        color="#ffffff"
-      />
+      <directionalLight position={[0, 8, 7]} intensity={isMobile ? 3.4 : 3.0} color="#ffffff" />
+      <directionalLight position={[-7, -3, 4]} intensity={isMobile ? 2.8 : 2.4} color="#38bdf8" />
+      <directionalLight position={[7, 2, 4]} intensity={isMobile ? 1.4 : 1.2} color="#e0f2fe" />
+      <directionalLight position={[0, 6, -5]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
     </>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Main Origo Carousel Component
-   Surrounding environment, DOM layout, text, and styling preserved completely
+   Main Origo Services Carousel Component
+   Matched 100% to KODE Immersive Reference Layout
 ───────────────────────────────────────────────────────────── */
 export default function ImmersiveCarousel() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null!);
-  const storyRef = useRef<HTMLDivElement>(null!);
+  const contentRef = useRef<HTMLDivElement>(null!);
 
-  /* Pause WebGL render loop when section is scrolled out of viewport */
   useEffect(() => {
     const el = containerRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
+      (entries) => {
+        entries.forEach((entry) => setIsVisible(entry.isIntersecting));
       },
-      { threshold: 0.05 }
+      { threshold: 0.1 }
     );
-
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  /* Direct jump on stage click */
-  const goToSlide = (c: number) => {
+  const goToSlide = (idx: number) => {
+    if (idx === slideIndex) return;
     soundManager.playClick();
-    const st = ScrollTrigger.getById('origo-carousel-trigger');
-    if (st) {
-      const targetScroll = st.start + (c / (SLIDES.length - 1)) * (st.end - st.start);
-      window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+    if (idx > slideIndex) {
+      soundManager.playWhooshUp(0.35);
+    } else {
+      soundManager.playWhooshDown(0.3);
+    }
+    setSlideIndex(idx);
+  };
+
+  const handleNext = () => {
+    const nextIdx = (slideIndex + 1) % SLIDES.length;
+    goToSlide(nextIdx);
+  };
+
+  const handleToggleMute = () => {
+    const nextState = !isMuted;
+    setIsMuted(nextState);
+    soundManager.setMuted(nextState);
+    if (!nextState) {
+      soundManager.playClick();
     }
   };
 
-  /* Smooth unblur & fade on slide change */
-  useEffect(() => {
-    if (storyRef.current) {
-      gsap.fromTo(
-        storyRef.current,
-        { opacity: 0, y: 20, filter: 'blur(8px)' },
-        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.48, ease: 'power2.out' }
-      );
-    }
-  }, [slideIndex]);
-
-  /* Smooth scroll scrubbing matching the Manifesto section */
+  /* Smooth scroll scrubbing */
   useEffect(() => {
     let lastIdx = -1;
     const ctx = gsap.context(() => {
@@ -399,9 +400,9 @@ export default function ImmersiveCarousel() {
     <section
       ref={containerRef}
       id="services-carousel"
-      className="relative w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-black"
+      className="relative w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-black flex flex-col justify-between px-6 sm:px-10 md:px-14 py-6 sm:py-8"
     >
-      {/* ── Subtle Ambient Background Texture (Preserved exactly as existing) ── */}
+      {/* ── Subtle Ambient Background Texture ── */}
       <div
         className="absolute inset-0 pointer-events-none opacity-15"
         style={{
@@ -413,10 +414,17 @@ export default function ImmersiveCarousel() {
         }}
       />
 
+      {/* ── TOP BAR: ONLY OUR SERVICES in top left ── */}
+      <div className="relative z-30 w-full flex items-center justify-between pointer-events-none text-black uppercase">
+        <span className="text-xs sm:text-sm font-mono font-bold tracking-[0.25em]">
+          OUR SERVICES
+        </span>
+      </div>
+
       {/* ══════════════════════════════════════════════
-          3D CANVAS — STANDING HEROIC IN CENTER
+          3D CANVAS — STANDING HEROIC IN CENTER (Transparent to reveal typography behind)
       ══════════════════════════════════════════════ */}
-      <div className="absolute inset-0 z-10 w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing">
+      <div className="absolute inset-0 z-20 w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing pointer-events-auto">
         <Canvas
           frameloop={isVisible ? 'always' : 'never'}
           dpr={[1, 2]}
@@ -428,15 +436,12 @@ export default function ImmersiveCarousel() {
             toneMappingExposure: 1.15,
           }}
           camera={{ fov: 48, position: [0, 0, 5] }}
-          style={{ touchAction: 'pan-y' }}
+          style={{ touchAction: 'pan-y', background: 'transparent' }}
         >
-          <color attach="background" args={['#1E90FF']} />
           <StudioLights />
 
-          {/* 100% Image-Free Pure Studio & Icy Lightformers for Chrome Metal */}
           <Suspense fallback={null}>
             <Environment resolution={512}>
-              {/* KEY LIGHT: Large soft rectangular light positioned above and in front */}
               <Lightformer
                 form="rect"
                 intensity={6.0}
@@ -445,7 +450,6 @@ export default function ImmersiveCarousel() {
                 target={[0, 0, 0]}
                 color="#ffffff"
               />
-              {/* FILL: Very subtle cool fill light from below */}
               <Lightformer
                 form="rect"
                 intensity={1.8}
@@ -454,7 +458,6 @@ export default function ImmersiveCarousel() {
                 target={[0, 0, 0]}
                 color="#e0f2fe"
               />
-              {/* RIM / EDGE LIGHT: Subtle cool white/blue rim reflection */}
               <Lightformer
                 form="rect"
                 intensity={4.2}
@@ -463,7 +466,6 @@ export default function ImmersiveCarousel() {
                 target={[0, 0, 0]}
                 color="#38bdf8"
               />
-              {/* RIM / OPPOSITE: Crisp silver rim reflection */}
               <Lightformer
                 form="rect"
                 intensity={4.2}
@@ -479,13 +481,12 @@ export default function ImmersiveCarousel() {
               onFirstDrag={() => setHasInteracted(true)}
             />
 
-            {/* Soft, subtle contact shadow beneath the objects */}
             <ContactShadows
-              position={[0, -1.65, 0]}
-              opacity={0.35}
-              scale={5.5}
-              blur={2.4}
-              far={4}
+              position={[0, -1.35, 0]}
+              opacity={0.30}
+              scale={4.2}
+              blur={2.2}
+              far={3.5}
               color="#001a33"
             />
 
@@ -494,105 +495,65 @@ export default function ImmersiveCarousel() {
         </Canvas>
       </div>
 
-      {/* ── Interactive Drag Hint Pill (Preserved exactly as existing) ── */}
-      {!hasInteracted && (
-        <div className="absolute bottom-[20%] md:top-[70%] md:bottom-auto left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none">
-          <span className="text-[8.5px] md:text-[10px] font-mono font-bold tracking-[0.25em] uppercase px-3.5 py-1.5 bg-black/10 backdrop-blur-md rounded-full border border-black/20 text-black animate-pulse">
-            HOLD & DRAG 3D MODEL
-          </span>
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════
-          LEFT FLANK: ORIGO STORY (Preserved exactly as existing)
-      ══════════════════════════════════════════════ */}
-      <div className="absolute left-6 md:left-14 top-6 sm:top-8 md:top-1/2 md:-translate-y-1/2 z-20 max-w-[320px] sm:max-w-sm lg:max-w-md pointer-events-none">
-        <div
-          ref={storyRef}
-          key={currentSlide.index}
-          className="flex flex-col space-y-1.5 md:space-y-2.5"
-        >
-          {/* Stage Tag */}
-          <span className="text-[9px] md:text-[10px] font-mono font-bold tracking-[0.28em] uppercase text-black/60">
-            {currentSlide.numLabel}
-          </span>
-
-          {/* Header: Stage Number & Title */}
-          <div className="flex items-baseline gap-3 pt-0.5">
-            <div
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontSize: 'clamp(36px, 7vw, 88px)',
-                lineHeight: 0.9,
-                fontWeight: 800,
-                letterSpacing: '-0.04em',
-                color: '#000000',
-              }}
+      {/* ── LOWER SECTION (Shifted towards the center) ── */}
+      <div className="w-full flex flex-col pointer-events-auto mt-auto mb-6 sm:mb-12 md:mb-16 lg:mb-20">
+        {/* Row: 001 and IDEATE/CREATE/DELIVER + Dividing Line (z-10 so line & text pass BEHIND 3D model) */}
+        <div className="relative z-10 w-full flex flex-col pointer-events-none">
+          <div className="w-full flex items-end justify-between px-1 sm:px-3 pb-0.5 sm:pb-1">
+            {/* Left: 001 */}
+            <span
+              className="text-[13vw] sm:text-[11vw] md:text-[9.5vw] font-black leading-none tracking-tighter text-black select-none whitespace-nowrap"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
             >
-              {currentSlide.index}
-            </div>
+              {currentSlide.num}
+            </span>
 
-            <div className="space-y-0.5">
-              <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-heading font-extrabold uppercase tracking-tight text-black">
-                {currentSlide.title}
-              </h3>
-              <p className="text-[11px] sm:text-xs md:text-sm font-serif italic text-black/70">
-                {currentSlide.subtitle}
-              </p>
-            </div>
+            {/* Right: IDEATE / CREATE / DELIVER */}
+            <span
+              className="text-[13vw] sm:text-[11vw] md:text-[9.5vw] font-black leading-none tracking-tight text-black text-right select-none whitespace-nowrap"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
+            >
+              {currentSlide.word}
+            </span>
           </div>
 
-          {/* Concise Story Copy */}
-          <p className="text-[10.5px] md:text-xs font-mono font-medium tracking-[0.05em] text-black/80 leading-relaxed pt-0.5 line-clamp-3 md:line-clamp-none">
-            {currentSlide.story}
-          </p>
-
-          {/* Role stamp */}
-          <span className="hidden sm:inline text-[8.5px] md:text-[9.5px] font-mono font-bold tracking-[0.2em] uppercase text-black/50 pt-1">
-            // {currentSlide.role}
-          </span>
-        </div>
-      </div>
-
-      {/* ══════════════════════════════════════════════
-          STAGE SELECTOR & METADATA (Preserved exactly as existing)
-      ══════════════════════════════════════════════ */}
-      <div className="absolute left-1/2 -translate-x-1/2 md:left-auto md:right-12 bottom-[11%] md:top-1/2 md:-translate-y-1/2 z-20 flex flex-row md:flex-col items-center md:items-end gap-2 md:space-y-4 pointer-events-auto">
-        {/* Shape Metadata Pill (Desktop only) */}
-        <div className="hidden md:flex flex-col items-end space-y-1 pointer-events-none">
-          <span className="text-[9px] font-mono font-bold tracking-[0.22em] uppercase text-black/50">
-            // FORM PARAMETERS
-          </span>
-          <span className="text-[10px] md:text-xs font-mono font-bold tracking-[0.16em] uppercase text-black">
-            {currentSlide.meta}
-          </span>
+          {/* ── CRISP HORIZONTAL DIVIDING LINE (Passes BEHIND the 3D shape) ── */}
+          <div className="w-full border-b border-black mb-3 sm:mb-4 pointer-events-none" />
         </div>
 
-        {/* Stage Selector Dots / Buttons */}
-        <div className="flex items-center gap-2">
-          {SLIDES.map((s, idx) => (
+        {/* ── LOWER TWO-COLUMN INFORMATION GRID (z-30 for interactivity) ── */}
+        <div className="relative z-30 w-full flex flex-col md:flex-row justify-between items-start gap-4 sm:gap-6 pointer-events-auto">
+          {/* Left: WE ... Manifesto copy */}
+          <div className="font-mono text-xs sm:text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-black font-semibold space-y-0.5">
+            {currentSlide.manifesto.map((line, idx) => (
+              <p key={idx} className={idx === 0 ? 'mb-1 font-bold' : ''}>
+                {line}
+              </p>
+            ))}
+          </div>
+
+          {/* Right: NEXT button + Capabilities List */}
+          <div className="flex flex-col items-end text-right">
             <button
-              key={s.index}
-              onClick={() => goToSlide(idx)}
-              className={`px-3 py-1.5 font-mono text-[10px] md:text-xs tracking-[0.2em] transition-all cursor-pointer rounded-sm ${
-                idx === slideIndex
-                  ? 'bg-black text-white font-bold shadow-md'
-                  : 'bg-black/10 hover:bg-black/20 text-black font-medium'
-              }`}
+              onClick={handleNext}
+              onMouseEnter={() => soundManager.playHover()}
+              className="text-xs font-mono font-bold tracking-widest uppercase text-black hover:opacity-75 transition-opacity cursor-pointer mb-2 sm:mb-3"
             >
-              [ 0{idx + 1} ]
+              NEXT
             </button>
-          ))}
-        </div>
-      </div>
 
-      {/* ══════════════════════════════════════════════
-          BOTTOM FOOTER BAR (Preserved exactly as existing)
-      ══════════════════════════════════════════════ */}
-      <div className="absolute bottom-6 md:bottom-8 left-6 md:left-12 right-6 md:right-12 z-30 flex items-center justify-between pointer-events-none text-[9px] md:text-[10.5px] font-mono tracking-[0.22em] uppercase text-black/60">
-        <span>ORIGO ATELIER // FROM ORIGIN TO EXCELLENCE</span>
-        <span className="hidden sm:inline">SCROLL TO MORPH FORMS ↓</span>
-        <span>[ 3D VOLUMETRIC SPACE ]</span>
+            <div className="font-mono text-xs sm:text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-black font-medium space-y-0.5">
+              {currentSlide.services.map((item, idx) => (
+                <p key={idx}>{item}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── BOTTOM RIGHT CORNER TAG: [ AR ] ── */}
+        <div className="relative z-30 w-full flex justify-end pt-1 pointer-events-none text-[10px] sm:text-xs font-mono tracking-widest text-black font-semibold">
+          [ AR ]
+        </div>
       </div>
     </section>
   );
