@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Send } from 'lucide-react';
 import { soundManager } from '@/lib/sound';
 import AsciiScramble from './AsciiScramble';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function ContactForm() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -17,6 +21,32 @@ export default function ContactForm() {
   });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const servicesEl = document.getElementById('services');
+      if (!servicesEl) return;
+
+      ScrollTrigger.create({
+        id: 'services-to-contact-stack',
+        trigger: servicesEl,
+        start: 'bottom bottom',
+        end: '+=100%',
+        pin: true,
+        pinSpacing: false,
+        anticipatePin: 1,
+        scrub: true,
+        onUpdate: (self) => {
+          gsap.set(servicesEl, {
+            scale: 1 - self.progress * 0.08,
+            opacity: 1 - self.progress * 0.45,
+            transformOrigin: 'center bottom',
+          });
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +65,10 @@ export default function ContactForm() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative px-8 md:px-16 lg:px-24 py-24 lg:py-32 bg-[#1E90FF] text-black overflow-hidden border-t border-black/10"
+      className="relative z-30 px-8 md:px-16 lg:px-24 py-24 lg:py-32 text-black overflow-hidden rounded-t-[36px] sm:rounded-t-[48px] shadow-[0_-30px_70px_rgba(0,0,0,0.45)] border-t border-white/60 will-change-transform"
+      style={{
+        background: 'linear-gradient(180deg, #FFFFFF 0%, #EDF5FD 26%, #7CB8F9 68%, #1E90FF 100%)',
+      }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full">
         {/* LEFT SIDE */}
@@ -52,7 +85,7 @@ export default function ContactForm() {
             <br />
             <AsciiScramble text="From The" />
             <br />
-            <span className="text-[#F7F7F5]"><AsciiScramble text="Origin." /></span>
+            <span className="text-black font-bold"><AsciiScramble text="Origin." /></span>
           </h3>
 
           <p className="text-sm sm:text-base font-mono mt-6 mb-8 max-w-md text-black/80 leading-relaxed">

@@ -83,26 +83,39 @@ const SLIDES = [
 ];
 
 /* ─────────────────────────────────────────────────────────────
-   Straightforward 3D Shapes: Circle, Triangle & Rectangle (Extruded Frames with Bevel)
+   Hollow 3D Architectural Shapes: Circle, Triangle & Square
+   - Hollow metallic frames with beveled profiles matching reference blueprint
+   - Only the perimeter lines/beams are rendered, completely see-through in the center
 ───────────────────────────────────────────────────────────── */
 function ShapeMesh({ shape }: { shape: string }) {
   const geom = useMemo(() => {
-    // 1. Solid Rectangle / Square Plate with Bevel
+    // 1. Hollow Square / Rectangle Frame
     if (shape === 'rectangle') {
       const s = new THREE.Shape();
-      const w = 1.05;
-      const h = 1.05;
-      s.moveTo(-w, -h);
-      s.lineTo(w, -h);
-      s.lineTo(w, h);
-      s.lineTo(-w, h);
+      const w_out = 1.15;
+      const h_out = 1.15;
+      s.moveTo(-w_out, -h_out);
+      s.lineTo(w_out, -h_out);
+      s.lineTo(w_out, h_out);
+      s.lineTo(-w_out, h_out);
       s.closePath();
 
+      // Inner cutout hole (Frame beam thickness ~0.23)
+      const w_in = 0.92;
+      const h_in = 0.92;
+      const hole = new THREE.Path();
+      hole.moveTo(-w_in, -h_in);
+      hole.lineTo(-w_in, h_in);
+      hole.lineTo(w_in, h_in);
+      hole.lineTo(w_in, -h_in);
+      hole.closePath();
+      s.holes.push(hole);
+
       const g = new THREE.ExtrudeGeometry(s, {
-        depth: 0.28,
+        depth: 0.22,
         bevelEnabled: true,
-        bevelThickness: 0.08,
-        bevelSize: 0.07,
+        bevelThickness: 0.05,
+        bevelSize: 0.05,
         bevelSegments: 8,
       });
       g.center();
@@ -110,20 +123,29 @@ function ShapeMesh({ shape }: { shape: string }) {
       return g;
     }
 
-    // 2. Solid Triangle Prism with Bevel
+    // 2. Hollow Triangle Frame
     if (shape === 'triangle') {
       const s = new THREE.Shape();
-      const R_out = 1.42;
+      const R_out = 1.48;
       s.moveTo(0, R_out);
       s.lineTo(R_out * Math.cos(-Math.PI / 6), R_out * Math.sin(-Math.PI / 6));
       s.lineTo(R_out * Math.cos(7 * Math.PI / 6), R_out * Math.sin(7 * Math.PI / 6));
       s.closePath();
 
+      // Inner triangular cutout hole
+      const R_in = 0.98;
+      const hole = new THREE.Path();
+      hole.moveTo(0, R_in);
+      hole.lineTo(R_in * Math.cos(7 * Math.PI / 6), R_in * Math.sin(7 * Math.PI / 6));
+      hole.lineTo(R_in * Math.cos(-Math.PI / 6), R_in * Math.sin(-Math.PI / 6));
+      hole.closePath();
+      s.holes.push(hole);
+
       const g = new THREE.ExtrudeGeometry(s, {
-        depth: 0.28,
+        depth: 0.22,
         bevelEnabled: true,
-        bevelThickness: 0.08,
-        bevelSize: 0.07,
+        bevelThickness: 0.05,
+        bevelSize: 0.05,
         bevelSegments: 8,
       });
       g.center();
@@ -131,16 +153,23 @@ function ShapeMesh({ shape }: { shape: string }) {
       return g;
     }
 
-    // 3. Solid Circle Disc with Bevel
+    // 3. Hollow Circle / Ring Frame
     const s = new THREE.Shape();
-    s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
+    const R_out = 1.25;
+    s.absarc(0, 0, R_out, 0, Math.PI * 2, false);
+
+    // Inner circular cutout hole
+    const R_in = 1.02;
+    const hole = new THREE.Path();
+    hole.absarc(0, 0, R_in, 0, Math.PI * 2, true);
+    s.holes.push(hole);
 
     const g = new THREE.ExtrudeGeometry(s, {
-      depth: 0.28,
+      depth: 0.22,
       bevelEnabled: true,
-      bevelThickness: 0.08,
-      bevelSize: 0.07,
-      bevelSegments: 16,
+      bevelThickness: 0.05,
+      bevelSize: 0.05,
+      bevelSegments: 10,
       curveSegments: 96,
     });
     g.center();
@@ -169,16 +198,16 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
   const isDragging = useRef(false);
   const hasDragged = useRef(false);
   const prevPtr = useRef({ x: 0, y: 0 });
-  const targetRot = useRef({ x: 0.08, y: -0.2 });
-  const currentRot = useRef({ x: 0.08, y: -0.2 });
+  const targetRot = useRef({ x: 0.18, y: -0.62 });
+  const currentRot = useRef({ x: 0.18, y: -0.62 });
 
   useEffect(() => {
     if (slideIndex === 0) {
-      targetRot.current = { x: 0.05, y: -0.15 };
+      targetRot.current = { x: 0.18, y: -0.62 };
     } else if (slideIndex === 1) {
-      targetRot.current = { x: 0.16, y: 0.25 };
+      targetRot.current = { x: 0.18, y: 0.35 };
     } else {
-      targetRot.current = { x: -0.12, y: 0.32 };
+      targetRot.current = { x: -0.14, y: 0.42 };
     }
   }, [slideIndex]);
 
@@ -303,7 +332,8 @@ function StudioLights() {
     <>
       <ambientLight intensity={isMobile ? 1.0 : 0.8} />
       <directionalLight position={[0, 8, 7]} intensity={isMobile ? 3.4 : 3.0} color="#ffffff" />
-      <directionalLight position={[-7, -3, 4]} intensity={isMobile ? 2.8 : 2.4} color="#38bdf8" />
+      <directionalLight position={[-5, 2, 4]} intensity={isMobile ? 3.2 : 2.8} color="#ffffff" />
+      <directionalLight position={[-7, -2, 4]} intensity={isMobile ? 2.8 : 2.4} color="#38bdf8" />
       <directionalLight position={[7, 2, 4]} intensity={isMobile ? 1.4 : 1.2} color="#e0f2fe" />
       <directionalLight position={[0, 6, -5]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
     </>
@@ -387,13 +417,13 @@ export default function ImmersiveCarousel() {
         id: 'origo-carousel-trigger',
         trigger: containerRef.current,
         start: 'top top',
-        end: `+=${SLIDES.length * 100}%`,
+        end: `+=${(SLIDES.length - 1) * 100}%`,
         pin: true,
         anticipatePin: 1,
-        scrub: 0.8,
+        scrub: 0.6,
         onUpdate: (self) => {
-          const raw = self.progress * SLIDES.length;
-          const idx = Math.min(Math.floor(raw), SLIDES.length - 1);
+          const raw = self.progress * (SLIDES.length - 1);
+          const idx = Math.min(Math.round(raw), SLIDES.length - 1);
 
           if (idx !== lastIdx) {
             if (self.direction === 1) {
@@ -417,7 +447,7 @@ export default function ImmersiveCarousel() {
     <section
       ref={containerRef}
       id="services-carousel"
-      className="relative w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-black flex flex-col justify-between px-6 sm:px-10 md:px-14 py-6 sm:py-8"
+      className="relative z-10 w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-black flex flex-col justify-between px-6 sm:px-10 md:px-14 py-6 sm:py-8"
     >
       {/* ── Subtle Ambient Background Texture ── */}
       <div
@@ -461,7 +491,7 @@ export default function ImmersiveCarousel() {
             <Environment resolution={512}>
               <Lightformer
                 form="rect"
-                intensity={6.0}
+                intensity={6.5}
                 position={[0, 5, 2.5]}
                 scale={[14, 3, 1]}
                 target={[0, 0, 0]}
@@ -469,7 +499,7 @@ export default function ImmersiveCarousel() {
               />
               <Lightformer
                 form="rect"
-                intensity={1.8}
+                intensity={2.0}
                 position={[0, -4, 2]}
                 scale={[10, 2.5, 1]}
                 target={[0, 0, 0]}
@@ -477,15 +507,23 @@ export default function ImmersiveCarousel() {
               />
               <Lightformer
                 form="rect"
-                intensity={4.2}
-                position={[-6, 0, 2.5]}
-                scale={[3, 12, 1]}
+                intensity={5.2}
+                position={[-6, 0.5, 2.5]}
+                scale={[4, 12, 1]}
                 target={[0, 0, 0]}
-                color="#38bdf8"
+                color="#7dd3fc"
               />
               <Lightformer
                 form="rect"
-                intensity={4.2}
+                intensity={4.0}
+                position={[-3.8, 2.8, 3]}
+                scale={[2, 6, 1]}
+                target={[0, 0, 0]}
+                color="#ffffff"
+              />
+              <Lightformer
+                form="rect"
+                intensity={3.8}
                 position={[6, 0, 2.5]}
                 scale={[3, 12, 1]}
                 target={[0, 0, 0]}

@@ -131,13 +131,13 @@ export default function Home() {
           <div className="flex flex-col items-center max-w-xs w-full px-4 text-center z-10 space-y-12">
 
             {/* Title and Subtitle */}
-            <div className="space-y-3 flex flex-col items-center">
+            <div className="space-y-4 flex flex-col items-center">
               <img
-                src="/Logo Design - final -V2-05.png"
+                src="/logo-white-transparent.png"
                 alt="Origo Atelier"
-                className="w-28 md:w-32 h-auto object-contain"
+                className="w-36 md:w-44 h-auto object-contain"
               />
-              <p className="text-[9px] text-white/70 tracking-[0.4em] uppercase font-bold">
+              <p className="text-[10px] text-white/70 tracking-[0.4em] uppercase font-bold">
                 FROM ORIGIN TO EXCELLENCE
               </p>
             </div>
@@ -189,16 +189,19 @@ export default function Home() {
         <div className="hero-atmospheric-fade" aria-hidden="true" />
 
         {/* Flat Immersive Navbar (Z-Index 30) */}
-        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-8 py-4 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
+        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
           <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity min-h-[44px]">
             <img
-              src="/Logo Design - final -V2-01.png"
+              src="/logo-black-transparent.png"
               alt="Origo Atelier"
-              className="h-8 md:h-10 w-auto object-contain rounded-sm shadow-sm"
+              className="h-11 md:h-14 w-auto object-contain"
             />
           </div>
-          <span className="font-extrabold absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em]">
-            ORIGO ATELIER
+          <span
+            className="font-normal text-xl sm:text-2xl md:text-3xl absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-wide text-black"
+            style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif", textTransform: 'none' }}
+          >
+            Origo Atelier
           </span>
           <div className="flex items-center gap-4 sm:gap-8">
             <button
@@ -229,7 +232,7 @@ export default function Home() {
         </div>
 
         {/* Bottom HUD layout (Z-Index 30) */}
-        <div className="absolute bottom-4 md:bottom-8 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-8 pointer-events-auto text-[9.5px] md:text-xs font-mono tracking-widest text-black uppercase">
+        <div className="absolute bottom-5 md:bottom-8 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 pointer-events-auto text-[9.5px] md:text-xs font-mono tracking-widest text-black uppercase">
           <div className="flex-1 hidden md:block text-black/80 font-medium truncate pr-2">
             FROM ORIGIN TO EXCELLENCE
           </div>

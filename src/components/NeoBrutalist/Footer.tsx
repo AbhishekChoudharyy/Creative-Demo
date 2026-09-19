@@ -12,11 +12,16 @@ export default function Footer() {
           <div>
             <a href="/" className="flex items-center gap-3">
               <img
-                src="/Logo Design - final -V2-01.png"
+                src="/logo-black-transparent.png"
                 alt="Origo Atelier"
-                className="h-9 w-auto object-contain rounded-sm"
+                className="h-11 md:h-12 w-auto object-contain"
               />
-              <span className="font-heading font-black text-xl tracking-widest uppercase text-black">ORIGO ATELIER</span>
+              <span
+                className="font-bold text-xl md:text-2xl text-black tracking-wide"
+                style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+              >
+                Origo Atelier
+              </span>
             </a>
 
             <p className="text-xs mt-3 font-mono text-black/85 leading-relaxed">

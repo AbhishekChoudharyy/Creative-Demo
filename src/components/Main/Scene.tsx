@@ -10,7 +10,7 @@ export const Scene: FC = () => {
   const { width } = useThree((state) => state.size);
   const viewport = useThree((state) => state.viewport);
   const isMobile = width < 768;
-  const responsiveScale = isMobile ? 0.72 : 1.38;
+  const responsiveScale = isMobile ? Math.max(0.96, Math.min(viewport.width * 0.35, 1.02)) : 1.38;
 
   return (
     <>
@@ -78,15 +78,15 @@ export const Scene: FC = () => {
       </Environment>
 
       {/* Hero display text rendered inside the WebGL canvas, allowing it to be refracted by the glass ring */}
-      <group scale={[1, 1.35, 1]} position={[0, 0, -1.5]}>
+      <group scale={isMobile ? [1, 1.38, 1] : [1, 1.35, 1]} position={[0, 0, -1.5]}>
         <Text
           font="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKfsukDQ.ttf"
-          fontSize={isMobile ? viewport.width * 0.165 : viewport.width * 0.102}
+          fontSize={isMobile ? viewport.width * 0.185 : viewport.width * 0.102}
           color="#000000"
-          maxWidth={viewport.width * 0.98}
+          maxWidth={isMobile ? viewport.width * 1.12 : viewport.width * 0.98}
           textAlign="center"
-          letterSpacing={-0.04}
-          lineHeight={0.82}
+          letterSpacing={-0.035}
+          lineHeight={0.86}
           anchorX="center"
           anchorY="middle"
         >

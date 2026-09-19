@@ -26,9 +26,9 @@ export default function Marquee() {
         {[...Array(8)].map((_, i) => (
           <div key={i} className="flex items-center gap-16 px-8">
             <img 
-              src="/Logo Design - final -V2-05.png" 
+              src="/logo-white-transparent.png" 
               alt="Origo Atelier" 
-              className="h-10 md:h-16 object-contain" 
+              className="h-12 md:h-16 object-contain" 
             />
             
             {/* Elegant four-pointed sparkle separator */}

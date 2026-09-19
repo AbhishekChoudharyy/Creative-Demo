@@ -13,7 +13,7 @@ function Marquee() {
             <span className="text-[#00A6B2]">✦</span>
             <span>FROM ORIGIN TO <span className="text-white font-bold">EXCELLENCE</span></span>
             <span className="text-[#00A6B2]">✦</span>
-            <img src="/Logo Design - final -V2-05.png" alt="Origo Atelier" className="h-8 md:h-10 object-contain" />
+            <img src="/logo-white-transparent.png" alt="Origo Atelier" className="h-10 md:h-12 object-contain" />
             <span className="text-[#00A6B2]">✦</span>
             <span>EXPERIENTIAL <span className="text-white font-bold">SOLUTIONS</span></span>
             <span className="text-[#00A6B2]">✦</span>
@@ -31,7 +31,7 @@ function Marquee() {
             <span className="text-[#00A6B2]">✦</span>
             <span>FROM ORIGIN TO <span className="text-white font-bold">EXCELLENCE</span></span>
             <span className="text-[#00A6B2]">✦</span>
-            <img src="/Logo Design - final -V2-05.png" alt="Origo Atelier" className="h-8 md:h-10 object-contain" />
+            <img src="/logo-white-transparent.png" alt="Origo Atelier" className="h-10 md:h-12 object-contain" />
             <span className="text-[#00A6B2]">✦</span>
             <span>EXPERIENTIAL <span className="text-white font-bold">SOLUTIONS</span></span>
             <span className="text-[#00A6B2]">✦</span>

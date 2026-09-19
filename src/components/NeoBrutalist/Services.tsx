@@ -93,7 +93,10 @@ export default function Services() {
       };
 
       window.addEventListener('mousemove', moveReveal);
-      return () => window.removeEventListener('mousemove', moveReveal);
+
+      return () => {
+        window.removeEventListener('mousemove', moveReveal);
+      };
     }, sectionRef);
 
     return () => ctx.revert();
@@ -109,7 +112,11 @@ export default function Services() {
   };
 
   return (
-    <section ref={sectionRef} id="services" className="py-24 bg-[#1E90FF] text-black relative z-10 overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="services"
+      className="py-24 bg-[#1E90FF] text-black relative z-20 overflow-hidden will-change-transform"
+    >
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
       <div 
