@@ -62,28 +62,27 @@ html, body {
   will-change: transform;
 }
 
-/* Cinematic Atmospheric Dissolve: Hero Electric Blue into Intro Paper White */
+/* Cinematic Atmospheric Dissolve: Hero Electric Blue into Intro Luminous Whitish-Blue (Zero papery tone) */
 .hero-atmospheric-fade {
   position: absolute;
   left: 0;
   right: 0;
   bottom: -1px;
-  height: 24%;
-  min-height: 160px;
+  height: 28%;
+  min-height: 180px;
   pointer-events: none;
   z-index: 25;
   background: linear-gradient(
     to bottom,
-    rgba(245, 245, 243, 0) 0%,
-    rgba(245, 245, 243, 0.02) 12%,
-    rgba(245, 245, 243, 0.06) 24%,
-    rgba(245, 245, 243, 0.15) 38%,
-    rgba(245, 245, 243, 0.30) 52%,
-    rgba(245, 245, 243, 0.50) 66%,
-    rgba(245, 245, 243, 0.72) 79%,
-    rgba(245, 245, 243, 0.89) 90%,
-    rgba(245, 245, 243, 0.98) 96%,
-    #F5F5F3 100%
+    rgba(244, 248, 253, 0) 0%,
+    rgba(244, 248, 253, 0.02) 12%,
+    rgba(244, 248, 253, 0.08) 24%,
+    rgba(244, 248, 253, 0.20) 38%,
+    rgba(244, 248, 253, 0.40) 52%,
+    rgba(244, 248, 253, 0.65) 66%,
+    rgba(244, 248, 253, 0.85) 82%,
+    rgba(244, 248, 253, 0.96) 94%,
+    #F4F8FD 100%
   );
 }
 
@@ -98,16 +97,16 @@ html, body {
     /* Radiant center sky diffusion */
     radial-gradient(ellipse 85% 45% at 50% 34%, rgba(255, 255, 255, 0.22) 0%, transparent 65%),
     /* Smooth vertical progression using exact Hero Electric Blue (#1E90FF) palette:
-       - 0% to 26%: Soft blend descending down from Intro's #F5F5F3 into Works ("blend thoda niche tkk ane de then uska bg start kr")
+       - 0% to 26%: Soft blend descending down from Intro's whitish-blue into Works
        - 26% to 75%: Hero's vibrant electric blue (#1E90FF) dissolving through airy sky tints
-       - 75% to 84%: Reduced white area below the gallery ("g se niche ka white part kam krke")
-       - 84% to 100%: Smooth blend into the next section's electric blue #1E90FF ("next me fir blend krde")
+       - 75% to 84%: Clean transition below gallery
+       - 84% to 100%: Smooth blend into the next section's electric blue #1E90FF
     */
     linear-gradient(
       180deg,
-      #F5F5F3 0%,
-      #EDF5FE 4%,
-      #D3E9FE 10%,
+      #EAF2FC 0%,
+      #E0EEFD 4%,
+      #CFE5FD 10%,
       #A3D1FD 17%,
       #64B3FE 24%,
       #1E90FF 31%,

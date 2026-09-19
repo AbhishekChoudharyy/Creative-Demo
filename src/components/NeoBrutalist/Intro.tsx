@@ -363,13 +363,16 @@ export default function Intro() {
     <section
       ref={sectionRef}
       id="intro"
-      className="relative w-full min-h-screen bg-[#F5F5F3] text-black overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pt-6 sm:pt-8 md:pt-12 pb-6 select-none"
+      className="relative w-full min-h-screen text-black overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pt-6 sm:pt-8 md:pt-12 pb-6 select-none"
+      style={{
+        background: 'linear-gradient(to bottom, #F4F8FD 0%, #EFF5FC 50%, #EAF2FC 100%)',
+      }}
     >
-      {/* ── Subtle Fine Paper Texture Overlay ── */}
+      {/* ── Pristine Subtle Micro-Grid Overlay (Zero papery grit) ── */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-20"
+        className="absolute inset-0 pointer-events-none opacity-25"
         style={{
-          backgroundImage: `radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(rgba(30, 144, 255, 0.12) 1px, transparent 1px)`,
           backgroundSize: '24px 24px',
         }}
       />

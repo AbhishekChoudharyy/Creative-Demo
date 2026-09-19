@@ -236,7 +236,7 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
 
-    const baseY = isMobile ? -0.15 : 0;
+    const baseY = isMobile ? 0.65 : 0;
     groupRef.current.position.y = baseY + Math.sin(t * 1.0) * 0.035;
 
     currentRot.current.x += (targetRot.current.x - currentRot.current.x) * 0.08;
@@ -307,6 +307,23 @@ function StudioLights() {
       <directionalLight position={[7, 2, 4]} intensity={isMobile ? 1.4 : 1.2} color="#e0f2fe" />
       <directionalLight position={[0, 6, -5]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
     </>
+  );
+}
+
+function SceneShadow() {
+  const { size } = useThree();
+  const isMobile = size.width < 768;
+  if (isMobile) return null;
+
+  return (
+    <ContactShadows
+      position={[0, -1.35, 0]}
+      opacity={0.30}
+      scale={4.2}
+      blur={2.2}
+      far={3.5}
+      color="#001a33"
+    />
   );
 }
 
@@ -481,26 +498,21 @@ export default function ImmersiveCarousel() {
               onFirstDrag={() => setHasInteracted(true)}
             />
 
-            <ContactShadows
-              position={[0, -1.35, 0]}
-              opacity={0.30}
-              scale={4.2}
-              blur={2.2}
-              far={3.5}
-              color="#001a33"
-            />
+            <SceneShadow />
 
             <Preload all />
           </Suspense>
         </Canvas>
       </div>
 
-      {/* ── LOWER SECTION (Shifted towards the center) ── */}
-      <div className="w-full flex flex-col pointer-events-auto mt-auto mb-6 sm:mb-12 md:mb-16 lg:mb-20">
-        {/* Row: 001 and IDEATE/CREATE/DELIVER + Dividing Line (z-10 so line & text pass BEHIND 3D model) */}
-        <div className="relative z-10 w-full flex flex-col pointer-events-none">
-          <div className="w-full flex items-end justify-between px-1 sm:px-3 pb-0.5 sm:pb-1">
-            {/* Left: 001 */}
+      {/* ── LOWER SECTION ── */}
+      <div className="w-full flex flex-col pointer-events-auto mt-auto mb-4 sm:mb-8 md:mb-16 lg:mb-20">
+        {/* ══════════════════════════════════════════════
+            1. DESKTOP / TABLET LAYOUT (hidden on mobile, flex on md+)
+        ══════════════════════════════════════════════ */}
+        <div className="hidden md:flex flex-col w-full">
+          {/* Row: 001 (left) ... IDEATE / CREATE / DELIVER (right) resting just above line */}
+          <div className="relative z-10 w-full flex items-end justify-between px-1 sm:px-3 pb-0.5 sm:pb-1 pointer-events-none">
             <span
               className="text-[13vw] sm:text-[11vw] md:text-[9.5vw] font-black leading-none tracking-tighter text-black select-none whitespace-nowrap"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
@@ -508,7 +520,6 @@ export default function ImmersiveCarousel() {
               {currentSlide.num}
             </span>
 
-            {/* Right: IDEATE / CREATE / DELIVER */}
             <span
               className="text-[13vw] sm:text-[11vw] md:text-[9.5vw] font-black leading-none tracking-tight text-black text-right select-none whitespace-nowrap"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
@@ -517,41 +528,77 @@ export default function ImmersiveCarousel() {
             </span>
           </div>
 
-          {/* ── CRISP HORIZONTAL DIVIDING LINE (Passes BEHIND the 3D shape) ── */}
-          <div className="w-full border-b border-black mb-3 sm:mb-4 pointer-events-none" />
+          {/* Crisp dividing line (Passes behind 3D model) */}
+          <div className="relative z-10 w-full border-b border-black mb-3 sm:mb-4 pointer-events-none" />
+
+          {/* Lower Two-Column Information Grid */}
+          <div className="relative z-30 w-full flex justify-between items-start gap-6 pointer-events-auto">
+            <div className="font-mono text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-black font-semibold space-y-0.5">
+              {currentSlide.manifesto.map((line, idx) => (
+                <p key={idx} className={idx === 0 ? 'mb-1 font-bold' : ''}>
+                  {line}
+                </p>
+              ))}
+            </div>
+
+            <div className="flex flex-col items-end text-right">
+              <button
+                onClick={handleNext}
+                onMouseEnter={() => soundManager.playHover()}
+                className="text-xs font-mono font-bold tracking-widest uppercase text-black hover:opacity-75 transition-opacity cursor-pointer mb-2 sm:mb-3"
+              >
+                NEXT
+              </button>
+
+              <div className="font-mono text-xs sm:text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-black font-medium space-y-0.5">
+                {currentSlide.services.map((item, idx) => (
+                  <p key={idx}>{item}</p>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* ── LOWER TWO-COLUMN INFORMATION GRID (z-30 for interactivity) ── */}
-        <div className="relative z-30 w-full flex flex-col md:flex-row justify-between items-start gap-4 sm:gap-6 pointer-events-auto">
-          {/* Left: WE ... Manifesto copy */}
-          <div className="font-mono text-xs sm:text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-black font-semibold space-y-0.5">
+        {/* ══════════════════════════════════════════════
+            2. MOBILE LAYOUT (flex on mobile, hidden on md+)
+            Refined with Neo-Brutalist Typography Hierarchy & Design Principles
+        ══════════════════════════════════════════════ */}
+        <div className="flex md:hidden flex-col w-full relative z-30">
+          {/* Dividing line right underneath the 3D shape */}
+          <div className="w-full border-b border-black mb-3.5 sm:mb-4 pointer-events-none" />
+
+          {/* Stacked 001 and IDEATE / CREATE / DELIVER with crisp typography hierarchy */}
+          <div
+            onClick={handleNext}
+            className="flex flex-col items-start select-none pointer-events-auto cursor-pointer active:opacity-75 transition-opacity"
+            title="Tap to advance"
+          >
+            <span
+              className="text-[17vw] sm:text-[15vw] font-black tracking-tighter text-black select-none leading-[0.88]"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
+            >
+              {currentSlide.num}
+            </span>
+            <span
+              className="text-[17vw] sm:text-[15vw] font-black tracking-tight text-black select-none leading-[0.88] mt-1 sm:mt-1.5"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
+            >
+              {currentSlide.word}
+            </span>
+          </div>
+
+          {/* Manifesto copy directly below IDEATE */}
+          <div className="font-mono text-[11.5px] sm:text-[12px] tracking-[0.06em] leading-[1.65] uppercase text-black font-semibold space-y-0.5 mt-4 sm:mt-5 pointer-events-none">
             {currentSlide.manifesto.map((line, idx) => (
               <p key={idx} className={idx === 0 ? 'mb-1 font-bold' : ''}>
                 {line}
               </p>
             ))}
           </div>
-
-          {/* Right: NEXT button + Capabilities List */}
-          <div className="flex flex-col items-end text-right">
-            <button
-              onClick={handleNext}
-              onMouseEnter={() => soundManager.playHover()}
-              className="text-xs font-mono font-bold tracking-widest uppercase text-black hover:opacity-75 transition-opacity cursor-pointer mb-2 sm:mb-3"
-            >
-              NEXT
-            </button>
-
-            <div className="font-mono text-xs sm:text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-black font-medium space-y-0.5">
-              {currentSlide.services.map((item, idx) => (
-                <p key={idx}>{item}</p>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* ── BOTTOM RIGHT CORNER TAG: [ AR ] ── */}
-        <div className="relative z-30 w-full flex justify-end pt-1 pointer-events-none text-[10px] sm:text-xs font-mono tracking-widest text-black font-semibold">
+        <div className="relative z-30 w-full flex justify-end pt-2 sm:pt-1 pointer-events-none text-[10px] sm:text-xs font-mono tracking-widest text-black font-semibold">
           [ AR ]
         </div>
       </div>
