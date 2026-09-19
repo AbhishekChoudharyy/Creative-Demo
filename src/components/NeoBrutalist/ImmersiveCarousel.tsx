@@ -2,14 +2,13 @@
 
 import React, {
   Suspense,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { MeshTransmissionMaterial, Preload } from '@react-three/drei';
+import { ContactShadows, Environment, Lightformer, Preload } from '@react-three/drei';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -18,7 +17,10 @@ import { soundManager } from '@/lib/sound';
 gsap.registerPlugin(ScrollTrigger);
 
 /* ─────────────────────────────────────────────────────────────
-   Origo Story Data — The Origin of Form, Brand & 3D Spatial Design
+   Origo Story Data — Preserved exactly as originally structured:
+   - 01: Circle
+   - 02: Square
+   - 03: Triangle
 ───────────────────────────────────────────────────────────── */
 const SLIDES = [
   {
@@ -57,153 +59,86 @@ const SLIDES = [
 ];
 
 /* ─────────────────────────────────────────────────────────────
-   3D Tubular Glass Geometries (Parametric Watertight Tori):
-   - 01: Circle Torus (Infinite Loop)
-   - 02: Square / Quad Torus (Spatial Matrix)
-   - 03: Triangle Torus (Primal Polygon Vertex — straight edges with rounded corners)
-   All three shapes are continuous closed tori with matching
-   tubular curvature, outward normals, pure transparency, and identical color.
+   Straightforward 3D Shapes: Circle, Triangle & Rectangle (Extruded Frames with Bevel)
 ───────────────────────────────────────────────────────────── */
-function createTorusFrom2DPath(
-  path2D: (t: number) => THREE.Vector2,
-  tubeRadius: number,
-  radialSegments = 32,
-  tubularSegments = 64
-) {
-  const geom = new THREE.BufferGeometry();
-  const vertices: number[] = [];
-  const normals: number[] = [];
-  const indices: number[] = [];
-
-  const points: THREE.Vector2[] = [];
-  for (let i = 0; i <= tubularSegments; i++) {
-    const t = i / tubularSegments;
-    points.push(path2D(t));
-  }
-
-  const frames: { p: THREE.Vector2; N: THREE.Vector2 }[] = [];
-  for (let i = 0; i <= tubularSegments; i++) {
-    const pPrev = points[(i - 1 + tubularSegments) % tubularSegments];
-    const pNext = points[(i + 1) % tubularSegments];
-    const T = new THREE.Vector2().subVectors(pNext, pPrev).normalize();
-    // CCW in-plane normal pointing outward
-    const N = new THREE.Vector2(T.y, -T.x);
-    frames.push({ p: points[i], N });
-  }
-
-  for (let j = 0; j <= radialSegments; j++) {
-    for (let i = 0; i <= tubularSegments; i++) {
-      const v = (j / radialSegments) * Math.PI * 2;
-      const { p, N } = frames[i];
-
-      const cosV = Math.cos(v);
-      const sinV = Math.sin(v);
-
-      const vx = p.x + tubeRadius * cosV * N.x;
-      const vy = p.y + tubeRadius * cosV * N.y;
-      const vz = tubeRadius * sinV;
-
-      vertices.push(vx, vy, vz);
-
-      const nx = cosV * N.x;
-      const ny = cosV * N.y;
-      const nz = sinV;
-
-      normals.push(nx, ny, nz);
-    }
-  }
-
-  // Exact Three.js TorusGeometry index builder (guarantees 100% outward normals)
-  for (let j = 1; j <= radialSegments; j++) {
-    for (let i = 1; i <= tubularSegments; i++) {
-      const a = (tubularSegments + 1) * j + i - 1;
-      const b = (tubularSegments + 1) * (j - 1) + i - 1;
-      const c = (tubularSegments + 1) * (j - 1) + i;
-      const d = (tubularSegments + 1) * j + i;
-
-      indices.push(a, b, d);
-      indices.push(b, c, d);
-    }
-  }
-
-  geom.setIndex(indices);
-  geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-  geom.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-  return geom;
-}
-
-// Rounded Square Path (Superellipse)
-function squarePath(t: number) {
-  const p = 2 / 5;
-  const angle = t * Math.PI * 2;
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  const sgnC = cos < 0 ? -1 : 1;
-  const sgnS = sin < 0 ? -1 : 1;
-  return new THREE.Vector2(
-    0.85 * sgnC * Math.pow(Math.abs(cos), p),
-    0.85 * sgnS * Math.pow(Math.abs(sin), p)
-  );
-}
-
-// Real Equilateral Triangle Path with 3 straight edges & rounded corners (NOT delta)
-function trianglePath(t: number) {
-  const R = 1.15;
-  const cornerRadius = 0.22;
-  const v1 = new THREE.Vector2(0, R); // top
-  const v2 = new THREE.Vector2(R * 0.866, -R * 0.5); // bottom right
-  const v3 = new THREE.Vector2(-R * 0.866, -R * 0.5); // bottom left
-
-  const d32 = new THREE.Vector2().subVectors(v2, v3).normalize();
-  const d21 = new THREE.Vector2().subVectors(v1, v2).normalize();
-  const d13 = new THREE.Vector2().subVectors(v3, v1).normalize();
-
-  const p3_out = new THREE.Vector2().copy(v3).addScaledVector(d32, cornerRadius);
-  const p2_in = new THREE.Vector2().copy(v2).addScaledVector(d32, -cornerRadius);
-
-  const p2_out = new THREE.Vector2().copy(v2).addScaledVector(d21, cornerRadius);
-  const p1_in = new THREE.Vector2().copy(v1).addScaledVector(d21, -cornerRadius);
-
-  const p1_out = new THREE.Vector2().copy(v1).addScaledVector(d13, cornerRadius);
-  const p3_in = new THREE.Vector2().copy(v3).addScaledVector(d13, -cornerRadius);
-
-  const curves = [
-    (f: number) => new THREE.Vector2().lerpVectors(p3_out, p2_in, f),
-    (f: number) => {
-      const pA = new THREE.Vector2().lerpVectors(p2_in, v2, f);
-      const pB = new THREE.Vector2().lerpVectors(v2, p2_out, f);
-      return new THREE.Vector2().lerpVectors(pA, pB, f);
-    },
-    (f: number) => new THREE.Vector2().lerpVectors(p2_out, p1_in, f),
-    (f: number) => {
-      const pA = new THREE.Vector2().lerpVectors(p1_in, v1, f);
-      const pB = new THREE.Vector2().lerpVectors(v1, p1_out, f);
-      return new THREE.Vector2().lerpVectors(pA, pB, f);
-    },
-    (f: number) => new THREE.Vector2().lerpVectors(p1_out, p3_in, f),
-    (f: number) => {
-      const pA = new THREE.Vector2().lerpVectors(p3_in, v3, f);
-      const pB = new THREE.Vector2().lerpVectors(v3, p3_out, f);
-      return new THREE.Vector2().lerpVectors(pA, pB, f);
-    },
-  ];
-
-  const s = (t % 1) * 6;
-  const idx = Math.min(5, Math.floor(s));
-  const f = s - idx;
-  return curves[idx](f);
-}
-
 function ShapeMesh({ shape }: { shape: string }) {
   const geom = useMemo(() => {
+    // 1. Rectangle / Square Frame
     if (shape === 'rectangle') {
-      return createTorusFrom2DPath(squarePath, 0.35, 32, 64);
+      const s = new THREE.Shape();
+      const w = 1.05;
+      const h = 1.05;
+      s.moveTo(-w, -h);
+      s.lineTo(w, -h);
+      s.lineTo(w, h);
+      s.lineTo(-w, h);
+      s.closePath();
+
+      const hole = new THREE.Path();
+      const hw = 0.62;
+      const hh = 0.62;
+      hole.moveTo(-hw, -hh);
+      hole.lineTo(hw, -hh);
+      hole.lineTo(hw, hh);
+      hole.lineTo(-hw, hh);
+      hole.closePath();
+      s.holes.push(hole);
+
+      const g = new THREE.ExtrudeGeometry(s, {
+        depth: 0.28,
+        bevelEnabled: true,
+        bevelThickness: 0.07,
+        bevelSize: 0.06,
+        bevelSegments: 4,
+      });
+      g.center();
+      return g;
     }
+
+    // 2. Triangle Frame
     if (shape === 'triangle') {
-      return createTorusFrom2DPath(trianglePath, 0.35, 32, 64);
+      const s = new THREE.Shape();
+      const R_out = 1.42;
+      s.moveTo(0, R_out);
+      s.lineTo(R_out * Math.cos(-Math.PI / 6), R_out * Math.sin(-Math.PI / 6));
+      s.lineTo(R_out * Math.cos(7 * Math.PI / 6), R_out * Math.sin(7 * Math.PI / 6));
+      s.closePath();
+
+      const hole = new THREE.Path();
+      const R_in = 0.82;
+      hole.moveTo(0, R_in);
+      hole.lineTo(R_in * Math.cos(-Math.PI / 6), R_in * Math.sin(-Math.PI / 6));
+      hole.lineTo(R_in * Math.cos(7 * Math.PI / 6), R_in * Math.sin(7 * Math.PI / 6));
+      hole.closePath();
+      s.holes.push(hole);
+
+      const g = new THREE.ExtrudeGeometry(s, {
+        depth: 0.28,
+        bevelEnabled: true,
+        bevelThickness: 0.07,
+        bevelSize: 0.06,
+        bevelSegments: 4,
+      });
+      g.center();
+      return g;
     }
-    const g = new THREE.TorusGeometry(0.85, 0.35, 48, 128);
-    g.computeVertexNormals();
+
+    // 3. Circle Frame
+    const s = new THREE.Shape();
+    s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
+    const hole = new THREE.Path();
+    hole.absarc(0, 0, 0.70, 0, Math.PI * 2, true);
+    s.holes.push(hole);
+
+    const g = new THREE.ExtrudeGeometry(s, {
+      depth: 0.28,
+      bevelEnabled: true,
+      bevelThickness: 0.07,
+      bevelSize: 0.06,
+      bevelSegments: 4,
+      curveSegments: 64,
+    });
+    g.center();
     return g;
   }, [shape]);
 
@@ -211,7 +146,7 @@ function ShapeMesh({ shape }: { shape: string }) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Interactive Crystal Glass 3D Model
+   Interactive Chrome Metal 3D Model
    Pure, unobstructed in the center, freely rotatable with physics
 ───────────────────────────────────────────────────────────── */
 interface ShapeProps {
@@ -219,7 +154,7 @@ interface ShapeProps {
   onFirstDrag: () => void;
 }
 
-function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
+function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
   const { size } = useThree();
   const isMobile = size.width < 768;
 
@@ -329,6 +264,7 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     }
   };
 
+  // Preserved exactly as existing scale
   const scale = isMobile ? 0.72 : 1.35;
 
   return (
@@ -343,26 +279,15 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
           scale={idx === slideIndex ? [1, 1, 1] : [0.001, 0.001, 0.001]}
         >
           <ShapeMesh shape={s.shape} />
-          {/* Pure transparent glass matching Hero GlassBox */}
-          <MeshTransmissionMaterial
-            backside
-            transmission={1.0}
-            roughness={0.0}
-            thickness={0.42}
-            ior={1.38}
-            chromaticAberration={0.0}
-            anisotropy={0.0}
-            distortion={0.08}
-            distortionScale={0.3}
-            temporalDistortion={0.0}
-            clearcoat={1.0}
-            clearcoatRoughness={0.02}
+          {/* Polished mirror chrome: metallic 1.0, low roughness, cold silver reflection */}
+          <meshPhysicalMaterial
             color="#ffffff"
-            attenuationColor="#ffffff"
-            attenuationDistance={20.0}
-            reflectivity={0.45}
-            resolution={512}
-            samples={6}
+            metalness={1.0}
+            roughness={0.10}
+            clearcoat={0.30}
+            clearcoatRoughness={0.06}
+            reflectivity={1.0}
+            envMapIntensity={2.6}
           />
         </mesh>
       ))}
@@ -370,25 +295,44 @@ function GlassHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
   );
 }
 
-
-
 function StudioLights() {
   const { size } = useThree();
   const isMobile = size.width < 768;
 
   return (
     <>
-      <ambientLight intensity={isMobile ? 2.2 : 1.8} />
-      <directionalLight position={[0, 4, 6]} intensity={isMobile ? 2.4 : 2.0} color="#ffffff" />
-      <directionalLight position={[0, 8, -2]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
-      <directionalLight position={[-6, 2, 4]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
-      <directionalLight position={[6, 2, 4]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
+      <ambientLight intensity={isMobile ? 1.0 : 0.8} />
+      {/* KEY LIGHT: Large bright directional light above and slightly in front */}
+      <directionalLight
+        position={[0, 8, 7]}
+        intensity={isMobile ? 3.4 : 3.0}
+        color="#ffffff"
+      />
+      {/* RIM / EDGE LIGHT: Subtle cool white/blue rim reflection along edges */}
+      <directionalLight
+        position={[-7, -3, 4]}
+        intensity={isMobile ? 2.8 : 2.4}
+        color="#38bdf8"
+      />
+      {/* FILL LIGHT: Very subtle cool fill from opposite side */}
+      <directionalLight
+        position={[7, 2, 4]}
+        intensity={isMobile ? 1.4 : 1.2}
+        color="#e0f2fe"
+      />
+      {/* Back rim light for separation */}
+      <directionalLight
+        position={[0, 6, -5]}
+        intensity={isMobile ? 2.0 : 1.6}
+        color="#ffffff"
+      />
     </>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────
    Main Origo Carousel Component
+   Surrounding environment, DOM layout, text, and styling preserved completely
 ───────────────────────────────────────────────────────────── */
 export default function ImmersiveCarousel() {
   const [slideIndex, setSlideIndex] = useState(0);
@@ -446,7 +390,7 @@ export default function ImmersiveCarousel() {
         end: `+=${SLIDES.length * 100}%`,
         pin: true,
         anticipatePin: 1,
-        scrub: 0.8, // Buttery smooth scroll scrub matching Manifesto
+        scrub: 0.8,
         onUpdate: (self) => {
           const raw = self.progress * SLIDES.length;
           const idx = Math.min(Math.floor(raw), SLIDES.length - 1);
@@ -475,7 +419,7 @@ export default function ImmersiveCarousel() {
       id="services-carousel"
       className="relative w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-black"
     >
-      {/* ── Subtle Ambient Background Texture ── */}
+      {/* ── Subtle Ambient Background Texture (Preserved exactly as existing) ── */}
       <div
         className="absolute inset-0 pointer-events-none opacity-15"
         style={{
@@ -488,7 +432,7 @@ export default function ImmersiveCarousel() {
       />
 
       {/* ══════════════════════════════════════════════
-          3D CANVAS — STANDING HEROIC & ALONE IN CENTER
+          3D CANVAS — STANDING HEROIC IN CENTER
       ══════════════════════════════════════════════ */}
       <div className="absolute inset-0 z-10 w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing">
         <Canvas
@@ -498,23 +442,68 @@ export default function ImmersiveCarousel() {
             powerPreference: 'high-performance',
             antialias: true,
             alpha: true,
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1.15,
           }}
           camera={{ fov: 48, position: [0, 0, 5] }}
           style={{ touchAction: 'pan-y' }}
         >
           <color attach="background" args={['#1E90FF']} />
           <StudioLights />
+
+          {/* HDR Studio Reflections + Custom Rectangular Key & Rim Lightformers */}
           <Suspense fallback={null}>
-            <GlassHeroObject
+            <Environment files="/env/warehouse.hdr" environmentIntensity={1.2}>
+              {/* KEY LIGHT: Large soft rectangular light positioned above and in front */}
+              <Lightformer
+                form="rect"
+                intensity={5.5}
+                position={[0, 5, 2.5]}
+                scale={[14, 3, 1]}
+                target={[0, 0, 0]}
+                color="#ffffff"
+              />
+              {/* FILL: Very subtle cool fill light from opposite side */}
+              <Lightformer
+                form="rect"
+                intensity={1.0}
+                position={[6, -3, 2]}
+                scale={[5, 4, 1]}
+                target={[0, 0, 0]}
+                color="#e0f2fe"
+              />
+              {/* RIM / EDGE LIGHT: Subtle cool white/blue rim reflection */}
+              <Lightformer
+                form="rect"
+                intensity={3.2}
+                position={[-6, -2, 2.5]}
+                scale={[4, 10, 1]}
+                target={[0, 0, 0]}
+                color="#38bdf8"
+              />
+            </Environment>
+
+            <MetalHeroObject
               slideIndex={slideIndex}
               onFirstDrag={() => setHasInteracted(true)}
             />
+
+            {/* Soft, subtle contact shadow beneath the objects */}
+            <ContactShadows
+              position={[0, -1.65, 0]}
+              opacity={0.35}
+              scale={5.5}
+              blur={2.4}
+              far={4}
+              color="#001a33"
+            />
+
             <Preload all />
           </Suspense>
         </Canvas>
       </div>
 
-      {/* ── Interactive Drag Hint Pill ── */}
+      {/* ── Interactive Drag Hint Pill (Preserved exactly as existing) ── */}
       {!hasInteracted && (
         <div className="absolute bottom-[20%] md:top-[70%] md:bottom-auto left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none">
           <span className="text-[8.5px] md:text-[10px] font-mono font-bold tracking-[0.25em] uppercase px-3.5 py-1.5 bg-black/10 backdrop-blur-md rounded-full border border-black/20 text-black animate-pulse">
@@ -524,7 +513,7 @@ export default function ImmersiveCarousel() {
       )}
 
       {/* ══════════════════════════════════════════════
-          LEFT FLANK: ORIGO STORY (RESPONSIVE & CLEAN)
+          LEFT FLANK: ORIGO STORY (Preserved exactly as existing)
       ══════════════════════════════════════════════ */}
       <div className="absolute left-6 md:left-14 top-6 sm:top-8 md:top-1/2 md:-translate-y-1/2 z-20 max-w-[320px] sm:max-w-sm lg:max-w-md pointer-events-none">
         <div
@@ -575,7 +564,7 @@ export default function ImmersiveCarousel() {
       </div>
 
       {/* ══════════════════════════════════════════════
-          STAGE SELECTOR & METADATA
+          STAGE SELECTOR & METADATA (Preserved exactly as existing)
       ══════════════════════════════════════════════ */}
       <div className="absolute left-1/2 -translate-x-1/2 md:left-auto md:right-12 bottom-[11%] md:top-1/2 md:-translate-y-1/2 z-20 flex flex-row md:flex-col items-center md:items-end gap-2 md:space-y-4 pointer-events-auto">
         {/* Shape Metadata Pill (Desktop only) */}
@@ -607,7 +596,7 @@ export default function ImmersiveCarousel() {
       </div>
 
       {/* ══════════════════════════════════════════════
-          BOTTOM FOOTER BAR (CLEAN & AIRY)
+          BOTTOM FOOTER BAR (Preserved exactly as existing)
       ══════════════════════════════════════════════ */}
       <div className="absolute bottom-6 md:bottom-8 left-6 md:left-12 right-6 md:right-12 z-30 flex items-center justify-between pointer-events-none text-[9px] md:text-[10.5px] font-mono tracking-[0.22em] uppercase text-black/60">
         <span>ORIGO ATELIER // FROM ORIGIN TO EXCELLENCE</span>

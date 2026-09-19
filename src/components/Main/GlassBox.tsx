@@ -16,11 +16,25 @@ export const GlassBox: FC = () => {
   const targetRotation = useRef({ x: 0, y: 0 });
   const currentRotation = useRef({ x: 0, y: 0 });
 
-  // Torus geometry for circular glass ring (high quality crystal finish)
-  const torusArgs: [number, number, number, number] = useMemo(
-    () => [0.96, 0.42, 48, 96],
-    []
-  );
+  // Extruded beveled circle geometry matching the metal circle in the carousel
+  const circleGeom = useMemo(() => {
+    const s = new THREE.Shape();
+    s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
+    const hole = new THREE.Path();
+    hole.absarc(0, 0, 0.70, 0, Math.PI * 2, true);
+    s.holes.push(hole);
+
+    const g = new THREE.ExtrudeGeometry(s, {
+      depth: 0.28,
+      bevelEnabled: true,
+      bevelThickness: 0.07,
+      bevelSize: 0.06,
+      bevelSegments: 4,
+      curveSegments: 64,
+    });
+    g.center();
+    return g;
+  }, []);
 
   const lockScroll = () => {
     document.documentElement.style.overflow = 'hidden';
@@ -129,26 +143,26 @@ export const GlassBox: FC = () => {
       ref={groupRef}
       onPointerDown={handlePointerDown}
     >
-      {/* 3D Polished Glass Torus Circle Ring */}
+      {/* 3D Transparent Beveled Circle Ring matching the Carousel shape */}
       <mesh ref={boxRef}>
-        <torusGeometry args={torusArgs} />
+        <primitive object={circleGeom} attach="geometry" />
         <MeshTransmissionMaterial
           backside
-          transmission={1.0}
-          roughness={0.0}
-          thickness={0.42}
-          ior={1.38}
-          chromaticAberration={0.0}
-          anisotropy={0.0}
+          transmission={0.98}
+          roughness={0.04}
+          thickness={0.35}
+          ior={1.42}
+          chromaticAberration={0.05}
+          anisotropy={0.1}
           distortion={0.08}
           distortionScale={0.3}
           temporalDistortion={0.0}
           clearcoat={1.0}
-          clearcoatRoughness={0.02}
+          clearcoatRoughness={0.03}
           color="#ffffff"
           attenuationColor="#ffffff"
-          attenuationDistance={20.0}
-          reflectivity={0.45}
+          attenuationDistance={12.0}
+          reflectivity={0.6}
           resolution={512}
           samples={6}
         />
