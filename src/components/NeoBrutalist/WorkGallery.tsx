@@ -613,23 +613,18 @@ export default function WorkGallery() {
     <section
       ref={sectionRef}
       id="work"
-      className="relative bg-[#EAF2FC] text-black pt-16 md:pt-24 pb-16 md:pb-24 overflow-hidden select-none"
+      className="relative text-black pt-16 md:pt-24 pb-16 md:pb-24 overflow-hidden select-none"
+      style={{
+        background:
+          'linear-gradient(180deg, #1E90FF 0%, #2D93FA 10%, #52A8FE 24%, #7CBEFE 40%, #A9D5FE 58%, #CCE6FE 74%, #E8F3FE 88%, #FFFFFF 100%)',
+      }}
     >
-      {/* Attached Panoramic Sky Background Image */}
+      {/* ── WHITE TO BLUE ATMOSPHERIC BLEND (Seamless transition from Intro into Work) ── */}
       <div
-        className="absolute inset-0 pointer-events-none z-0 bg-cover bg-top"
-        style={{
-          backgroundImage: 'url(/works-carousel-bg.png)',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-
-      {/* Top Atmospheric Dissolve: Wide whitish-blue blend spreading from Intro down through Works heading */}
-      <div
-        className="absolute top-0 left-0 right-0 h-64 sm:h-80 md:h-[460px] lg:h-[540px] pointer-events-none z-[1]"
+        className="absolute top-0 left-0 right-0 h-48 sm:h-64 md:h-[340px] lg:h-[400px] pointer-events-none z-[1]"
         style={{
           background:
-            'linear-gradient(to bottom, #EAF2FC 0%, rgba(234, 242, 252, 0.96) 20%, rgba(234, 242, 252, 0.70) 50%, rgba(234, 242, 252, 0.25) 78%, rgba(234, 242, 252, 0) 100%)',
+            'linear-gradient(to bottom, #EAF2FC 0%, rgba(234, 242, 252, 0.96) 18%, rgba(234, 242, 252, 0.70) 45%, rgba(234, 242, 252, 0.20) 75%, rgba(30, 144, 255, 0) 100%)',
         }}
       />
 

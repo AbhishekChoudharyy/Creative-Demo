@@ -236,7 +236,7 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
 
-    const baseY = isMobile ? 0.65 : 0;
+    const baseY = isMobile ? -0.26 : 0;
     groupRef.current.position.y = baseY + Math.sin(t * 1.0) * 0.035;
 
     currentRot.current.x += (targetRot.current.x - currentRot.current.x) * 0.08;
@@ -266,7 +266,7 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     }
   };
 
-  const scale = isMobile ? 0.55 : 0.95;
+  const scale = isMobile ? 0.72 : 1.35;
 
   return (
     <group ref={groupRef} scale={scale} onPointerDown={handlePointerDown}>

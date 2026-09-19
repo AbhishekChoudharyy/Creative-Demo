@@ -20,6 +20,8 @@ class SoundManager {
   private lastTextAnimTime: number = 0;
   // Hover rate limiting — prevents firing multiple times per frame on nested elements
   private lastHoverTime: number = 0;
+  // Crystal shimmer rate limiting — prevents duplicate triggers while cursor remains over sphere
+  private lastCrystalShimmerTime: number = 0;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -652,6 +654,124 @@ class SoundManager {
       osc2.start(ctx.currentTime + 0.05);
       osc2.stop(ctx.currentTime + 0.08);
     } catch (e) {}
+  }
+
+  /**
+   * Delicate optical crystal shimmer & resonance (0.5–0.8s, low and elegant volume).
+   * Crystalline ping followed by a subtle icy harmonic tail as fragments separate.
+   * Respects autoplay policies and rate-limits to avoid repeated triggers.
+   */
+  public playCrystalShimmer() {
+    if (this.isMuted) return;
+    // Autoplay compliance: only trigger after user has interacted with the page
+    if (!this.isUnlocked || !this.ctx || this.ctx.state !== 'running') return;
+    const ctx = this.ctx;
+    if (!this.compressor) return;
+
+    // Prevent repeated triggering while cursor remains over sphere
+    const now = ctx.currentTime;
+    if (now - this.lastCrystalShimmerTime < 0.6) return;
+    this.lastCrystalShimmerTime = now;
+
+    try {
+      // MASTER CRYSTAL BUS (Highpass filtered at 1800Hz to remove any low/mid rumble, keeping pure glass transparency)
+      const crystalFilter = ctx.createBiquadFilter();
+      crystalFilter.type = 'highpass';
+      crystalFilter.frequency.setValueAtTime(1800, now);
+
+      const masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0.35, now); // Global trim keeping volume soft, subtle and elegant
+      crystalFilter.connect(masterGain);
+      masterGain.connect(this.compressor);
+
+      // 1. DELICATE INITIAL CRYSTAL PING (Pristine optical glass strike ~2850Hz & 5700Hz)
+      const pingFreqs = [2850, 5700];
+      pingFreqs.forEach((freq, idx) => {
+        const pingOsc = ctx.createOscillator();
+        const pingGain = ctx.createGain();
+        pingOsc.type = 'sine';
+        pingOsc.frequency.setValueAtTime(freq, now);
+
+        const pingAmp = idx === 0 ? 0.05 : 0.025;
+        pingGain.gain.setValueAtTime(0.0001, now);
+        pingGain.gain.linearRampToValueAtTime(pingAmp, now + 0.002);
+        pingGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+
+        pingOsc.connect(pingGain);
+        pingGain.connect(crystalFilter);
+        pingOsc.start(now);
+        pingOsc.stop(now + 0.30);
+      });
+
+      // 2. ETHEREAL ICY CRYSTALLINE SHIMMER & HARMONIC TAIL (0.5 - 0.75s)
+      // Delicate optical quartz harmonic ratios: E7, G#7, B7, D#8 with micro-detuning
+      const shimmerNodes = [
+        { freq: 3320, detune: 4,  delay: 0.012, duration: 0.58, gain: 0.028 },
+        { freq: 4180, detune: -6, delay: 0.024, duration: 0.64, gain: 0.024 },
+        { freq: 4970, detune: 8,  delay: 0.038, duration: 0.70, gain: 0.018 },
+        { freq: 6280, detune: -4, delay: 0.052, duration: 0.52, gain: 0.012 },
+        { freq: 7920, detune: 2,  delay: 0.068, duration: 0.44, gain: 0.008 },
+      ];
+
+      shimmerNodes.forEach((node) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+
+        const startTime = now + node.delay;
+        osc.frequency.setValueAtTime(node.freq, startTime);
+        osc.detune.setValueAtTime(node.detune, startTime);
+        // Subtle micro-pitch glide simulating fragments gently shifting outward
+        osc.frequency.exponentialRampToValueAtTime(node.freq * 1.015, startTime + node.duration);
+
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.linearRampToValueAtTime(node.gain, startTime + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + node.duration);
+
+        osc.connect(gain);
+        gain.connect(crystalFilter);
+        osc.start(startTime);
+        osc.stop(startTime + node.duration + 0.02);
+      });
+    } catch (e) {}
+  }
+
+  /**
+   * Hover out: Very subtle receding glass resonance (clean descending harmonic tail, 0.22s, low volume).
+   */
+  public playCrystalRecede() {
+    if (this.isMuted) return;
+    if (!this.isUnlocked || !this.ctx || this.ctx.state !== 'running') return;
+    const ctx = this.ctx;
+    if (!this.compressor) return;
+
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+
+      // Gentle descending resonance curve
+      osc.frequency.setValueAtTime(2600, now);
+      osc.frequency.exponentialRampToValueAtTime(1750, now + 0.22);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.018, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+
+      osc.connect(gain);
+      gain.connect(this.compressor);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } catch (e) {}
+  }
+
+  public playGlassFracture() {
+    this.playCrystalShimmer();
+  }
+
+  public playGlassReassemble() {
+    this.playCrystalRecede();
   }
 }
 
