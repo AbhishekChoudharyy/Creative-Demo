@@ -15,13 +15,13 @@ interface Project {
 }
 
 const CATEGORIES = [
-  'ALL',
-  'AUTOMOTIVE EXPERIENCES',
-  'EXHIBITIONS & BRAND EXPERIENCES',
-  'EVENTS & ACTIVATIONS',
-  'SHOWROOM DESIGN',
-  'SOCIAL MEDIA & CONTENT',
-  'PRINT & OOH',
+  { key: 'ALL', label: 'All' },
+  { key: 'AUTOMOTIVE EXPERIENCES', label: 'Automotive' },
+  { key: 'EXHIBITIONS & BRAND EXPERIENCES', label: 'Exhibitions' },
+  { key: 'EVENTS & ACTIVATIONS', label: 'Events' },
+  { key: 'SHOWROOM DESIGN', label: 'Showrooms' },
+  { key: 'SOCIAL MEDIA & CONTENT', label: 'Social' },
+  { key: 'PRINT & OOH', label: 'Print' },
 ];
 
 const ALL_PROJECTS: Project[] = [
@@ -180,6 +180,7 @@ const FRAGMENT_SHADER = /* glsl */ `
   uniform float uImageAspect; // width / height of texture
   uniform vec3  uBgColor;     // background electric blue blend color
   uniform float uSeed;
+  uniform float uSectionOpacity;
 
   varying vec2  vUv;
   varying float vTear;
@@ -251,7 +252,7 @@ const FRAGMENT_SHADER = /* glsl */ `
 
     // Outer edge fade
     float fade = 1.0 - smoothstep(0.85, 1.0, tear) * 0.55;
-    float alpha = cardAlpha * geometryAlpha * fade;
+    float alpha = cardAlpha * geometryAlpha * fade * uSectionOpacity;
     if (alpha < 0.003) discard;
 
     // Sample cover-fitted image texture
@@ -356,13 +357,21 @@ export default function WorkGallery() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const [activeCategory, setActiveCategory] = useState('ALL');
+  const activeCategoryRef = useRef('ALL');
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const slideByRef = useRef<(dir: number) => void>(() => {});
+  const switchCategoryRef = useRef<(newCat: string) => void>(() => {});
+  const isTweeningRef = useRef(false);
+  const targetUnitRef = useRef(0);
+  const filterScrollRef = useRef<HTMLDivElement>(null);
+  const desktopFilterScrollRef = useRef<HTMLDivElement>(null);
 
   const filteredProjects = useMemo(() => {
     if (activeCategory === 'ALL') return ALL_PROJECTS;
     return ALL_PROJECTS.filter((p) => p.cat === activeCategory);
   }, [activeCategory]);
 
-  const motionRef = useRef({ velocity: 36, offset: 0 });
+  const motionRef = useRef({ velocity: 0, offset: 0 });
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -375,10 +384,10 @@ export default function WorkGallery() {
       cardMaxHeight: 340,
       cardAspect: 16 / 9, // Exact 16:9 widescreen ratio
       cardGapRatio: 0.08,
-      cardRadius: 14,
-      scrollSpeed: 36,    // Calm, luxurious auto-drift
+      cardRadius: 18, // Clean rounded corners matching mockup screenshot
+      scrollSpeed: 18, // Subtle, slow continuous drift on desktop
       flingMax: 2600,
-      tearZoneRatio: 0.20,
+      tearZoneRatio: 0.22,
       tearZoneMax: 260,
     };
 
@@ -404,94 +413,96 @@ export default function WorkGallery() {
       uCardSize: { value: new THREE.Vector2(1, 1) },
       uRadius: { value: CONFIG.cardRadius },
       uBgColor: { value: new THREE.Color('#D8ECFD') },
+      uSectionOpacity: { value: 1.0 },
     };
 
     const textureLoader = new THREE.TextureLoader();
     textureLoader.setCrossOrigin('');
 
-    const slots = filteredProjects.map((proj, i) => {
-      // Direct TextureLoader for local images with SRGBColorSpace
+    // Pre-cache all project textures & materials once in GPU memory to prevent black flash
+    const textureMap = new Map<number, { texture: THREE.Texture; material: THREE.ShaderMaterial; project: Project }>();
+
+    ALL_PROJECTS.forEach((proj, i) => {
       const texture = textureLoader.load(
         proj.img,
         (loadedTex) => {
           loadedTex.colorSpace = THREE.SRGBColorSpace;
-          loadedTex.minFilter = THREE.LinearFilter;
+          loadedTex.generateMipmaps = true;
+          loadedTex.minFilter = THREE.LinearMipmapLinearFilter;
           loadedTex.magFilter = THREE.LinearFilter;
-          loadedTex.wrapS = loadedTex.wrapT = THREE.ClampToEdgeWrapping;
           loadedTex.needsUpdate = true;
-          if (loadedTex.image && loadedTex.image.naturalWidth) {
-            material.uniforms.uImageAspect.value = loadedTex.image.naturalWidth / loadedTex.image.naturalHeight;
-          }
+        },
+        undefined,
+        () => {
+          const fallbackPlate = drawPlaceholderPlate(proj.id * 17);
+          const canvasTexture = new THREE.CanvasTexture(fallbackPlate);
+          canvasTexture.colorSpace = THREE.SRGBColorSpace;
+          material.uniforms.uMap.value = canvasTexture;
         }
       );
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
-      texture.generateMipmaps = false;
 
       const material = new THREE.ShaderMaterial({
         vertexShader: VERTEX_SHADER,
         fragmentShader: FRAGMENT_SHADER,
-        transparent: true,
-        depthTest: false,
-        depthWrite: false,
         uniforms: {
           uMap: { value: texture },
-          uSeed: { value: (i + 1) * 0.731 },
-          uImageAspect: { value: 16 / 9 },
+          uCardSize: shared.uCardSize,
+          uRadius: shared.uRadius,
           uTime: shared.uTime,
           uHalfWidth: shared.uHalfWidth,
           uZone: shared.uZone,
           uStrength: shared.uStrength,
           uWobble: shared.uWobble,
-          uCardSize: shared.uCardSize,
-          uRadius: shared.uRadius,
           uBgColor: shared.uBgColor,
+          uSectionOpacity: shared.uSectionOpacity,
+          uImageAspect: { value: 16 / 9 },
+          uSeed: { value: (i * 13.37) % 10 },
         },
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
       });
 
-      // Same-origin Image loader (no crossOrigin header) ensures local files always render
-      const img = new Image();
-      img.onload = () => {
-        texture.image = img;
-        texture.needsUpdate = true;
-        if (img.naturalWidth && img.naturalHeight) {
-          material.uniforms.uImageAspect.value = img.naturalWidth / img.naturalHeight;
-        }
-      };
-      img.src = proj.img;
-      if (img.complete && img.naturalWidth > 0) {
-        texture.image = img;
-        texture.needsUpdate = true;
-        material.uniforms.uImageAspect.value = img.naturalWidth / img.naturalHeight;
-      }
-
-      return { texture, material };
+      textureMap.set(proj.id, { texture, material, project: proj });
     });
 
-    const cards: { mesh: THREE.Mesh; baseX: number }[] = [];
+    let currentProjects: Project[] = ALL_PROJECTS;
     let geometry: THREE.BufferGeometry | null = null;
-    let cardWidth = 0, cardHeight = 0, pitch = 0, stripSpan = 0;
-    let viewportWidth = 0, viewportHeight = 0;
+    let cards: { mesh: THREE.Mesh; baseX: number }[] = [];
+    let viewportWidth = 1;
+    let viewportHeight = 1;
+    let cardWidth = 560;
+    let cardHeight = 315;
+    let pitch = 640;
+    let stripSpan = 1;
 
     function rebuildStrip() {
-      cards.forEach((card) => scene.remove(card.mesh));
-      cards.length = 0;
+      cards.forEach((c) => scene.remove(c.mesh));
+      cards = [];
       if (geometry) geometry.dispose();
 
       geometry = buildRibbonGeometry(cardWidth, cardHeight, CONFIG.threads, CONFIG.segments);
 
-      const count = Math.max(8, Math.ceil((viewportWidth + pitch * 3) / pitch));
-      stripSpan = count * pitch;
+      const activeSlots = currentProjects.map((p) => textureMap.get(p.id)!).filter(Boolean);
+      const count = Math.max(activeSlots.length, 3);
+      // Ensure sufficient cards to cover viewport + continuous loop
+      const minCardsNeeded = Math.ceil(viewportWidth / pitch) + 4;
+      const repeats = Math.max(1, Math.ceil(minCardsNeeded / count));
+      const totalCards = count * repeats;
+      stripSpan = totalCards * pitch;
+      const half = stripSpan / 2;
 
-      for (let i = 0; i < count; i++) {
-        const slotIdx = i % slots.length;
-        const mesh = new THREE.Mesh(geometry, slots[slotIdx].material);
-        mesh.frustumCulled = false;
+      for (let i = 0; i < totalCards; i++) {
+        const slot = activeSlots[i % activeSlots.length];
+        const mesh = new THREE.Mesh(geometry, slot.material);
         scene.add(mesh);
         cards.push({ mesh, baseX: i * pitch });
       }
+
+      // Initialize with center card aligned
+      motion.offset = -half;
+      motion.velocity = 0;
+      targetUnitRef.current = 0;
     }
 
     function resize() {
@@ -507,24 +518,120 @@ export default function WorkGallery() {
       camera.updateProjectionMatrix();
 
       const isMobile = viewportWidth < 768;
-      cardHeight = isMobile
-        ? Math.min(210, viewportHeight * 0.65)
-        : Math.min(CONFIG.cardMaxHeight, viewportHeight * 0.72);
-      cardWidth = cardHeight * CONFIG.cardAspect; // 16:9
-      pitch = cardWidth + Math.max(isMobile ? 14 : 26, cardWidth * CONFIG.cardGapRatio);
+      if (isMobile) {
+        cardWidth = Math.min(Math.round(viewportWidth * 0.86), 350);
+        cardHeight = Math.round(cardWidth / CONFIG.cardAspect);
+        const gap = Math.max(16, Math.round(cardWidth * 0.06));
+        pitch = cardWidth + gap;
+
+        const centerEdge = cardWidth / 2;
+        const sideEdge = pitch - cardWidth / 2;
+        const tearStart = (centerEdge + sideEdge) / 2;
+        shared.uZone.value = Math.max(26, (viewportWidth / 2) - tearStart);
+      } else {
+        cardHeight = Math.min(CONFIG.cardMaxHeight, Math.max(260, viewportHeight * 0.72));
+        cardWidth = cardHeight * CONFIG.cardAspect; // 16:9
+        const gap = Math.max(26, Math.round(cardWidth * CONFIG.cardGapRatio));
+        pitch = cardWidth + gap;
+
+        const centerEdge = cardWidth / 2;
+        const sideEdge = pitch - cardWidth / 2;
+        const tearStart = (centerEdge + sideEdge) / 2;
+        shared.uZone.value = Math.max(60, (viewportWidth / 2) - tearStart);
+      }
 
       shared.uHalfWidth.value = viewportWidth / 2;
-      shared.uZone.value = Math.min(viewportWidth * CONFIG.tearZoneRatio, CONFIG.tearZoneMax);
       shared.uCardSize.value.set(cardWidth, cardHeight);
 
       rebuildStrip();
     }
 
-    const baseSpeed = CONFIG.scrollSpeed;
     const motion = motionRef.current;
-    motion.velocity = baseSpeed;
+    motion.velocity = 0;
 
-    gsap.to(shared.uStrength, { value: 1, duration: 1.5, ease: 'power3.inOut', delay: 0.2 });
+    // Smooth category switcher with zero black flash
+    switchCategoryRef.current = (newCat: string) => {
+      soundManager.playClick();
+      if (newCat === activeCategoryRef.current) return;
+      activeCategoryRef.current = newCat;
+      setActiveCategory(newCat);
+
+      // Smooth cinematic dissolve: softly fade out current cards (background stays visible!)
+      gsap.killTweensOf(shared.uSectionOpacity);
+      gsap.killTweensOf(shared.uStrength);
+
+      gsap.to(shared.uSectionOpacity, {
+        value: 0,
+        duration: 0.22,
+        ease: 'power2.in',
+        onComplete: () => {
+          currentProjects = newCat === 'ALL'
+            ? ALL_PROJECTS
+            : ALL_PROJECTS.filter((p) => p.cat === newCat);
+
+          rebuildStrip();
+          targetUnitRef.current = 0;
+          setCurrentIndex(1);
+
+          // Soft bloom & fade back in seamlessly
+          shared.uStrength.value = 0;
+          gsap.to(shared.uSectionOpacity, {
+            value: 1,
+            duration: 0.38,
+            ease: 'power2.out',
+          });
+          gsap.to(shared.uStrength, {
+            value: 1,
+            duration: 1.6,
+            delay: 0.08,
+            ease: 'power2.out',
+          });
+        },
+      });
+    };
+
+    // Smooth navigation function attached to ref for button clicks with ZERO stuckness
+    slideByRef.current = (dir: number) => {
+      soundManager.playClick();
+      const half = stripSpan / 2;
+
+      // If neither tweening nor dragging, sync targetUnitRef cleanly with current position
+      if (!isTweeningRef.current && !dragging) {
+        targetUnitRef.current = Math.round((motion.offset + half) / pitch);
+      }
+
+      // Increment / decrement target unit cleanly
+      targetUnitRef.current += dir;
+      const targetOffset = targetUnitRef.current * pitch - half;
+
+      const total = currentProjects.length;
+      if (total > 0) {
+        const rawIdx = ((targetUnitRef.current % total) + total) % total;
+        setCurrentIndex(rawIdx + 1);
+      }
+
+      isTweeningRef.current = true;
+      gsap.killTweensOf(motion);
+      gsap.to(motion, {
+        offset: targetOffset,
+        duration: 0.72,
+        ease: 'power3.out',
+        overwrite: 'auto',
+        onComplete: () => {
+          isTweeningRef.current = false;
+        },
+      });
+    };
+
+    // Delayed, smooth cinematic bloom: cards start solid and gently, slowly shatter into geometric fragments
+    shared.uStrength.value = 0;
+    gsap.killTweensOf(shared.uStrength);
+    gsap.to(shared.uStrength, {
+      value: 1,
+      duration: 2.8,
+      delay: 0.8,
+      ease: 'power2.out',
+    });
 
     let dragging = false;
     let lastX = 0, lastTime = 0, dragVelocity = 0;
@@ -534,6 +641,7 @@ export default function WorkGallery() {
       lastX = event.clientX;
       lastTime = performance.now();
       dragVelocity = 0;
+      isTweeningRef.current = false;
       stage.classList.add('cursor-grabbing');
       stage.setPointerCapture(event.pointerId);
       gsap.killTweensOf(motion);
@@ -545,7 +653,7 @@ export default function WorkGallery() {
       const dx = event.clientX - lastX;
       const dt = Math.max(1, now - lastTime) / 1000;
       motion.offset -= dx;
-      dragVelocity += (-dx / dt - dragVelocity) * 0.35;
+      dragVelocity = -dx / dt;
       lastX = event.clientX;
       lastTime = now;
     };
@@ -554,8 +662,34 @@ export default function WorkGallery() {
       if (!dragging) return;
       dragging = false;
       stage.classList.remove('cursor-grabbing');
-      motion.velocity = gsap.utils.clamp(-CONFIG.flingMax, CONFIG.flingMax, dragVelocity);
-      gsap.to(motion, { velocity: baseSpeed, duration: 2.2, ease: 'power3.out' });
+      const half = stripSpan / 2;
+
+      const currentUnit = (motion.offset + half) / pitch;
+      let targetUnit = Math.round(currentUnit);
+
+      if (Math.abs(dragVelocity) > 260) {
+        targetUnit += dragVelocity > 0 ? 1 : -1;
+      }
+      targetUnitRef.current = targetUnit;
+
+      const targetOffset = targetUnit * pitch - half;
+      const total = currentProjects.length;
+      if (total > 0) {
+        const rawIdx = ((targetUnit % total) + total) % total;
+        setCurrentIndex(rawIdx + 1);
+      }
+
+      isTweeningRef.current = true;
+      gsap.killTweensOf(motion);
+      gsap.to(motion, {
+        offset: targetOffset,
+        duration: 0.75,
+        ease: 'power3.out',
+        overwrite: 'auto',
+        onComplete: () => {
+          isTweeningRef.current = false;
+        },
+      });
     };
 
     stage.addEventListener('pointerdown', onPointerDown);
@@ -565,10 +699,13 @@ export default function WorkGallery() {
     stage.addEventListener('lostpointercapture', endDrag);
 
     const tickerCallback = (time: number, deltaMS: number) => {
-      if (!dragging) {
-        motion.offset += motion.velocity * (deltaMS / 1000);
-      }
       shared.uTime.value = time;
+
+      const isMobile = viewportWidth < 768;
+      // On desktop: drift infinitely when not dragging and no button slide active
+      if (!isMobile && !dragging && !isTweeningRef.current) {
+        motion.offset += CONFIG.scrollSpeed * (deltaMS / 1000);
+      }
 
       const half = stripSpan / 2;
       for (const card of cards) {
@@ -584,8 +721,19 @@ export default function WorkGallery() {
     window.addEventListener('resize', resize);
     resize();
 
+    // Keyboard navigation (Left / Right arrow keys)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') {
+        slideByRef.current(1);
+      } else if (e.key === 'ArrowLeft') {
+        slideByRef.current(-1);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('keydown', handleKeyDown);
       stage.removeEventListener('pointerdown', onPointerDown);
       stage.removeEventListener('pointermove', onPointerMove);
       stage.removeEventListener('pointerup', endDrag);
@@ -596,7 +744,7 @@ export default function WorkGallery() {
 
       cards.forEach((c) => scene.remove(c.mesh));
       if (geometry) geometry.dispose();
-      slots.forEach((s) => {
+      textureMap.forEach((s) => {
         s.texture.dispose();
         s.material.dispose();
       });
@@ -607,72 +755,253 @@ export default function WorkGallery() {
         }
       }
     };
-  }, [filteredProjects]);
+  }, []);
 
   return (
     <section
       ref={sectionRef}
       id="work"
-      className="relative text-black pt-16 md:pt-24 pb-16 md:pb-24 overflow-hidden select-none"
-      style={{
-        background:
-          'linear-gradient(180deg, #1E90FF 0%, #2D93FA 10%, #52A8FE 24%, #7CBEFE 40%, #A9D5FE 58%, #CCE6FE 74%, #E8F3FE 88%, #FFFFFF 100%)',
-      }}
+      className="relative bg-[#EAF2FC] text-black pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
     >
-      {/* ── WHITE TO BLUE ATMOSPHERIC BLEND (Seamless transition from Intro into Work) ── */}
+      {/* Attached Panoramic Sky Background Image */}
       <div
-        className="absolute top-0 left-0 right-0 h-48 sm:h-64 md:h-[340px] lg:h-[400px] pointer-events-none z-[1]"
+        className="absolute inset-0 pointer-events-none z-0 bg-cover bg-top"
+        style={{
+          backgroundImage: 'url(/works-carousel-bg.png)',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+
+      {/* Top Atmospheric Dissolve: Wide whitish-blue blend spreading from Intro down through Works heading */}
+      <div
+        className="absolute top-0 left-0 right-0 h-64 sm:h-80 md:h-[460px] lg:h-[540px] pointer-events-none z-[1]"
         style={{
           background:
-            'linear-gradient(to bottom, #EAF2FC 0%, rgba(234, 242, 252, 0.96) 18%, rgba(234, 242, 252, 0.70) 45%, rgba(234, 242, 252, 0.20) 75%, rgba(30, 144, 255, 0) 100%)',
+            'linear-gradient(to bottom, #EAF2FC 0%, rgba(234, 242, 252, 0.96) 20%, rgba(234, 242, 252, 0.70) 50%, rgba(234, 242, 252, 0.25) 78%, rgba(234, 242, 252, 0) 100%)',
         }}
       />
 
       <div className="w-full relative z-10">
         
-        {/* Brutalist Section Header — Blending begins right here */}
-        <div className="mb-10 md:mb-14 flex flex-col items-center text-center px-4">
-          <h2 className="text-[12vw] leading-[0.8] font-heading font-black z-10 text-black tracking-tight">
-            SELECTED
-          </h2>
-          <h2
-            className="text-[12vw] leading-[0.8] font-heading font-black text-transparent z-10 -mt-3 md:-mt-8 tracking-tight"
-            style={{ WebkitTextStroke: '2px #000' }}
-          >
-            WORKS
-          </h2>
+        {/* ── DESKTOP HEADER (lg and up): ASYMMETRICAL EDITORIAL LAYOUT ── */}
+        {/* Left: SELECTED WORKS | Right: 3-Line Paragraph + Category Filter Capsule (Aligned to Top & Flush Right) */}
+        <div className="hidden lg:flex w-full max-w-[1440px] mx-auto px-8 md:px-12 items-start justify-between select-none">
+          {/* LEFT SIDE: SELECTED WORKS */}
+          <div className="flex flex-col items-start text-left">
+            <h2
+              className="text-[5.5vw] xl:text-[5.2vw] leading-[0.96] uppercase text-black font-bold tracking-[-0.03em]"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+            >
+              SELECTED
+            </h2>
+            <h2
+              className="text-[5.5vw] xl:text-[5.2vw] leading-[0.96] uppercase text-black font-bold tracking-[-0.03em] mt-1"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+            >
+              WORKS
+            </h2>
+          </div>
+
+          {/* RIGHT SIDE: 3-LINE EDITORIAL PARAGRAPH + FILTER CAPSULE FLUSH RIGHT */}
+          <div className="flex flex-col items-end text-right pt-1">
+            <p className="text-[10px] xl:text-[10.5px] font-mono font-medium tracking-[0.06em] text-black/75 uppercase leading-[1.5] mb-3 max-w-sm select-none">
+              IDEAS SHAPED INTO EXPERIENCES.<br />
+              A SELECTION OF WORK DRIVEN BY DETAIL,<br />
+              INTENT AND VISUAL CLARITY.
+            </p>
+
+            {/* Compact Filter Row Aligned Right with Mobile-like White Circular Arrow Buttons (4 visible at a time) */}
+            <div className="flex items-center justify-end gap-1.5 sm:gap-2">
+              {/* Left Arrow Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  desktopFilterScrollRef.current?.scrollBy({ left: -115, behavior: 'smooth' });
+                }}
+                className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-black border border-black/15 shadow-[0_2px_0_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.06)] -translate-y-[0.5px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(0,0,0,0.12)] flex items-center justify-center text-xs font-mono font-bold transition-all duration-150 cursor-pointer select-none"
+                aria-label="Scroll filter left"
+              >
+                ←
+              </button>
+
+              {/* Compact Curved Outer Capsule Container (Fits exactly 4 categories at a time) */}
+              <div className="w-[342px] xl:w-[354px] overflow-hidden rounded-full border border-white/80 bg-white/95 backdrop-blur-md shadow-[0_3px_16px_rgba(0,0,0,0.06)] p-1">
+                <div
+                  ref={desktopFilterScrollRef}
+                  className="overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-1 rounded-full py-0.5 px-0.5"
+                >
+                  {CATEGORIES.map((cat) => {
+                    const isActive = activeCategory === cat.key;
+                    return (
+                      <button
+                        key={cat.key}
+                        onClick={() => {
+                          switchCategoryRef.current(cat.key);
+                        }}
+                        onMouseEnter={() => soundManager.playHover()}
+                        className={`relative flex-shrink-0 min-h-[30px] px-3.5 xl:px-4 py-1 text-[11px] font-mono font-bold tracking-wider uppercase transition-all duration-150 cursor-pointer select-none rounded-full flex items-center justify-center ${
+                          isActive
+                            ? 'bg-black text-white shadow-[0_2.5px_0_#000000,0_5px_10px_rgba(0,0,0,0.35)] -translate-y-[1px]'
+                            : 'text-black/65 hover:text-black hover:bg-black/5 font-medium'
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Arrow Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  desktopFilterScrollRef.current?.scrollBy({ left: 115, behavior: 'smooth' });
+                }}
+                className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-black border border-black/15 shadow-[0_2px_0_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.06)] -translate-y-[0.5px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(0,0,0,0.12)] flex items-center justify-center text-xs font-mono font-bold transition-all duration-150 cursor-pointer select-none"
+                aria-label="Scroll filter right"
+              >
+                →
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-10 px-4">
-          {CATEGORIES.map((cat) => (
+        {/* ── MOBILE HEADER (< lg): STACKED WITH CENTERED FILTER & CIRCULAR ARROWS ── */}
+        <div className="lg:hidden w-full flex flex-col">
+          {/* Heading & paragraph */}
+          <div className="w-full px-6 sm:px-8 flex flex-col items-start text-left select-none">
+            <h2
+              className="text-[13vw] sm:text-[9.5vw] leading-[0.96] uppercase text-black font-bold tracking-[-0.03em]"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+            >
+              SELECTED
+            </h2>
+            <h2
+              className="text-[13vw] sm:text-[9.5vw] leading-[0.96] uppercase text-black font-bold tracking-[-0.03em] mt-1 sm:mt-1.5"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+            >
+              WORKS
+            </h2>
+
+            <p className="text-[10px] sm:text-[11px] font-mono font-medium tracking-[0.06em] text-black/75 uppercase text-left leading-[1.6] mt-5 sm:mt-6 max-w-sm select-none">
+              IDEAS SHAPED INTO EXPERIENCES.<br />
+              A SELECTION OF WORK DRIVEN BY DETAIL,<br />
+              INTENT AND VISUAL CLARITY.
+            </p>
+          </div>
+
+          {/* Filter Row with circular arrows & horizontal scrollable capsule */}
+          <div className="w-full px-4 sm:px-8 mt-6 sm:mt-7 flex items-center justify-center gap-2 sm:gap-3">
+            {/* Left Arrow Button (White Circular Keycap) */}
             <button
-              key={cat}
+              type="button"
               onClick={() => {
                 soundManager.playClick();
-                setActiveCategory(cat);
+                filterScrollRef.current?.scrollBy({ left: -140, behavior: 'smooth' });
               }}
-              onMouseEnter={() => soundManager.playHover()}
-              className={`min-h-[38px] px-3.5 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs font-mono uppercase tracking-wider transition-all duration-300 border cursor-pointer ${
-                activeCategory === cat
-                  ? 'bg-black text-white border-black font-bold shadow-md'
-                  : 'bg-transparent text-black/75 border-black/25 hover:border-black hover:text-black'
-              }`}
+              className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black border border-black/15 shadow-[0_2.5px_0_rgba(0,0,0,0.12),0_4px_10px_rgba(0,0,0,0.06)] -translate-y-[1px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(0,0,0,0.12)] flex items-center justify-center text-xs sm:text-sm font-mono font-bold transition-all duration-150 cursor-pointer select-none"
+              aria-label="Scroll filter left"
             >
-              {cat}
+              ←
             </button>
-          ))}
+
+            {/* Permanently Curved Outer Capsule Container */}
+            <div className="max-w-[calc(100vw-110px)] sm:max-w-max overflow-hidden rounded-full border border-white/80 bg-white/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.06)] p-1 sm:p-1.5">
+              <div
+                ref={filterScrollRef}
+                className="overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-1.5 rounded-full py-0.5 px-1"
+              >
+                {CATEGORIES.map((cat) => {
+                  const isActive = activeCategory === cat.key;
+                  return (
+                    <button
+                      key={cat.key}
+                      onClick={(e) => {
+                        switchCategoryRef.current(cat.key);
+                        e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                      }}
+                      onMouseEnter={() => soundManager.playHover()}
+                      className={`relative flex-shrink-0 min-h-[34px] sm:min-h-[38px] px-4 sm:px-6 py-1.5 sm:py-2 text-[11px] sm:text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer select-none rounded-full flex items-center justify-center ${
+                        isActive
+                          ? 'bg-black text-white shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(0,0,0,0.35)] -translate-y-[1px]'
+                          : 'text-black/65 hover:text-black hover:bg-black/5 font-medium'
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right Arrow Button (White Circular Keycap) */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                filterScrollRef.current?.scrollBy({ left: 140, behavior: 'smooth' });
+              }}
+              className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black border border-black/15 shadow-[0_2.5px_0_rgba(0,0,0,0.12),0_4px_10px_rgba(0,0,0,0.06)] -translate-y-[1px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(0,0,0,0.12)] flex items-center justify-center text-xs sm:text-sm font-mono font-bold transition-all duration-150 cursor-pointer select-none"
+              aria-label="Scroll filter right"
+            >
+              →
+            </button>
+          </div>
         </div>
 
         {/* ══════════════════════════════════════════════
             ORIGO GEOMETRIC UNWOVEN LOOM (Cards Carousel)
+            - 1 Card centered 100% solid & full
+            - 2 Side cards peeking
         ══════════════════════════════════════════════ */}
-        <div className="relative w-full overflow-hidden my-4 py-8 sm:py-12 md:py-14">
+        <div className="relative w-full overflow-hidden mt-4 sm:mt-6 md:mt-8 mb-3 sm:mb-5 md:mb-6">
           <div
             ref={stageRef}
-            className="relative z-10 w-full h-[260px] sm:h-[340px] md:h-[420px] cursor-grab touch-pan-y"
+            className="relative z-10 w-full h-[255px] sm:h-[330px] md:h-[420px] cursor-grab touch-pan-y"
             style={{ willChange: 'transform' }}
           />
+        </div>
+
+        {/* ── CENTERED INTERACTIVE PREV & NEXT NAVIGATION BUTTONS (BLACK KEYBOARD KEYCAPS WITH < > CHEVRONS) ── */}
+        <div className="relative z-20 mx-auto px-4 mt-5 sm:mt-7 flex items-center justify-center gap-3.5 sm:gap-4 select-none">
+          <button
+            type="button"
+            onClick={() => slideByRef.current(-1)}
+            onMouseEnter={() => soundManager.playHover()}
+            className="group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black text-white border-t border-white/25 border-x border-black border-b border-black shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(0,0,0,0.35)] -translate-y-[1px] hover:-translate-y-[2px] hover:shadow-[0_4.5px_0_#000000,0_9px_18px_rgba(0,0,0,0.45)] active:translate-y-[2px] active:shadow-[0_0.5px_0_#000000,0_2px_4px_rgba(0,0,0,0.25)] transition-all duration-150 flex items-center justify-center cursor-pointer select-none"
+            aria-label="Previous Project"
+          >
+            <svg
+              className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform duration-200 ease-out group-hover:-translate-x-0.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.8}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => slideByRef.current(1)}
+            onMouseEnter={() => soundManager.playHover()}
+            className="group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black text-white border-t border-white/25 border-x border-black border-b border-black shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(0,0,0,0.35)] -translate-y-[1px] hover:-translate-y-[2px] hover:shadow-[0_4.5px_0_#000000,0_9px_18px_rgba(0,0,0,0.45)] active:translate-y-[2px] active:shadow-[0_0.5px_0_#000000,0_2px_4px_rgba(0,0,0,0.25)] transition-all duration-150 flex items-center justify-center cursor-pointer select-none"
+            aria-label="Next Project"
+          >
+            <svg
+              className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.8}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
         </div>
 
       </div>
