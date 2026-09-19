@@ -596,9 +596,12 @@ export default function WorkGallery() {
     <section
       ref={sectionRef}
       id="work"
-      className="relative bg-[#1E90FF] text-black pt-20 md:pt-28 pb-20 md:pb-28 overflow-hidden select-none"
+      className="relative works-blend-bg text-black pt-20 md:pt-28 pb-20 md:pb-28 overflow-hidden select-none"
     >
-      <div className="w-full">
+      {/* Cinematic Atmospheric Fade: Intro Paper White dissolving into Works Electric Blue */}
+      <div className="white-to-blue-fade" aria-hidden="true" />
+
+      <div className="w-full relative z-10">
         
         {/* Brutalist Section Header */}
         <div className="mb-10 md:mb-14 flex flex-col items-center text-center px-4">

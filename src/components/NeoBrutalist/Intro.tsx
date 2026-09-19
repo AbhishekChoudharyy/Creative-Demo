@@ -399,7 +399,7 @@ export default function Intro() {
     <section
       ref={sectionRef}
       id="intro"
-      className="relative w-full min-h-screen bg-[#F5F5F3] text-black overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pt-6 sm:pt-8 md:pt-12 pb-6 select-none border-b border-black/10"
+      className="relative w-full min-h-screen bg-[#F5F5F3] text-black overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pt-6 sm:pt-8 md:pt-12 pb-6 select-none"
     >
       {/* ── Subtle Fine Paper Texture Overlay ── */}
       <div

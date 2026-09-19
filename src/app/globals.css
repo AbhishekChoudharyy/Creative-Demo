@@ -57,9 +57,69 @@ html, body {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.85; /* Subtle opacity for the generated canvas texture */
+  opacity: 0.10; /* Ultra-low noise for razor-sharp clarity */
   background-repeat: repeat;
   will-change: transform;
+}
+
+/* Cinematic Atmospheric Dissolve: Hero Electric Blue into Intro Paper White */
+.hero-atmospheric-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 22%;
+  min-height: 150px;
+  pointer-events: none;
+  z-index: 25;
+  background: linear-gradient(
+    to bottom,
+    rgba(245, 245, 243, 0) 0%,
+    rgba(245, 245, 243, 0.015) 12%,
+    rgba(245, 245, 243, 0.055) 24%,
+    rgba(245, 245, 243, 0.14) 38%,
+    rgba(245, 245, 243, 0.28) 52%,
+    rgba(245, 245, 243, 0.48) 66%,
+    rgba(245, 245, 243, 0.70) 79%,
+    rgba(245, 245, 243, 0.88) 90%,
+    rgba(245, 245, 243, 0.97) 96%,
+    #F5F5F3 100%
+  );
+}
+
+/* Cinematic Atmospheric Dissolve: Intro Paper White into Works Electric Blue */
+.white-to-blue-fade {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 200px;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to bottom,
+    #F5F5F3 0%,
+    rgba(245, 245, 243, 0.97) 5%,
+    rgba(245, 245, 243, 0.88) 12%,
+    rgba(245, 245, 243, 0.70) 24%,
+    rgba(245, 245, 243, 0.48) 40%,
+    rgba(245, 245, 243, 0.28) 58%,
+    rgba(245, 245, 243, 0.14) 74%,
+    rgba(245, 245, 243, 0.055) 86%,
+    rgba(245, 245, 243, 0.015) 94%,
+    rgba(245, 245, 243, 0) 100%
+  );
+}
+
+/* Works Section Atmospheric Blend of Mix (Only in Works Section) */
+.works-blend-bg {
+  background-color: #1E90FF;
+  background-image: 
+    radial-gradient(110% 75% at 50% 35%, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.09) 45%, transparent 75%),
+    radial-gradient(900px circle at 85% 20%, rgba(255, 255, 255, 0.18) 0%, transparent 60%),
+    radial-gradient(750px circle at 15% 65%, rgba(255, 255, 255, 0.14) 0%, transparent 55%),
+    linear-gradient(180deg, #1E90FF 0%, #2596FF 25%, #1E90FF 75%, #1E90FF 100%);
+  position: relative;
 }
 
 .hero-title {

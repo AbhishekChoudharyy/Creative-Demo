@@ -16,14 +16,14 @@ export const Scene: FC = () => {
     <>
       <color attach="background" args={["#1E90FF"]} />
 
-      {/* Ambient light for clean even illumination */}
-      <ambientLight intensity={isMobile ? 2.0 : 1.6} />
+      {/* Radiant ambient light for bright, high-clarity illumination */}
+      <ambientLight intensity={isMobile ? 2.5 : 2.0} />
 
-      {/* Balanced studio directional lights */}
-      <directionalLight position={[0, 4, 6]} intensity={isMobile ? 2.2 : 1.8} color="#ffffff" />
-      <directionalLight position={[0, 8, -2]} intensity={isMobile ? 1.8 : 1.4} color="#ffffff" />
-      <directionalLight position={[-6, 2, 4]} intensity={isMobile ? 1.8 : 1.4} color="#ffffff" />
-      <directionalLight position={[6, 2, 4]} intensity={isMobile ? 1.6 : 1.2} color="#ffffff" />
+      {/* Sharp studio directional lights for specular glass reflections */}
+      <directionalLight position={[0, 6, 7]} intensity={isMobile ? 2.6 : 2.2} color="#ffffff" />
+      <directionalLight position={[0, 10, -2]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
+      <directionalLight position={[-7, 3, 5]} intensity={isMobile ? 2.2 : 1.8} color="#ffffff" />
+      <directionalLight position={[7, 3, 5]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
 
       {/* Hero display text rendered inside the WebGL canvas, allowing it to be refracted by the glass ring */}
       <group scale={[1, 1.35, 1]} position={[0, 0, -1.5]}>

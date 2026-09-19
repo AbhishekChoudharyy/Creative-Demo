@@ -148,21 +148,21 @@ export const GlassBox: FC = () => {
         <primitive object={circleGeom} attach="geometry" />
         <MeshTransmissionMaterial
           backside
-          transmission={0.98}
-          roughness={0.04}
+          transmission={0.99}
+          roughness={0.015}
           thickness={0.35}
-          ior={1.42}
-          chromaticAberration={0.05}
-          anisotropy={0.1}
+          ior={1.48}
+          chromaticAberration={0.08}
+          anisotropy={0.15}
           distortion={0.08}
           distortionScale={0.3}
           temporalDistortion={0.0}
           clearcoat={1.0}
-          clearcoatRoughness={0.03}
+          clearcoatRoughness={0.01}
           color="#ffffff"
           attenuationColor="#ffffff"
-          attenuationDistance={12.0}
-          reflectivity={0.6}
+          attenuationDistance={14.0}
+          reflectivity={0.85}
           resolution={512}
           samples={6}
         />

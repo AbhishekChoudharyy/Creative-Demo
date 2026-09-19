@@ -183,9 +183,10 @@ export default function Home() {
         {/* Ball of Glass Interactive 3D Canvas Background (Z-Index 20) */}
         <div className="absolute inset-0 z-20 w-full h-full">
           <Main />
-          {/* Seamless transparent transition to match the navy flow */}
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-transparent pointer-events-none" />
         </div>
+
+        {/* Cinematic Atmospheric Fade: Electric Blue dissolving into Intro Paper White (Z-Index 25) */}
+        <div className="hero-atmospheric-fade" aria-hidden="true" />
 
         {/* Flat Immersive Navbar (Z-Index 30) */}
         <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 sm:px-8 py-4 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">

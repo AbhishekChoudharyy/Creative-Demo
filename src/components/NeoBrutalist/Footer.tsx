@@ -5,7 +5,7 @@ import { soundManager } from "@/lib/sound";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-[#1E90FF] via-[#1A7FE5] to-[#1265C4] text-black relative select-none">
+    <footer className="bg-[#1E90FF] text-black relative select-none">
       <div className="px-6 sm:px-10 lg:px-16 pt-12 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 max-w-6xl mx-auto">
           {/* BRAND */}
