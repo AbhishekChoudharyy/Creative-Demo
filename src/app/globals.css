@@ -62,53 +62,93 @@ html, body {
   will-change: transform;
 }
 
-/* Cinematic Atmospheric Dissolve: Hero Electric Blue into Intro Paper White */
+/* Cinematic Cloud-like Atmospheric Dissolve: Hero Electric Blue into Intro Paper White */
 .hero-atmospheric-fade {
   position: absolute;
   left: 0;
   right: 0;
   bottom: -1px;
-  height: 22%;
-  min-height: 150px;
+  height: 28%;
+  min-height: 220px;
   pointer-events: none;
   z-index: 25;
-  background: linear-gradient(
-    to bottom,
-    rgba(245, 245, 243, 0) 0%,
-    rgba(245, 245, 243, 0.015) 12%,
-    rgba(245, 245, 243, 0.055) 24%,
-    rgba(245, 245, 243, 0.14) 38%,
-    rgba(245, 245, 243, 0.28) 52%,
-    rgba(245, 245, 243, 0.48) 66%,
-    rgba(245, 245, 243, 0.70) 79%,
-    rgba(245, 245, 243, 0.88) 90%,
-    rgba(245, 245, 243, 0.97) 96%,
-    #F5F5F3 100%
-  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-image:
+    /* Dense rolling cumulus cloud banks at the base */
+    radial-gradient(ellipse 48% 65% at 18% 100%, #F5F5F3 0%, rgba(245, 245, 243, 0.92) 45%, transparent 80%),
+    radial-gradient(ellipse 55% 70% at 52% 100%, #F5F5F3 0%, rgba(245, 245, 243, 0.95) 48%, transparent 85%),
+    radial-gradient(ellipse 48% 65% at 84% 100%, #F5F5F3 0%, rgba(245, 245, 243, 0.92) 45%, transparent 80%),
+    /* Mid-altitude billowing cloud puffs with soft white luminous highlights */
+    radial-gradient(ellipse 38% 50% at 32% 82%, rgba(255, 255, 255, 0.85) 0%, rgba(245, 245, 243, 0.50) 45%, transparent 78%),
+    radial-gradient(ellipse 42% 52% at 68% 80%, rgba(255, 255, 255, 0.82) 0%, rgba(245, 245, 243, 0.48) 45%, transparent 78%),
+    radial-gradient(ellipse 32% 42% at 6% 75%, rgba(255, 255, 255, 0.70) 0%, rgba(245, 245, 243, 0.35) 45%, transparent 75%),
+    radial-gradient(ellipse 32% 42% at 94% 75%, rgba(255, 255, 255, 0.70) 0%, rgba(245, 245, 243, 0.35) 45%, transparent 75%),
+    /* High-altitude ethereal cirrus wisps drifting into the blue sky */
+    radial-gradient(ellipse 65% 38% at 48% 60%, rgba(255, 255, 255, 0.42) 0%, rgba(245, 245, 243, 0.18) 40%, transparent 72%),
+    radial-gradient(ellipse 52% 32% at 20% 50%, rgba(255, 255, 255, 0.30) 0%, transparent 68%),
+    radial-gradient(ellipse 52% 32% at 80% 50%, rgba(255, 255, 255, 0.30) 0%, transparent 68%),
+    /* Ambient atmospheric sky-to-cloud density gradient */
+    linear-gradient(
+      to bottom,
+      rgba(245, 245, 243, 0) 0%,
+      rgba(245, 245, 243, 0.04) 25%,
+      rgba(245, 245, 243, 0.22) 50%,
+      rgba(245, 245, 243, 0.55) 72%,
+      rgba(245, 245, 243, 0.80) 88%,
+      rgba(245, 245, 243, 0.90) 100%
+    );
 }
 
-/* Cinematic Atmospheric Dissolve: Intro Paper White into Works Electric Blue */
+/* Cloud-like Wisps and Atmospheric Mist in Top of Intro Section */
+.intro-top-blend {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 260px;
+  pointer-events: none;
+  z-index: 1;
+  background-image:
+    /* Gentle floating blue sky pockets between cloud formations */
+    radial-gradient(ellipse 42% 65% at 22% 0%, rgba(30, 144, 255, 0.14) 0%, rgba(30, 144, 255, 0.04) 50%, transparent 75%),
+    radial-gradient(ellipse 48% 60% at 76% 0%, rgba(30, 144, 255, 0.15) 0%, rgba(30, 144, 255, 0.05) 50%, transparent 75%),
+    radial-gradient(ellipse 36% 48% at 48% 8%, rgba(30, 144, 255, 0.09) 0%, transparent 65%),
+    linear-gradient(
+      to bottom,
+      rgba(30, 144, 255, 0.10) 0%,
+      rgba(30, 144, 255, 0.05) 35%,
+      rgba(30, 144, 255, 0.015) 70%,
+      transparent 100%
+    );
+}
+
+/* Cinematic Cloud-like Atmospheric Dissolve: Intro Paper White into Works Electric Blue */
 .white-to-blue-fade {
   position: absolute;
   top: -1px;
   left: 0;
   right: 0;
-  height: 200px;
+  height: 240px;
   pointer-events: none;
   z-index: 10;
-  background: linear-gradient(
-    to bottom,
-    #F5F5F3 0%,
-    rgba(245, 245, 243, 0.97) 5%,
-    rgba(245, 245, 243, 0.88) 12%,
-    rgba(245, 245, 243, 0.70) 24%,
-    rgba(245, 245, 243, 0.48) 40%,
-    rgba(245, 245, 243, 0.28) 58%,
-    rgba(245, 245, 243, 0.14) 74%,
-    rgba(245, 245, 243, 0.055) 86%,
-    rgba(245, 245, 243, 0.015) 94%,
-    rgba(245, 245, 243, 0) 100%
-  );
+  background-image:
+    /* Cloud banks receding into the blue world of Works */
+    radial-gradient(ellipse 48% 65% at 20% 0%, #F5F5F3 0%, rgba(245, 245, 243, 0.90) 45%, transparent 80%),
+    radial-gradient(ellipse 55% 70% at 50% 0%, #F5F5F3 0%, rgba(245, 245, 243, 0.94) 48%, transparent 85%),
+    radial-gradient(ellipse 48% 65% at 82% 0%, #F5F5F3 0%, rgba(245, 245, 243, 0.90) 45%, transparent 80%),
+    radial-gradient(ellipse 38% 50% at 35% 18%, rgba(255, 255, 255, 0.75) 0%, rgba(245, 245, 243, 0.40) 45%, transparent 75%),
+    radial-gradient(ellipse 42% 52% at 65% 20%, rgba(255, 255, 255, 0.75) 0%, rgba(245, 245, 243, 0.40) 45%, transparent 75%),
+    radial-gradient(ellipse 60% 35% at 50% 40%, rgba(255, 255, 255, 0.35) 0%, transparent 70%),
+    linear-gradient(
+      to bottom,
+      #F5F5F3 0%,
+      rgba(245, 245, 243, 0.92) 10%,
+      rgba(245, 245, 243, 0.65) 30%,
+      rgba(245, 245, 243, 0.30) 58%,
+      rgba(245, 245, 243, 0.08) 82%,
+      rgba(245, 245, 243, 0) 100%
+    );
 }
 
 /* Works Section Atmospheric Blend of Mix (Only in Works Section) */

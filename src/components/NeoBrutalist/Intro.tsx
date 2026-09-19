@@ -2,10 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { soundManager } from '@/lib/sound';
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface AnimatedWordConfig {
   id: string;
@@ -46,73 +43,83 @@ export default function Intro() {
 
   // Animated words config: all active on hover
   const animatedWords: AnimatedWordConfig[] = [
-    { id: 'every', ref: everyRef, openDirection: 'right', maxOpenDistance: 260, maxOuterDistance: 55 },
-    { id: 'experience', ref: experienceRef, openDirection: 'left', maxOpenDistance: 280, maxOuterDistance: 55 },
-    { id: 'begins', ref: beginsRef, openDirection: 'right', maxOpenDistance: 280, maxOuterDistance: 55 },
-    { id: 'with', ref: withRef, openDirection: 'left', maxOpenDistance: 280, maxOuterDistance: 55 },
-    { id: 'idea', ref: ideaRef, openDirection: 'left', maxOpenDistance: 280, maxOuterDistance: 85 },
-    { id: 'from', ref: fromRef, openDirection: 'right', maxOpenDistance: 280, maxOuterDistance: 55 },
-    { id: 'origin', ref: originRef, openDirection: 'left', maxOpenDistance: 280, maxOuterDistance: 55 },
-    { id: 'to', ref: toRef, openDirection: 'right', maxOpenDistance: 260, maxOuterDistance: 55 },
-    { id: 'excellence', ref: excellenceRef, openDirection: 'left', maxOpenDistance: 300, maxOuterDistance: 55 },
-    { id: 'shaping', ref: shapingRef, openDirection: 'right', maxOpenDistance: 260, maxOuterDistance: 55 },
-    { id: 'forms', ref: formsRef, openDirection: 'left', maxOpenDistance: 280, maxOuterDistance: 55 },
-    { id: 'that', ref: thatRef, openDirection: 'right', maxOpenDistance: 260, maxOuterDistance: 55 },
-    { id: 'connect', ref: connectRef, openDirection: 'right', maxOpenDistance: 260, maxOuterDistance: 55 },
-    { id: 'inspire', ref: inspireRef, openDirection: 'left', maxOpenDistance: 260, maxOuterDistance: 55 },
-    { id: 'endure', ref: endureRef, openDirection: 'left', maxOpenDistance: 280, maxOuterDistance: 55 },
+    { id: 'every', ref: everyRef, openDirection: 'right', maxOpenDistance: 80, maxOuterDistance: 30 },
+    { id: 'experience', ref: experienceRef, openDirection: 'left', maxOpenDistance: 80, maxOuterDistance: 30 },
+    { id: 'begins', ref: beginsRef, openDirection: 'right', maxOpenDistance: 75, maxOuterDistance: 35 },
+    { id: 'with', ref: withRef, openDirection: 'left', maxOpenDistance: 75, maxOuterDistance: 30 },
+    { id: 'idea', ref: ideaRef, openDirection: 'right', maxOpenDistance: 75, maxOuterDistance: 30 },
+    { id: 'from', ref: fromRef, openDirection: 'right', maxOpenDistance: 80, maxOuterDistance: 30 },
+    { id: 'origin', ref: originRef, openDirection: 'left', maxOpenDistance: 80, maxOuterDistance: 30 },
+    { id: 'to', ref: toRef, openDirection: 'right', maxOpenDistance: 75, maxOuterDistance: 35 },
+    { id: 'excellence', ref: excellenceRef, openDirection: 'left', maxOpenDistance: 80, maxOuterDistance: 30 },
+    { id: 'shaping', ref: shapingRef, openDirection: 'right', maxOpenDistance: 70, maxOuterDistance: 25 },
+    { id: 'forms', ref: formsRef, openDirection: 'left', maxOpenDistance: 70, maxOuterDistance: 25 },
+    { id: 'that', ref: thatRef, openDirection: 'right', maxOpenDistance: 70, maxOuterDistance: 25 },
+    { id: 'connect', ref: connectRef, openDirection: 'right', maxOpenDistance: 70, maxOuterDistance: 25 },
+    { id: 'inspire', ref: inspireRef, openDirection: 'left', maxOpenDistance: 70, maxOuterDistance: 25 },
+    { id: 'endure', ref: endureRef, openDirection: 'left', maxOpenDistance: 70, maxOuterDistance: 25 },
   ];
 
   const wordDirStateRef = useRef<Record<string, 'left' | 'right'>>({
-    every: 'left',
+    every: 'right',
     experience: 'left',
     begins: 'right',
     with: 'left',
     idea: 'right',
-    from: 'left',
+    from: 'right',
     origin: 'left',
     to: 'right',
-    excellence: 'right',
-    shaping: 'left',
-    forms: 'right',
-    that: 'left',
-    connect: 'left',
-    inspire: 'right',
+    excellence: 'left',
+    shaping: 'right',
+    forms: 'left',
+    that: 'right',
+    connect: 'right',
+    inspire: 'left',
     endure: 'left',
   });
 
   const wordClickCountRef = useRef<Record<string, number>>({});
 
   /**
-   * Unified Travel Calculation (Exact same animation physics for Desktop & Mobile):
-   * - Each word glides outward or inward based on alternating direction
-   * - Clamped to viewport safety so it never overflows screen edge
+   * Safe Viewport Clamped Travel Calculation:
+   * - Strict mathematical clamp: NO word can EVER exceed the screen boundary.
+   * - A 24px (mobile) to 48px (desktop) safety padding is strictly enforced at all times.
+   * - Left-anchored words glide inwards to the right; right-anchored words glide inwards to the left.
    */
   const getTargetX = (item: AnimatedWordConfig, el: HTMLElement) => {
     if (typeof window === 'undefined') return 0;
     const isMobile = window.innerWidth < 768;
     const screenWidth = window.innerWidth;
+    const safetyMargin = isMobile ? 24 : 48;
+
+    // Get current GSAP translation to derive the unshifted base position
+    const currentX = (gsap.getProperty(el, 'x') as number) || 0;
     const rect = el.getBoundingClientRect();
-    const padding = 16;
+    const baseLeft = rect.left - currentX;
+    const baseRight = rect.right - currentX;
 
-    const dir = wordDirStateRef.current[item.id] || 'right';
-    const rawDist = item.openDirection === 'right' ? item.maxOpenDistance : item.maxOuterDistance;
+    // Calculate maximum allowable shift without bleeding past screen edges:
+    // baseLeft + targetX >= safetyMargin => targetX >= safetyMargin - baseLeft
+    // baseRight + targetX <= screenWidth - safetyMargin => targetX <= (screenWidth - safetyMargin) - baseRight
+    const minAllowedX = safetyMargin - baseLeft;
+    const maxAllowedX = (screenWidth - safetyMargin) - baseRight;
 
-    if (isMobile) {
-      if (dir === 'right') {
-        const spaceToRight = Math.max(screenWidth - rect.right - padding, 10);
-        return Math.min(rawDist * 0.45, spaceToRight * 0.70);
-      } else {
-        const spaceToLeft = Math.max(rect.left - padding, 10);
-        return -Math.min(rawDist * 0.45, spaceToLeft * 0.70);
-      }
-    } else {
-      if (item.id === 'experience') return 0;
-
-      const maxBound = window.innerWidth * 0.40;
-      const dist = Math.min(rawDist, maxBound);
-      return dir === 'right' ? dist : -dist;
+    if (minAllowedX >= maxAllowedX) {
+      return 0; // Word is wider than safe viewport
     }
+
+    const dir = wordDirStateRef.current[item.id] || item.openDirection;
+
+    // Distance tuned for premium, controlled brutalist editorial motion:
+    // Left-anchored words move inwards (+X); right-anchored words move inwards (-X).
+    const maxShift = isMobile
+      ? (dir === item.openDirection ? 35 : 18)
+      : (dir === item.openDirection ? 80 : 35);
+
+    const rawX = dir === 'right' ? maxShift : -maxShift;
+
+    // Hard mathematical clamp guarantees 100% viewport safety
+    return Math.max(minAllowedX, Math.min(maxAllowedX, rawX));
   };
 
   const playHoverSound = () => {
@@ -346,50 +353,7 @@ export default function Intro() {
   };
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const revealLines = gsap.utils.toArray('.intro-reveal-text');
-
-      revealLines.forEach((line: any, i) => {
-        gsap.fromTo(
-          line,
-          { y: 60, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1.1,
-            delay: i * 0.05,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top 75%',
-              toggleActions: 'play reverse play reverse',
-            },
-          }
-        );
-      });
-
-      if (dotRef.current) {
-        gsap.fromTo(
-          dotRef.current,
-          { scale: 0, opacity: 0 },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 0.6,
-            delay: 0.45,
-            ease: 'back.out(2)',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top 75%',
-              toggleActions: 'play reverse play reverse',
-            },
-          }
-        );
-      }
-    }, sectionRef);
-
     return () => {
-      ctx.revert();
       if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
@@ -409,6 +373,9 @@ export default function Intro() {
           backgroundSize: '24px 24px',
         }}
       />
+
+      {/* ── Soft Stretched Atmospheric Blue Blend from Hero (Few shades only) ── */}
+      <div className="intro-top-blend" aria-hidden="true" />
 
       {/* ══════════════════════════════════════════════
           MAIN EDITORIAL TYPOGRAPHY POSTER
@@ -510,7 +477,7 @@ export default function Intro() {
             </span>
           </h2>
           <h2
-            className="self-start md:self-auto pl-[40%] sm:pl-[45%] md:pl-0 text-left intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
+            className="self-start md:self-auto pl-[40%] sm:pl-[45%] md:pl-[6%] text-left intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
