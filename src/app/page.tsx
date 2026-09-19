@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Marquee from "@/components/Marque";
 import dynamic from "next/dynamic";
 import { soundManager } from "@/lib/sound";
 
 import Intro from "@/components/NeoBrutalist/Intro";
 import WorkGallery from "@/components/NeoBrutalist/WorkGallery";
-import Manifesto from "@/components/NeoBrutalist/Manifesto";
 import ImmersiveCarousel from "@/components/NeoBrutalist/ImmersiveCarousel";
 import Team from "@/components/NeoBrutalist/Team";
 import Services from "@/components/NeoBrutalist/Services";
@@ -76,9 +74,9 @@ export default function Home() {
       for (let i = 0; i < data.length; i += 4) {
         const value = Math.floor(Math.random() * 255);
         data[i] = value;     // R
-        data[i+1] = value;   // G
-        data[i+2] = value;   // B
-        data[i+3] = 16;      // A (subtle opacity)
+        data[i + 1] = value;   // G
+        data[i + 2] = value;   // B
+        data[i + 3] = 16;      // A (subtle opacity)
       }
       ctx.putImageData(imgData, 0, 0);
       const dataUrl = canvas.toDataURL();
@@ -129,9 +127,9 @@ export default function Home() {
         <div className={`fixed inset-0 bg-[#080808] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
           {/* Subtle grid background */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-          
+
           <div className="flex flex-col items-center max-w-xs w-full px-4 text-center z-10 space-y-12">
-            
+
             {/* Title and Subtitle */}
             <div className="space-y-3 flex flex-col items-center">
               <img
@@ -152,7 +150,7 @@ export default function Home() {
                     LOADING • {progress}%
                   </span>
                   <div className="w-24 h-[1px] bg-white/10 relative overflow-hidden">
-                    <div 
+                    <div
                       className="absolute top-0 bottom-0 left-0 bg-white transition-all duration-150 ease-out"
                       style={{ width: `${progress}%` }}
                     />
@@ -252,16 +250,11 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Original Marquee right after Hero */}
-      <Marquee />
-
       {/* Neo-Brutalist Portfolio Sections */}
       <Intro />
-      <Services />
-      <Manifesto />
-      <ImmersiveCarousel />
       <WorkGallery />
+      <ImmersiveCarousel />
+      <Services />
 
       {/* Contact Form Section */}
       <ContactForm />

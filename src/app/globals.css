@@ -4,12 +4,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'OT Brut';
+  src: url('/fonts/OTBrut-Regular.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --font-syne: 'Syne', sans-serif;
   --font-manrope: 'Manrope', sans-serif;
   --font-playfair: 'Playfair Display', serif;
   --font-geist-sans: 'Geist', sans-serif;
   --font-geist-mono: 'Geist Mono', monospace;
+  --font-ot-brut: 'OT Brut', 'Bodoni Moda', serif;
 }
 
 html, body {
