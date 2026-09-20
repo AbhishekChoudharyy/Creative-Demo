@@ -158,11 +158,11 @@ export default function Services() {
           </div>
         </div>
 
-        <ul ref={listRef} className="border-t border-[#0A1F44]/20">
+        <ul ref={listRef} className="border-t border-white/25">
           {services.map((service, idx) => (
             <li 
               key={service.id} 
-              className="group border-b border-[#0A1F44]/20 relative overflow-hidden cursor-pointer"
+              className="group border-b border-white/25 relative overflow-hidden cursor-pointer"
               onMouseEnter={() => {
                 handleMouseEnter(service.img);
                 soundManager.playHover();
@@ -179,13 +179,13 @@ export default function Services() {
               <div className="relative z-10 flex justify-between items-center py-5 sm:py-6 md:py-7 px-2 sm:px-4 group-hover:px-4 sm:group-hover:px-6 transition-all duration-300">
                 <div className="flex items-baseline gap-4 sm:gap-6 min-w-0 pr-2">
                   <span
-                    className="text-xs sm:text-sm font-mono text-[#0A1F44]/50 group-hover:text-white transition-colors shrink-0 tracking-wider"
+                    className="text-xs sm:text-sm font-mono text-white/70 group-hover:text-black transition-colors shrink-0 tracking-wider"
                     style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
                   >
                     0{service.id}
                   </span>
                   <h3
-                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl group-hover:text-white transition-colors group-hover:translate-x-2 sm:group-hover:translate-x-3 duration-300 break-words font-semibold tracking-tight"
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white group-hover:text-black transition-colors group-hover:translate-x-2 sm:group-hover:translate-x-3 duration-300 break-words font-semibold tracking-tight"
                     style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
                   >
                     {service.title}
@@ -194,12 +194,12 @@ export default function Services() {
                 
                 <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                   <span
-                    className="text-[10px] sm:text-xs uppercase tracking-widest opacity-0 md:opacity-100 group-hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0 duration-300 delay-75 hidden sm:inline font-mono"
+                    className="text-[10px] sm:text-xs uppercase tracking-widest opacity-0 md:opacity-100 text-white/80 group-hover:text-black transition-all transform translate-y-2 group-hover:translate-y-0 duration-300 delay-75 hidden sm:inline font-mono"
                     style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
                   >
                     {service.category}
                   </span>
-                  <ArrowUpRight className={`w-5 h-5 sm:w-6 sm:h-6 text-[#0A1F44]/50 transition-all duration-300 ${openIndex === idx ? 'text-white rotate-90' : 'group-hover:text-white group-hover:rotate-45'}`} />
+                  <ArrowUpRight className={`w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 ${openIndex === idx ? 'text-black rotate-90' : 'text-white/80 group-hover:text-black group-hover:rotate-45'}`} />
                 </div>
               </div>
 

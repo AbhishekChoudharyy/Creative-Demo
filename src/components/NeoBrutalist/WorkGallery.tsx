@@ -764,7 +764,13 @@ export default function WorkGallery() {
       className="relative bg-white text-[#0A1F44] pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
     >
       {/* ── DIAGONAL BLUE GRADIENT BAND (Top-Left to Bottom-Right) ── */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      <div
+        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+        style={{
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 40px, black 240px)',
+          maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 40px, black 240px)',
+        }}
+      >
         {/* Soft atmospheric cloud texture rotated along the diagonal */}
         <div
           className="absolute -top-[50%] -left-[35%] w-[170%] h-[200%] pointer-events-none"
@@ -802,11 +808,12 @@ export default function WorkGallery() {
         />
       </div>
 
-      {/* Gentle top edge dissolve to blend seamlessly with Intro white */}
+      {/* Ultra-smooth blending border: dissolves seamlessly from Intro's 100% white ground into Works */}
       <div
-        className="absolute top-0 left-0 right-0 h-20 sm:h-28 pointer-events-none z-[1]"
+        className="absolute top-0 left-0 right-0 h-40 sm:h-52 lg:h-64 pointer-events-none z-[1]"
         style={{
-          background: 'linear-gradient(to bottom, #FFFFFF 0%, rgba(255, 255, 255, 0.85) 45%, rgba(255, 255, 255, 0.25) 75%, transparent 100%)',
+          background:
+            'linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 20%, rgba(255, 255, 255, 0.88) 45%, rgba(255, 255, 255, 0.45) 75%, transparent 100%)',
         }}
       />
 
@@ -816,6 +823,8 @@ export default function WorkGallery() {
         style={{
           background:
             'radial-gradient(ellipse 95% 90% at 100% 0%, #FFFFFF 0%, #FFFFFF 55%, rgba(255, 255, 255, 0.95) 72%, rgba(255, 255, 255, 0.45) 88%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 40px, black 200px)',
+          maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 40px, black 200px)',
         }}
       />
 
@@ -823,7 +832,7 @@ export default function WorkGallery() {
         
         {/* ── DESKTOP HEADER (lg and up): ASYMMETRICAL EDITORIAL LAYOUT ── */}
         {/* Left: SELECTED WORKS | Right: 3-Line Paragraph + Category Filter Capsule (Aligned to Top & Flush Right) */}
-        <div className="hidden lg:flex w-full max-w-[1440px] mx-auto px-8 md:px-12 items-start justify-between select-none">
+        <div className="hidden lg:flex w-full max-w-[1440px] mx-auto px-8 md:px-12 items-stretch justify-between select-none">
           {/* LEFT SIDE: SELECTED WORKS */}
           <div className="flex flex-col items-start text-left">
             <h2
@@ -840,15 +849,15 @@ export default function WorkGallery() {
             </h2>
           </div>
 
-          {/* RIGHT SIDE: 3-LINE EDITORIAL PARAGRAPH + FILTER CAPSULE FLUSH RIGHT */}
-          <div className="flex flex-col items-end text-right pt-1">
-            <p className="text-[10px] xl:text-[10.5px] font-mono font-medium tracking-[0.06em] text-[#0A1F44]/75 uppercase leading-[1.5] mb-3 max-w-sm select-none">
+          {/* RIGHT SIDE: 3-LINE EDITORIAL PARAGRAPH + FILTER CAPSULE FLUSH RIGHT (Aligned to WORKS level) */}
+          <div className="flex flex-col items-end justify-between self-stretch text-right pt-1 pb-1">
+            <p className="text-[10px] xl:text-[10.5px] font-mono font-medium tracking-[0.06em] text-[#0A1F44]/75 uppercase leading-[1.5] max-w-sm select-none">
               IDEAS SHAPED INTO EXPERIENCES.<br />
               A SELECTION OF WORK DRIVEN BY DETAIL,<br />
               INTENT AND VISUAL CLARITY.
             </p>
 
-            {/* Compact Filter Row Aligned Right with Mobile-like White Circular Arrow Buttons (4 visible at a time) */}
+            {/* Compact Filter Row Aligned to WORKS text level with Circular Arrow Buttons */}
             <div className="flex items-center justify-end gap-1.5 sm:gap-2">
               {/* Left Arrow Button */}
               <button

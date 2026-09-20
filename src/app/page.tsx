@@ -326,28 +326,38 @@ export default function Home() {
 
       {/* Sticky Navbar (fixed, always on top of every section) */}
       <div className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-[#0A1F44] uppercase mix-blend-normal">
-        <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity min-h-[44px]">
-          <img
-            src="/logo-black-transparent.png"
-            alt="Origo Atelier"
-            className="h-11 md:h-14 w-auto object-contain"
-          />
-        </div>
-        <span
-          className="font-extrabold text-xs sm:text-sm font-mono absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em] text-[#0A1F44]"
-          style={{ textTransform: 'none' }}
+        {/* Brand Lockup: Origo ATELIER (Replaces logo image, active on desktop & mobile) */}
+        <div
+          onClick={() => {
+            soundManager.playClick();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className="flex items-baseline gap-1.5 sm:gap-2 text-[#0A1F44] select-none cursor-pointer hover:opacity-75 transition-opacity min-h-[44px] normal-case"
         >
-          Origo Atelier
-        </span>
-        <div className="flex items-center gap-4 sm:gap-8">
+          <span
+            className="text-base sm:text-lg leading-none tracking-[0.02em] font-bold normal-case"
+            style={{ fontFamily: "'ERF Neot', sans-serif", textTransform: 'none' }}
+          >
+            Origo
+          </span>
+          <span
+            className="text-[10px] sm:text-[11.5px] font-extralight uppercase tracking-[0.26em] leading-none opacity-85 font-sans"
+            style={{ fontWeight: 200 }}
+          >
+            ATELIER
+          </span>
+        </div>
+
+        {/* Right Navigation Controls */}
+        <div className="flex items-center gap-2.5 sm:gap-4 md:gap-8">
           <button
             onClick={handleToggleMute}
             onMouseEnter={() => soundManager.playHover()}
-            className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-medium px-1"
+            className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-medium px-0.5 sm:px-1"
           >
             [ SOUND {isMuted ? 'OFF' : 'ON'} ]
           </button>
-          <span className="opacity-80 hidden md:inline">[ {String(scrollCount).padStart(3, '0')} ]</span>
+          <span className="opacity-80 inline">[ {String(scrollCount).padStart(3, '0')} ]</span>
           <button
             onClick={() => {
               soundManager.playClick();
@@ -355,7 +365,7 @@ export default function Home() {
               contactSection?.scrollIntoView({ behavior: "smooth" });
             }}
             onMouseEnter={() => soundManager.playHover()}
-            className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-bold px-1"
+            className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-bold px-0.5 sm:px-1"
           >
             CONTACT
           </button>

@@ -7,9 +7,22 @@ export default function CustomCursor() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    // Only show the custom dot cursor on precise (mouse/trackpad) pointers
-    if (!window.matchMedia('(pointer: fine)').matches) return;
-    setEnabled(true);
+    const checkIsDesktop = () => {
+      const isMobileScreen = window.innerWidth < 1024;
+      const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+      const canHover = window.matchMedia('(hover: hover)').matches;
+
+      return !isMobileScreen && !isCoarse && canHover;
+    };
+
+    setEnabled(checkIsDesktop());
+
+    const onResize = () => {
+      setEnabled(checkIsDesktop());
+    };
+
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   useEffect(() => {
@@ -70,13 +83,15 @@ export default function CustomCursor() {
     <div
       ref={dotRef}
       aria-hidden="true"
-      className="fixed top-0 left-0 z-[100000] pointer-events-none opacity-0 transition-opacity duration-200"
+      className="hidden lg:block fixed top-0 left-0 z-[100000] pointer-events-none opacity-0 transition-opacity duration-200"
     >
       <div
-        className="w-3 h-3 rounded-full"
+        className="w-3.5 h-3.5 rounded-full border-0 border-none outline-none"
         style={{
-          background: '#0A1F44',
-          boxShadow: '0 0 0 1.5px rgba(255,255,255,0.9), 0 0 12px rgba(10,31,68,0.35)',
+          background: 'rgba(10, 31, 68, 0.35)',
+          boxShadow: 'none',
+          border: 'none',
+          outline: 'none',
         }}
       />
     </div>

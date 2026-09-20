@@ -896,7 +896,7 @@ export default function Intro() {
           WHAT WE BELIEVE — BRAND PHILOSOPHY PARAGRAPH
           - DESKTOP ONLY: 100% original full 2 paragraphs exactly as approved
       ══════════════════════════════════════════════ */}
-      <div className="hidden md:flex relative z-10 w-full max-w-[1700px] mx-auto mt-8 mb-16 md:mb-24 justify-end">
+      <div className="hidden md:flex relative z-10 w-full max-w-[1700px] mx-auto mt-16 md:mt-24 lg:mt-32 mb-16 md:mb-24 justify-end">
         <div className="w-8/12 lg:w-6/12 border-l-2 border-[#0A1F44]/25 pl-8 space-y-3">
           <span className="text-xs uppercase tracking-[0.25em] font-mono font-bold text-[#0A1F44]/60 block">
             {"WHAT WE BELIEVE"}
