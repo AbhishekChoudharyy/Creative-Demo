@@ -447,7 +447,7 @@ export default function ImmersiveCarousel() {
     <section
       ref={containerRef}
       id="services-carousel"
-      className="relative z-10 w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-[#0A1F44] flex flex-col justify-between px-6 sm:px-10 md:px-14 py-6 sm:py-8"
+      className="sticky top-0 z-20 w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-[#0A1F44] flex flex-col justify-between px-6 sm:px-10 md:px-14 py-6 sm:py-8"
     >
       {/* ── Subtle Ambient Background Texture ── */}
       <div

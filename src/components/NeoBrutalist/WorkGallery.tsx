@@ -761,7 +761,7 @@ export default function WorkGallery() {
     <section
       ref={sectionRef}
       id="work"
-      className="relative bg-white text-[#0A1F44] pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
+      className="sticky top-0 z-10 min-h-screen bg-white text-[#0A1F44] pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
     >
       {/* ── DIAGONAL BLUE GRADIENT BAND (Top-Left to Bottom-Right) ── */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
