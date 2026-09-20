@@ -11,9 +11,6 @@ import Team from "@/components/NeoBrutalist/Team";
 import Services from "@/components/NeoBrutalist/Services";
 import ContactForm from "@/components/NeoBrutalist/ContactForm";
 import CustomCursor from "@/components/CustomCursor";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
 
 const Main = dynamic(() => import("@/components/Main").then((mod) => mod.Main), {
   ssr: false,
@@ -58,7 +55,6 @@ export default function Home() {
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
-  const flashRef = useRef<HTMLDivElement>(null);
   const [scrollCount, setScrollCount] = useState(0);
 
   // Navbar counter: 000 → 100 based on total page scroll distance
@@ -79,94 +75,6 @@ export default function Home() {
     return () => {
       window.removeEventListener('scroll', updateCount);
       window.removeEventListener('resize', updateCount);
-    };
-  }, []);
-
-  // ── Cinematic color-flash: Work → Shapes boundary par Shapes section ka
-  // exact blue poore viewport ko le leta hai, phir section reveal hota hai.
-  // Har boundary cross (dono direction) + Shapes ke end pe bhi trigger hota hai.
-  // ── Cinematic color-flash: Work ↔ Shapes boundary ──
-  // Highly optimized for mobile: ignoreMobileResize, momentum cooldown, GPU accelerated layer, and natural landing.
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    ScrollTrigger.config({ ignoreMobileResize: true });
-
-    const overlay = flashRef.current;
-    const shapesSection = document.getElementById('services-carousel');
-    const workSection = document.getElementById('work');
-    const gapSection = document.getElementById('works-shapes-gap');
-    if (!overlay || !shapesSection || !workSection) return;
-
-    let isFlashing = false;
-    let lastFlashTime = 0;
-    const COOLDOWN_MS = 850;
-
-    const runFlash = (color: string, destination: 'shapes' | 'work') => {
-      const now = Date.now();
-      if (isFlashing || now - lastFlashTime < COOLDOWN_MS) return;
-
-      isFlashing = true;
-      lastFlashTime = now;
-      gsap.killTweensOf(overlay);
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          isFlashing = false;
-          lastFlashTime = Date.now();
-          ScrollTrigger.refresh();
-        },
-      });
-
-      tl.set(overlay, { display: 'block', background: color, opacity: 0 })
-        // Smooth flash pop to full color
-        .to(overlay, { opacity: 1, duration: 0.15, ease: 'power2.in' })
-        // While fully masked: jump instantly to destination
-        .call(
-          () => {
-            if (destination === 'shapes') {
-              const targetTop = shapesSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
-              window.scrollTo({ top: Math.round(targetTop), behavior: 'instant' as ScrollBehavior });
-            } else {
-              // Returning to Work: land naturally at the bottom of the gallery where user left off
-              const currentWorkTop = workSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
-              const targetTop = currentWorkTop + workSection.offsetHeight - window.innerHeight;
-              window.scrollTo({ top: Math.max(0, Math.round(targetTop)), behavior: 'instant' as ScrollBehavior });
-            }
-          },
-          undefined,
-          0.15
-        )
-        // Brief hold so the new section renders stably underneath
-        .to(overlay, { opacity: 1, duration: 0.12, ease: 'none' })
-        // Silky fade out revealing the new section
-        .to(overlay, { opacity: 0, duration: 0.38, ease: 'power2.out' })
-        .set(overlay, { display: 'none' });
-    };
-
-    // Work → Shapes: blue flash
-    const shapesColor = window.getComputedStyle(shapesSection).backgroundColor || '#1E90FF';
-    const flashToShapes = () => runFlash(shapesColor, 'shapes');
-
-    // Shapes → Work: white flash
-    const flashBackToWork = () => runFlash('#FFFFFF', 'work');
-
-    // Work → Shapes: triggers cleanly inside the extra buffer gap without clashing with Works
-    const stA = ScrollTrigger.create({
-      trigger: gapSection || shapesSection,
-      start: gapSection ? 'center bottom' : 'top bottom-=1px',
-      onEnter: flashToShapes,
-    });
-
-    // Shapes → Work: triggers when scrolling back up through the buffer gap
-    const stB = ScrollTrigger.create({
-      trigger: gapSection || shapesSection,
-      start: gapSection ? 'center top' : 'top top+=1px',
-      onLeaveBack: flashBackToWork,
-    });
-
-    return () => {
-      stA.kill();
-      stB.kill();
     };
   }, []);
 
@@ -236,14 +144,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#1E90FF] text-[#0A1F44] selection:bg-[#0A1F44]/10 relative">
       <CustomCursor />
-
-      {/* Section-change color flash layer (color set dynamically per trigger) */}
-      <div
-        ref={flashRef}
-        aria-hidden="true"
-        className="fixed inset-0 z-[99998] pointer-events-none will-change-[opacity] transform-gpu"
-        style={{ display: 'none', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
-      />
       {bootState !== 'booted' && (
         <div className={`fixed inset-0 bg-[#080808] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
           {/* Subtle grid background */}
@@ -356,14 +256,6 @@ export default function Home() {
       {/* Neo-Brutalist Portfolio Sections */}
       <Intro />
       <WorkGallery />
-
-      {/* Extra scroll buffer gap between Works and Shapes — houses the cinematic flash transition */}
-      <div
-        id="works-shapes-gap"
-        className="relative w-full h-[28vh] sm:h-[36vh] md:h-[44vh] bg-[#1E90FF] pointer-events-none select-none"
-        aria-hidden="true"
-      />
-
       <ImmersiveCarousel />
       <Services />
 
