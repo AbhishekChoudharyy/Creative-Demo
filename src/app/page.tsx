@@ -63,7 +63,8 @@ export default function Home() {
   const navRef = useRef<HTMLDivElement>(null);
   const [scrollCount, setScrollCount] = useState(0);
   const [isOverWhite, setIsOverWhite] = useState(false);
-  const triggerFlashForwardRef = useRef<(() => void) | null>(null);
+  const triggerFlashToShapesRef = useRef<(() => void) | null>(null);
+  const triggerFlashToWorkRef = useRef<(() => void) | null>(null);
 
   // Navbar dynamic vertical scroll movement with buttery delay lerp & end fade-out
   useEffect(() => {
@@ -82,14 +83,32 @@ export default function Home() {
       const maxScroll = doc.scrollHeight - window.innerHeight;
       const progress = maxScroll <= 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / maxScroll));
 
-      const count = Math.round(progress * 100);
+      const exactPercent = progress * 100;
+      const count = Math.round(exactPercent);
       setScrollCount(count);
 
-      // Trigger flash and forward at 30%–31% scroll count when scrolling forward (downward)
       const isScrollingDown = window.scrollY > lastY;
+      const isScrollingUp = window.scrollY < lastY;
       lastY = window.scrollY;
-      if (isScrollingDown && count >= 30 && count <= 31) {
-        triggerFlashForwardRef.current?.();
+
+      const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+
+      // Work → Shapes: Desktop = 32%, Mobile = 28.5%–31.0% (29.5%)
+      if (isScrollingDown) {
+        if (isDesktop && (count === 32 || (exactPercent >= 31.8 && exactPercent <= 33.2))) {
+          triggerFlashToShapesRef.current?.();
+        } else if (!isDesktop && exactPercent >= 28.5 && exactPercent <= 31.0) {
+          triggerFlashToShapesRef.current?.();
+        }
+      }
+
+      // Shapes → Work: Desktop = 46%, Mobile = 38.5%
+      if (isScrollingUp) {
+        if (isDesktop && (count === 46 || (exactPercent >= 45.2 && exactPercent <= 46.8))) {
+          triggerFlashToWorkRef.current?.();
+        } else if (!isDesktop && (count === 38 || count === 39 || (exactPercent >= 38.0 && exactPercent <= 39.0))) {
+          triggerFlashToWorkRef.current?.();
+        }
       }
 
       const navEl = navRef.current;
@@ -236,7 +255,7 @@ export default function Home() {
         .set(overlay, { display: 'none' });
     };
 
-    // Work → Shapes ONLY: blue flash & forward jump
+    // 1. Work → Shapes: blue flash & forward jump (28%–29%)
     const shapesColor = window.getComputedStyle(shapesSection).backgroundColor || '#1E90FF';
     const flashToShapes = () => {
       const shapesRect = shapesSection.getBoundingClientRect();
@@ -246,22 +265,47 @@ export default function Home() {
       }
     };
 
-    triggerFlashForwardRef.current = flashToShapes;
+    // 2. Shapes → Work: white flash & jump back to work (39%)
+    const flashBackToWork = () => {
+      const workRect = workSection.getBoundingClientRect();
+      // Ensure we are scrolling backward from shapes towards work (work is above)
+      if (workRect.bottom <= window.innerHeight * 0.95) {
+        runFlash('#FFFFFF', 'work');
+      }
+    };
 
-    // Trigger exactly at 30%–31% scroll count for Work → Shapes ONLY
+    triggerFlashToShapesRef.current = flashToShapes;
+    triggerFlashToWorkRef.current = flashBackToWork;
+
+    // Work → Shapes: triggers forward at 32% on desktop, 29.5% on mobile
     const stA = ScrollTrigger.create({
       start: () => {
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        return maxScroll * 0.305;
+        const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+        return maxScroll * (isDesktop ? 0.32 : 0.295);
       },
       onEnter: () => {
         flashToShapes();
       },
     });
 
+    // Shapes → Work: triggers backward at 46% on desktop, 38.5% on mobile
+    const stB = ScrollTrigger.create({
+      start: () => {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+        return maxScroll * (isDesktop ? 0.46 : 0.385);
+      },
+      onLeaveBack: () => {
+        flashBackToWork();
+      },
+    });
+
     return () => {
-      triggerFlashForwardRef.current = null;
+      triggerFlashToShapesRef.current = null;
+      triggerFlashToWorkRef.current = null;
       stA.kill();
+      stB.kill();
     };
   }, []);
 
