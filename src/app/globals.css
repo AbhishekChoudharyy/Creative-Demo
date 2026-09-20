@@ -144,9 +144,10 @@ span:not(#intro *):not([style*="OT Brut"] *):not([style*="ERF Neot"] *):not(.fon
   font-family: 'OT Brut', 'Bodoni Moda', serif !important;
 }
 
-/* WHAT WE DO SECTION: Main heading uses OT Brut (matching Works section), all other texts use FF Identification Std Five C Regular */
-#services h2 {
-  font-family: 'OT Brut', 'Bodoni Moda', serif !important;
+/* WHAT WE DO SECTION: Main heading uses ERF Neot (matching Contact Form heading), all other texts use FF Identification Std Five C Regular */
+#services h2,
+#services h2 * {
+  font-family: 'ERF Neot', sans-serif !important;
 }
 
 #services *:not(h2):not(h2 *) {

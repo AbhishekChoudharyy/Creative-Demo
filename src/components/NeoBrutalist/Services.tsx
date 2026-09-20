@@ -129,19 +129,17 @@ export default function Services() {
 
       <div className="container mx-auto px-4 md:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row justify-between items-start select-none mb-12 md:mb-16">
-          {/* LEFT SIDE: WHAT WE DO (Stacked OT Brut Heading - cleanly scaled) */}
+          {/* LEFT SIDE: WHAT WE DO (Stacked ERF Neot Heading - exact solid & stroke mix matching Contact Form) */}
           <div className="flex flex-col items-start text-left">
             <h2
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-[#0A1F44] font-bold tracking-[-0.03em]"
-              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-[#0A1F44] font-heading font-black tracking-tight"
+              style={{ fontFamily: "'ERF Neot', sans-serif" }}
             >
-              WHAT
-            </h2>
-            <h2
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-[#0A1F44] font-bold tracking-[-0.03em] mt-1 sm:mt-1.5"
-              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
-            >
-              WE DO
+              <AsciiScramble text="WHAT" />
+              <br />
+              <span className="text-transparent" style={{ WebkitTextStroke: "1.5px #0A1F44" }}>
+                <AsciiScramble text="WE DO" />
+              </span>
             </h2>
           </div>
 
