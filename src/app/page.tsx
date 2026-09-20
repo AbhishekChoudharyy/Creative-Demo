@@ -130,6 +130,11 @@ export default function Home() {
         const rect = contactEl.getBoundingClientRect();
         if (rect.top <= checkY && rect.top + 340 >= checkY) overWhite = true;
       }
+      const gapEl = document.getElementById('works-shapes-gap');
+      if (gapEl) {
+        const rect = gapEl.getBoundingClientRect();
+        if (rect.top <= checkY && rect.top + rect.height * 0.45 >= checkY) overWhite = true;
+      }
 
       setIsOverWhite(overWhite);
 
@@ -393,7 +398,7 @@ export default function Home() {
       {/* Sticky Navbar (scrolls down from start of viewport to end of viewport, staying at bottom at end of site) */}
       <div
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-[#0A1F44] uppercase mix-blend-normal will-change-transform"
+        className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest uppercase mix-blend-normal will-change-transform"
       >
         {/* Brand Lockup: Origo ATELIER (Replaces logo image, active on desktop & mobile) */}
         <div
@@ -405,7 +410,7 @@ export default function Home() {
         >
           <div className="flex items-baseline gap-1.5 sm:gap-2">
             <span
-              className="text-base sm:text-lg leading-none tracking-[0.02em] font-bold normal-case"
+              className="text-base sm:text-lg leading-none tracking-[0.02em] font-bold normal-case text-[#0A1F44]"
               style={{ fontFamily: "'ERF Neot', sans-serif", textTransform: 'none' }}
             >
               Origo
@@ -423,7 +428,10 @@ export default function Home() {
         </div>
 
         {/* Right Navigation Controls */}
-        <div className="flex items-center gap-2.5 sm:gap-4 md:gap-8">
+        <div
+          className="flex items-center gap-2.5 sm:gap-4 md:gap-8 transition-colors duration-300"
+          style={{ color: isOverWhite ? '#0A1F44' : '#FFFFFF' }}
+        >
           <button
             onClick={handleToggleMute}
             onMouseEnter={() => soundManager.playHover()}
@@ -434,7 +442,7 @@ export default function Home() {
             <span className="sm:hidden flex items-center justify-center">
               {isMuted ? (
                 <svg
-                  className="w-4 h-4 text-[#0A1F44]"
+                  className="w-4 h-4"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -448,7 +456,7 @@ export default function Home() {
                 </svg>
               ) : (
                 <svg
-                  className="w-4 h-4 text-[#0A1F44]"
+                  className="w-4 h-4"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -503,10 +511,13 @@ export default function Home() {
       <Intro />
       <WorkGallery />
 
-      {/* Extra scroll buffer gap between Works and Shapes — houses the cinematic transition */}
+      {/* Extra scroll buffer gap between Works and Shapes — footer jese soft organic gradient */}
       <div
         id="works-shapes-gap"
-        className="relative w-full h-[65vh] sm:h-[80vh] md:h-[95vh] bg-[#1E90FF] pointer-events-none select-none"
+        className="relative w-full h-[32vh] sm:h-[42vh] md:h-[50vh] pointer-events-none select-none"
+        style={{
+          background: 'linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 24%, #F0F6FD 40%, #C4E1FD 56%, #70B4F9 70%, #1E90FF 82%, #1E90FF 100%)',
+        }}
         aria-hidden="true"
       />
 

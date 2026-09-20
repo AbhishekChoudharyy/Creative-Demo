@@ -841,8 +841,8 @@ export default function WorkGallery() {
       <div
         className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
         style={{
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 40px, black 240px)',
-          maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 40px, black 240px)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 40px, black 240px, black calc(100% - 240px), transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 40px, black 240px, black calc(100% - 240px), transparent 100%)',
         }}
       >
         {/* Soft atmospheric cloud texture rotated along the diagonal */}
@@ -1127,11 +1127,11 @@ export default function WorkGallery() {
 
       </div>
 
-      {/* Bottom Atmospheric Dissolve: Sky smoothly dissolving into ImmersiveCarousel (#1E90FF) */}
+      {/* Bottom White Dissolve: ensures works bottom stays 100% pure white ground */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-24 sm:h-32 md:h-40 pointer-events-none z-[1]"
+        className="absolute bottom-0 left-0 right-0 h-32 sm:h-44 md:h-56 pointer-events-none z-[1]"
         style={{
-          background: 'linear-gradient(to bottom, rgba(30, 144, 255, 0) 0%, rgba(30, 144, 255, 0.20) 35%, rgba(30, 144, 255, 0.65) 75%, #1E90FF 100%)',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.7) 45%, #FFFFFF 100%)',
         }}
       />
     </section>
