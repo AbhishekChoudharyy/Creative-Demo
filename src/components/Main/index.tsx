@@ -28,8 +28,12 @@ const CanvasLoader: FC = () => {
 export const Main: FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
+  const [dpr, setDpr] = useState<[number, number]>([1, 1.5]);
 
   useEffect(() => {
+    const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
+    setDpr(isMobile ? [1, 1.25] : [1, 1.8]);
+
     const el = containerRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
 
@@ -50,7 +54,7 @@ export const Main: FC = () => {
 
       <Canvas
         frameloop={isVisible ? 'always' : 'never'}
-        dpr={[1, 2]}
+        dpr={dpr}
         gl={{ powerPreference: 'high-performance', antialias: true, alpha: true }}
         camera={{ fov: 60 }}
         style={{ touchAction: 'pan-y' }}

@@ -8,6 +8,11 @@ import { soundManager } from '@/lib/sound';
 import { generateFractureSystem } from './fractureGeometry';
 
 export const GlassBox: FC = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
+  }, []);
+
   const groupRef = useRef<THREE.Group>(null);
   const boxRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Group>(null);
@@ -35,6 +40,7 @@ export const GlassBox: FC = () => {
 
   // Extruded beveled solid circular lens/disc (exact default state)
   const circleGeom = useMemo(() => {
+    const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
     const s = new THREE.Shape();
     s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
 
@@ -43,8 +49,8 @@ export const GlassBox: FC = () => {
       bevelEnabled: true,
       bevelThickness: 0.10,
       bevelSize: 0.08,
-      bevelSegments: 24,
-      curveSegments: 128,
+      bevelSegments: isMobile ? 4 : 10,
+      curveSegments: isMobile ? 32 : 64,
     });
     g.center();
     g.computeVertexNormals();
@@ -257,12 +263,12 @@ export const GlassBox: FC = () => {
       <mesh ref={boxRef}>
         <primitive object={circleGeom} attach="geometry" />
         <MeshTransmissionMaterial
-          backside
+          backside={!isMobile}
           transmission={1.0}
           roughness={0.0}
           thickness={0.22}
           ior={1.44}
-          chromaticAberration={0.03}
+          chromaticAberration={isMobile ? 0.015 : 0.03}
           anisotropy={0.0}
           distortion={0.0}
           distortionScale={0.0}
@@ -273,8 +279,8 @@ export const GlassBox: FC = () => {
           attenuationColor="#e0f2fe"
           attenuationDistance={20.0}
           reflectivity={0.90}
-          resolution={1024}
-          samples={12}
+          resolution={isMobile ? 384 : 768}
+          samples={isMobile ? 4 : 8}
         />
       </mesh>
 

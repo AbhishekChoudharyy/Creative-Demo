@@ -28,6 +28,7 @@ export interface MergedFractureSystem {
  * - Dynamic shockwave propagation & impact-driven recoil
  */
 export function generateFractureSystem(): MergedFractureSystem {
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
   const R = 1.15; // Exact radius matching circleGeom
   const depth = 0.22;
   const bevelThickness = 0.10;
@@ -46,7 +47,7 @@ export function generateFractureSystem(): MergedFractureSystem {
   const crackLinePoints: THREE.Vector3[] = [];
 
   // Helper to sample circular arc points along outer perimeter
-  const sampleArc = (startRad: number, endRad: number, steps: number = 8): THREE.Vector2[] => {
+  const sampleArc = (startRad: number, endRad: number, steps: number = isMobile ? 5 : 8): THREE.Vector2[] => {
     const pts: THREE.Vector2[] = [];
     if (endRad <= startRad) endRad += Math.PI * 2;
     for (let i = 0; i <= steps; i++) {
@@ -143,8 +144,8 @@ export function generateFractureSystem(): MergedFractureSystem {
       bevelEnabled: true,
       bevelThickness: 0.10,
       bevelSize: 0.08,
-      bevelSegments: 8, // Smooth optical lens fillet matching circleGeom concentric reflections
-      curveSegments: 48,
+      bevelSegments: isMobile ? 3 : 6,
+      curveSegments: isMobile ? 24 : 36,
     });
     // Center ONLY along Z so that X and Y coordinates retain 100% exact polygon alignment!
     g.translate(0, 0, -depth / 2);
@@ -381,7 +382,25 @@ export function generateFractureSystem(): MergedFractureSystem {
   // Focus radius for localized heavy break
   const FOCUS_RADIUS = 0.88;
 
+  let lastProgress = -1;
+  let lastHoverX = -999;
+  let lastHoverY = -999;
+
   const update = (progress: number, _time: number, hoverPoint?: THREE.Vector2 | null) => {
+    // If progress is at 0, nothing to morph
+    if (progress <= 0.0001) return;
+
+    const hx = hoverPoint ? hoverPoint.x : 0;
+    const hy = hoverPoint ? hoverPoint.y : 0;
+    const deltaP = Math.abs(progress - lastProgress);
+    const deltaH = Math.hypot(hx - lastHoverX, hy - lastHoverY);
+
+    // If resting or barely moved, skip vertex buffer upload
+    if (deltaP < 0.0006 && deltaH < 0.004) return;
+    lastProgress = progress;
+    lastHoverX = hx;
+    lastHoverY = hy;
+
     // Physical cubic ease-out
     const easeP = 1 - Math.pow(1 - progress, 3);
 
