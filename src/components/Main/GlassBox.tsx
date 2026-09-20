@@ -22,8 +22,8 @@ export const GlassBox: FC = () => {
   // Drag rotation state — starts tilted so the first frame matches the reference
   const isDragging = useRef(false);
   const previousPointerPosition = useRef({ x: 0, y: 0 });
-  const targetRotation = useRef({ x: 0.22, y: 0.72 });
-  const currentRotation = useRef({ x: 0.22, y: 0.72 });
+  const targetRotation = useRef({ x: -0.70, y: 1 });
+  const currentRotation = useRef({ x: -0.70, y: 1 });
 
   // Hover & Fracture Animation State
   const isHovered = useRef(false);
@@ -181,8 +181,7 @@ export const GlassBox: FC = () => {
 
     group.rotation.x = currentRotation.current.x;
     group.rotation.y = currentRotation.current.y;
-    // Anticlockwise tilt in the red-arrow direction (world Z), stays during drag
-    group.rotation.z = 0.38;
+    group.rotation.z = 0.10;
 
     // ── ULTRA-FAST MAGNETIC GLASS FRACTURE & REWIND ANIMATION ──
     const dt = Math.min(delta, 0.05);
