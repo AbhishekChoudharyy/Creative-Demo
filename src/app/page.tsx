@@ -185,9 +185,6 @@ export default function Home() {
           <Main />
         </div>
 
-        {/* Cinematic Atmospheric Fade: Electric Blue dissolving into Intro Paper White (Z-Index 25) */}
-        <div className="hero-atmospheric-fade" aria-hidden="true" />
-
         {/* Flat Immersive Navbar (Z-Index 30) */}
         <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
           <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity min-h-[44px]">
@@ -198,8 +195,8 @@ export default function Home() {
             />
           </div>
           <span
-            className="font-normal text-xl sm:text-2xl md:text-3xl absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-wide text-black"
-            style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif", textTransform: 'none' }}
+            className="font-extrabold text-xs sm:text-sm font-mono absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em] text-black"
+            style={{ textTransform: 'none' }}
           >
             Origo Atelier
           </span>
@@ -253,6 +250,15 @@ export default function Home() {
             [ 3D ]
           </div>
         </div>
+
+        {/* Soft atmospheric dissolve into Intro pure white canvas (removes any dark seam) */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-24 sm:h-32 pointer-events-none z-20"
+          style={{
+            background: 'linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.18) 25%, rgba(255, 255, 255, 0.58) 60%, rgba(255, 255, 255, 0.92) 88%, #FFFFFF 100%)',
+          }}
+          aria-hidden="true"
+        />
       </section>
       {/* Neo-Brutalist Portfolio Sections */}
       <Intro />

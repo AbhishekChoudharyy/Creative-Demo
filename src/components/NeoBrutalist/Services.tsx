@@ -115,26 +115,47 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="py-24 bg-[#1E90FF] text-black relative z-20 overflow-hidden will-change-transform"
+      className="py-16 sm:py-20 bg-[#1E90FF] text-black relative z-20 overflow-hidden will-change-transform"
     >
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
       <div 
         ref={revealRef} 
-        className="fixed top-0 left-0 w-[300px] h-[400px] pointer-events-none z-[100] opacity-0 scale-0 hidden md:block rounded-lg overflow-hidden shadow-2xl"
+        className="fixed top-0 left-0 w-[260px] h-[340px] pointer-events-none z-[100] opacity-0 scale-0 hidden md:block rounded-lg overflow-hidden shadow-2xl"
         style={{ willChange: 'transform' }}
       >
         <img src={activeImage} alt="Service Preview" className="w-full h-full object-cover" />
       </div>
 
       <div className="container mx-auto px-4 md:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start mb-20">
-          <h2 className="text-6xl md:text-8xl font-bold mb-8 md:mb-0 font-heading">
-            <AsciiScramble text="What" /><br /><AsciiScramble text="We Do" />
-          </h2>
-          <p className="max-w-xs text-sm uppercase tracking-wide text-black/70 pt-4 font-mono">
-            Experiential solutions that inspire, engage and endure.
-          </p>
+        <div className="flex flex-col lg:flex-row justify-between items-start select-none mb-12 md:mb-16">
+          {/* LEFT SIDE: WHAT WE DO (Stacked OT Brut Heading - cleanly scaled) */}
+          <div className="flex flex-col items-start text-left">
+            <h2
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-black font-bold tracking-[-0.03em]"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+            >
+              WHAT
+            </h2>
+            <h2
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-black font-bold tracking-[-0.03em] mt-1 sm:mt-1.5"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+            >
+              WE DO
+            </h2>
+          </div>
+
+          {/* RIGHT SIDE: 3-LINE EDITORIAL PARAGRAPH */}
+          <div className="flex flex-col items-start lg:items-end text-left lg:text-right pt-4 lg:pt-2">
+            <p
+              className="text-[10px] sm:text-xs font-mono font-medium tracking-[0.06em] text-black/75 uppercase leading-[1.6] max-w-xs select-none"
+              style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
+            >
+              EXPERIENTIAL SOLUTIONS THAT INSPIRE,<br />
+              ENGAGE AND ENDURE.<br />
+              FROM ORIGIN TO EXCELLENCE.
+            </p>
+          </div>
         </div>
 
         <ul ref={listRef} className="border-t border-black/20">
@@ -155,17 +176,30 @@ export default function Services() {
                 }, 520);
               }}
             >
-              <div className="relative z-10 flex justify-between items-center py-8 sm:py-12 px-3 sm:px-4 group-hover:px-6 sm:group-hover:px-8 transition-all duration-500">
-                <div className="flex items-baseline gap-4 sm:gap-8 min-w-0 pr-2">
-                  <span className="text-xs font-mono text-black/50 group-hover:text-white transition-colors shrink-0">0{service.id}</span>
-                  <h3 className="text-xl sm:text-2xl md:text-5xl font-heading group-hover:text-white transition-colors group-hover:translate-x-2 sm:group-hover:translate-x-4 duration-500 break-words">{service.title}</h3>
+              <div className="relative z-10 flex justify-between items-center py-5 sm:py-6 md:py-7 px-2 sm:px-4 group-hover:px-4 sm:group-hover:px-6 transition-all duration-300">
+                <div className="flex items-baseline gap-4 sm:gap-6 min-w-0 pr-2">
+                  <span
+                    className="text-xs sm:text-sm font-mono text-black/50 group-hover:text-white transition-colors shrink-0 tracking-wider"
+                    style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
+                  >
+                    0{service.id}
+                  </span>
+                  <h3
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl group-hover:text-white transition-colors group-hover:translate-x-2 sm:group-hover:translate-x-3 duration-300 break-words font-semibold tracking-tight"
+                    style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
+                  >
+                    {service.title}
+                  </h3>
                 </div>
                 
                 <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                  <span className="text-xs uppercase tracking-widest opacity-0 md:opacity-100 group-hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-500 delay-75 hidden sm:inline">
+                  <span
+                    className="text-[10px] sm:text-xs uppercase tracking-widest opacity-0 md:opacity-100 group-hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0 duration-300 delay-75 hidden sm:inline font-mono"
+                    style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
+                  >
                     {service.category}
                   </span>
-                  <ArrowUpRight className={`w-6 h-6 sm:w-8 sm:h-8 text-black/50 transition-all duration-500 ${openIndex === idx ? 'text-white rotate-90' : 'group-hover:text-white group-hover:rotate-45'}`} />
+                  <ArrowUpRight className={`w-5 h-5 sm:w-6 sm:h-6 text-black/50 transition-all duration-300 ${openIndex === idx ? 'text-white rotate-90' : 'group-hover:text-white group-hover:rotate-45'}`} />
                 </div>
               </div>
 
@@ -173,9 +207,12 @@ export default function Services() {
               <div 
                 className={`overflow-hidden transition-all duration-500 ease-out ${openIndex === idx ? 'max-h-[350px] opacity-100' : 'max-h-0 opacity-0'}`}
               >
-                <div className="pb-12 pl-4 pr-4 md:pl-[120px] max-w-3xl">
-                  <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-xl p-6 sm:p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)]">
-                    <p className="text-lg md:text-xl leading-relaxed font-light text-white">
+                <div className="pb-8 pl-4 pr-4 sm:pl-12 md:pl-16 max-w-2xl">
+                  <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-xl p-5 sm:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)]">
+                    <p
+                      className="text-sm sm:text-base leading-relaxed font-normal text-white/95"
+                      style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
+                    >
                       {service.desc}
                     </p>
                   </div>

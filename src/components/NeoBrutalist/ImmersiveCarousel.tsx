@@ -207,7 +207,7 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     } else if (slideIndex === 1) {
       targetRot.current = { x: 0.18, y: 0.35 };
     } else {
-      targetRot.current = { x: -0.14, y: 0.42 };
+      targetRot.current = { x: 0.16, y: -0.58 };
     }
   }, [slideIndex]);
 

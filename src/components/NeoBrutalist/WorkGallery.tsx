@@ -761,7 +761,7 @@ export default function WorkGallery() {
     <section
       ref={sectionRef}
       id="work"
-      className="relative bg-[#EAF2FC] text-black pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
+      className="relative bg-white text-black pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
     >
       {/* Attached Panoramic Sky Background Image */}
       <div
@@ -772,12 +772,12 @@ export default function WorkGallery() {
         }}
       />
 
-      {/* Top Atmospheric Dissolve: Wide whitish-blue blend spreading from Intro down through Works heading */}
+      {/* Top Atmospheric Dissolve: Pure White from Intro smoothly dissolving into Works Sky */}
       <div
-        className="absolute top-0 left-0 right-0 h-64 sm:h-80 md:h-[460px] lg:h-[540px] pointer-events-none z-[1]"
+        className="absolute top-0 left-0 right-0 h-48 sm:h-64 md:h-80 pointer-events-none z-[1]"
         style={{
           background:
-            'linear-gradient(to bottom, #EAF2FC 0%, rgba(234, 242, 252, 0.96) 20%, rgba(234, 242, 252, 0.70) 50%, rgba(234, 242, 252, 0.25) 78%, rgba(234, 242, 252, 0) 100%)',
+            'linear-gradient(to bottom, #FFFFFF 0%, rgba(255, 255, 255, 0.95) 25%, rgba(255, 255, 255, 0.60) 55%, rgba(255, 255, 255, 0.15) 80%, transparent 100%)',
         }}
       />
 

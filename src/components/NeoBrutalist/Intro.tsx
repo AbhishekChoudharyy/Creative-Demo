@@ -363,33 +363,30 @@ export default function Intro() {
     <section
       ref={sectionRef}
       id="intro"
-      className="relative w-full min-h-screen text-black overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pt-6 sm:pt-8 md:pt-12 pb-6 select-none"
+      className="relative w-full min-h-screen text-black overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pb-6 select-none"
       style={{
-        background: 'linear-gradient(to bottom, #F4F8FD 0%, #EFF5FC 50%, #EAF2FC 100%)',
+        background: '#FFFFFF',
+        fontFamily: "'OT Brut', 'Bodoni Moda', serif",
       }}
     >
       {/* ── Pristine Subtle Micro-Grid Overlay (Zero papery grit) ── */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-25"
+        className="absolute inset-0 pointer-events-none opacity-20"
         style={{
-          backgroundImage: `radial-gradient(rgba(30, 144, 255, 0.12) 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(rgba(30, 144, 255, 0.10) 1px, transparent 1px)`,
           backgroundSize: '24px 24px',
         }}
       />
 
       {/* ══════════════════════════════════════════════
           MAIN EDITORIAL TYPOGRAPHY POSTER
-          - Starting Point aligned exactly with user reference:
-            Col A (0%): EVERY, AN •, FROM
-            Col B (~22%): BEGINS, IDEA., TO (perfect vertical line!)
-            Col C (100%): EXPERIENCE, WITH, ORIGIN, EXCELLENCE.
       ══════════════════════════════════════════════ */}
       <div
         ref={posterRef}
         onPointerMove={handlePointerMove}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
-        className="relative z-10 w-full max-w-[1700px] mx-auto pt-1 md:pt-4 flex flex-col md:gap-y-6 cursor-default"
+        className="relative z-10 w-full max-w-[1700px] mx-auto pt-8 sm:pt-12 md:pt-16 flex flex-col md:gap-y-6 cursor-default"
       >
         
         {/* ── PAIR 1: EVERY ... EXPERIENCE ── */}
@@ -403,7 +400,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('every')}
               onPointerDown={() => triggerWordInteraction('every')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               EVERY
             </span>
@@ -417,7 +414,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('experience')}
               onPointerDown={() => triggerWordInteraction('experience')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               EXPERIENCE
             </span>
@@ -435,7 +432,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('begins')}
               onPointerDown={() => triggerWordInteraction('begins')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               BEGINS
             </span>
@@ -449,7 +446,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('with')}
               onPointerDown={() => triggerWordInteraction('with')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               WITH
             </span>
@@ -466,6 +463,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('idea')}
               onPointerDown={() => triggerWordInteraction('idea')}
               className="cursor-pointer select-none"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               AN
             </span>
@@ -485,7 +483,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('idea')}
               onPointerDown={() => triggerWordInteraction('idea')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               IDEA.
             </span>
@@ -503,7 +501,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('from')}
               onPointerDown={() => triggerWordInteraction('from')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               FROM
             </span>
@@ -517,7 +515,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('origin')}
               onPointerDown={() => triggerWordInteraction('origin')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               ORIGIN
             </span>
@@ -535,7 +533,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('to')}
               onPointerDown={() => triggerWordInteraction('to')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               TO
             </span>
@@ -549,7 +547,7 @@ export default function Intro() {
               onClick={() => triggerWordInteraction('excellence')}
               onPointerDown={() => triggerWordInteraction('excellence')}
               className="inline-block cursor-pointer select-none"
-              style={{ display: 'inline-block', willChange: 'transform' }}
+              style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               EXCELLENCE.
             </span>
@@ -573,7 +571,7 @@ export default function Intro() {
                 onClick={() => triggerWordInteraction('shaping')}
                 onPointerDown={() => triggerWordInteraction('shaping')}
                 className="inline-block cursor-pointer select-none"
-                style={{ display: 'inline-block', willChange: 'transform' }}
+                style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
               >
                 SHAPING
               </span>
@@ -587,7 +585,7 @@ export default function Intro() {
                 onClick={() => triggerWordInteraction('forms')}
                 onPointerDown={() => triggerWordInteraction('forms')}
                 className="inline-block cursor-pointer select-none"
-                style={{ display: 'inline-block', willChange: 'transform' }}
+                style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
               >
                 FORMS
               </span>
@@ -605,7 +603,7 @@ export default function Intro() {
                 onClick={() => triggerWordInteraction('that')}
                 onPointerDown={() => triggerWordInteraction('that')}
                 className="inline-block cursor-pointer select-none"
-                style={{ display: 'inline-block', willChange: 'transform' }}
+                style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
               >
                 THAT
               </span>
@@ -619,7 +617,7 @@ export default function Intro() {
                 onClick={() => triggerWordInteraction('connect')}
                 onPointerDown={() => triggerWordInteraction('connect')}
                 className="inline-block cursor-pointer select-none"
-                style={{ display: 'inline-block', willChange: 'transform' }}
+                style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
               >
                 CONNECT,
               </span>
@@ -637,7 +635,7 @@ export default function Intro() {
                 onClick={() => triggerWordInteraction('inspire')}
                 onPointerDown={() => triggerWordInteraction('inspire')}
                 className="inline-block cursor-pointer select-none"
-                style={{ display: 'inline-block', willChange: 'transform' }}
+                style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
               >
                 INSPIRE
               </span>
@@ -651,7 +649,7 @@ export default function Intro() {
                 onClick={() => triggerWordInteraction('endure')}
                 onPointerDown={() => triggerWordInteraction('endure')}
                 className="inline-block cursor-pointer select-none"
-                style={{ display: 'inline-block', willChange: 'transform' }}
+                style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
               >
                 & ENDURE.
               </span>
@@ -665,7 +663,7 @@ export default function Intro() {
           WHAT WE BELIEVE — BRAND PHILOSOPHY PARAGRAPH
           - DESKTOP ONLY: 100% original full 2 paragraphs exactly as approved
       ══════════════════════════════════════════════ */}
-      <div className="hidden md:flex relative z-10 w-full max-w-[1700px] mx-auto mt-8 justify-end">
+      <div className="hidden md:flex relative z-10 w-full max-w-[1700px] mx-auto mt-8 mb-16 md:mb-24 justify-end">
         <div className="w-8/12 lg:w-6/12 border-l-2 border-black/25 pl-8 space-y-3">
           <span className="text-xs uppercase tracking-[0.25em] font-mono font-bold text-black/60 block">
             // WHAT WE BELIEVE

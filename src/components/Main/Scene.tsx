@@ -80,7 +80,7 @@ export const Scene: FC = () => {
       {/* Hero display text rendered inside the WebGL canvas, allowing it to be refracted by the glass ring */}
       <group scale={isMobile ? [1, 1.38, 1] : [1, 1.35, 1]} position={[0, 0, -1.5]}>
         <Text
-          font="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKfsukDQ.ttf"
+          font="/fonts/OTBrut-Bold.ttf"
           fontSize={isMobile ? viewport.width * 0.185 : viewport.width * 0.102}
           color="#000000"
           maxWidth={isMobile ? viewport.width * 1.12 : viewport.width * 0.98}

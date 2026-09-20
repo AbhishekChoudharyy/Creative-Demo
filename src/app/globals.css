@@ -6,18 +6,78 @@
 
 @font-face {
   font-family: 'OT Brut';
-  src: url('/fonts/OTBrut-Regular.woff2') format('woff2');
-  font-weight: 400 900;
+  src: url('/fonts/OTBrut-Regular.woff2') format('woff2'),
+       url('/fonts/OTBrut-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OT Brut';
+  src: url('/fonts/OTBrut-Bold.ttf') format('truetype'),
+       url('/fonts/OTBrut-Regular.woff2') format('woff2'),
+       url('/fonts/OTBrut-Regular.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OT Brut';
+  src: url('/fonts/OTBrut-Bold.ttf') format('truetype'),
+       url('/fonts/OTBrut-Regular.woff2') format('woff2'),
+       url('/fonts/OTBrut-Regular.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OT Brut';
+  src: url('/fonts/OTBrut-Bold.ttf') format('truetype'),
+       url('/fonts/OTBrut-Regular.woff2') format('woff2'),
+       url('/fonts/OTBrut-Regular.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OT Brut';
+  src: url('/fonts/OTBrut-Regular.woff2') format('woff2'),
+       url('/fonts/OTBrut-Regular.ttf') format('truetype'),
+       url('/fonts/OTBrut-Bold.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ERF Neot';
+  src: url('/fonts/ERFNeot-Black.ttf') format('truetype'),
+       local('ERF Neot'), local('ERFNeot'), local('ERFNeot-Regular'), local('Neot');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FF Identification Std Five C Regular';
+  src: local('FF Identification Std Five C Regular'), local('FF Identification Std Five C'), local('FF Identification Std'), local('FFIdentificationStd-FiveC');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
+  --font-heading: 'ERF Neot', 'Syne', sans-serif;
+  --font-body: 'FF Identification Std Five C Regular', 'FF Identification Std', 'Manrope', sans-serif;
   --font-syne: 'Syne', sans-serif;
-  --font-manrope: 'Manrope', sans-serif;
+  --font-manrope: 'FF Identification Std Five C Regular', 'FF Identification Std', 'Manrope', sans-serif;
   --font-playfair: 'Playfair Display', serif;
-  --font-geist-sans: 'Geist', sans-serif;
-  --font-geist-mono: 'Geist Mono', monospace;
+  --font-geist-sans: 'FF Identification Std Five C Regular', 'FF Identification Std', 'Geist', sans-serif;
+  --font-geist-mono: 'FF Identification Std Five C Regular', 'FF Identification Std', 'Geist Mono', monospace;
   --font-ot-brut: 'OT Brut', 'Bodoni Moda', serif;
 }
 
@@ -28,6 +88,63 @@ html, body {
   overflow-x: hidden;
   max-width: 100vw;
   -webkit-overflow-scrolling: touch;
+  font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif;
+}
+
+/* Headings: ERF Neot */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'ERF Neot', var(--font-syne), sans-serif;
+}
+
+/* Paragraphs, descriptions and all small text: FF Identification Std Five C Regular */
+p, a, li, label, input, textarea, button, small {
+  font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif;
+}
+
+span:not(#intro *):not([style*="OT Brut"] *):not(h1 *):not(h2 *):not(h3 *) {
+  font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif;
+}
+
+.font-heading {
+  font-family: 'ERF Neot', var(--font-syne), sans-serif !important;
+}
+
+.font-mono {
+  font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-geist-mono), monospace !important;
+}
+
+.font-sans {
+  font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif !important;
+}
+
+/* INTRO SECTION: Strict OT Brut priority on all words and headers */
+#intro,
+#intro *,
+#intro h1,
+#intro h2,
+#intro h3,
+#intro span,
+#intro div,
+#intro .intro-reveal-text,
+#intro .intro-reveal-text *,
+[style*="OT Brut"],
+[style*="OT Brut"] * {
+  font-family: 'OT Brut', 'Bodoni Moda', serif !important;
+}
+
+/* WHAT WE DO SECTION: Main heading uses OT Brut (matching Works section), all other texts use FF Identification Std Five C Regular */
+#services h2 {
+  font-family: 'OT Brut', 'Bodoni Moda', serif !important;
+}
+
+#services *:not(h2):not(h2 *) {
+  font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-mono), monospace, sans-serif !important;
+}
+
+/* Strict preservation: Anywhere OT Brut is specified, preserve it 100% */
+[style*="OT Brut"],
+[style*="Bodoni Moda"] {
+  font-family: 'OT Brut', 'Bodoni Moda', serif !important;
 }
 
 /* Prevent iOS Safari from zooming in on input focus */
@@ -152,10 +269,10 @@ html, body {
 
 
 @theme inline {
-  --font-heading: var(--font-syne), var(--font-sans);
-  --font-sans: var(--font-manrope), var(--font-sans);
+  --font-heading: 'ERF Neot', var(--font-syne), sans-serif;
+  --font-sans: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif;
   --font-serif: var(--font-playfair), var(--font-serif);
-  --font-mono: var(--font-geist-mono), monospace;
+  --font-mono: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-geist-mono), monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

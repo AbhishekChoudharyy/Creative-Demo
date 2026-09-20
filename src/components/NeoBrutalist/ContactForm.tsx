@@ -80,7 +80,10 @@ export default function ContactForm() {
             </p>
           </div>
 
-          <h3 className="text-black font-heading font-black text-3xl sm:text-4xl lg:text-5xl leading-tight uppercase tracking-tight">
+          <h3
+            className="text-black font-heading font-black text-3xl sm:text-4xl lg:text-5xl leading-tight uppercase tracking-tight"
+            style={{ fontFamily: "'ERF Neot', sans-serif" }}
+          >
             <AsciiScramble text="Let's " /><span className="text-transparent" style={{ WebkitTextStroke: "1px #000" }}><AsciiScramble text="Create" /></span>
             <br />
             <AsciiScramble text="From The" />
