@@ -38,6 +38,7 @@ class SoundManager {
       window.addEventListener('keydown', unlock, { once: true });
       window.addEventListener('touchstart', unlock, { once: true });
       window.addEventListener('pointerdown', unlock, { once: true });
+      window.addEventListener('pointermove', unlock, { once: true });
     }
   }
 
@@ -69,15 +70,18 @@ class SoundManager {
     if (!this.ctx || this.soundsLoading) return;
     this.soundsLoading = true;
 
-    const soundAssets = {
+    const soundAssets: Record<string, string> = {
       clickDown: '/sounds/clickDown.mp3',
       clickUp: '/sounds/clickUp.mp3',
-      scroll: '/sounds/scroll.mp3'
+      scroll: '/sounds/scroll.mp3',
+      heroSound1: '/sounds/Sound (1).mp3',
+      heroSound2: '/sounds/Sound (2).mp3',
+      heroSound3: '/sounds/Sound (3).mp3',
     };
 
     for (const [key, path] of Object.entries(soundAssets)) {
       try {
-        const response = await fetch(path);
+        const response = await fetch(encodeURI(path));
         if (!response.ok) {
           throw new Error(`HTTP status ${response.status}`);
         }
@@ -657,21 +661,64 @@ class SoundManager {
   }
 
   /**
-   * Delicate optical crystal shimmer & resonance (0.5–0.8s, low and elegant volume).
-   * Crystalline ping followed by a subtle icy harmonic tail as fragments separate.
-   * Respects autoplay policies and rate-limits to avoid repeated triggers.
+  /**
+   * Hero 3D Hover Sound: Plays Sound (1).mp3, Sound (2).mp3, and Sound (3).mp3 simultaneously together on every hover
    */
-  public playCrystalShimmer() {
+  public playHeroHover(volume: number = 0.70) {
     if (this.isMuted) return;
-    // Autoplay compliance: only trigger after user has interacted with the page
-    if (!this.isUnlocked || !this.ctx || this.ctx.state !== 'running') return;
+    this.unlockContext();
+    if (!this.ctx) return;
     const ctx = this.ctx;
     if (!this.compressor) return;
 
-    // Prevent repeated triggering while cursor remains over sphere
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+
+    // Rate-limiting: allow crisp triggers on each entry
     const now = ctx.currentTime;
-    if (now - this.lastCrystalShimmerTime < 0.6) return;
+    if (now - this.lastCrystalShimmerTime < 0.22) return;
     this.lastCrystalShimmerTime = now;
+
+    const heroKeys = ['heroSound1', 'heroSound2', 'heroSound3'];
+    let playedAny = false;
+
+    heroKeys.forEach((key) => {
+      const buffer = this.buffers.get(key);
+      if (buffer) {
+        try {
+          const source = ctx.createBufferSource();
+          source.buffer = buffer;
+          const gainNode = ctx.createGain();
+          gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+          source.connect(gainNode);
+          gainNode.connect(this.compressor!);
+          source.start(ctx.currentTime);
+          playedAny = true;
+        } catch (e) {
+          console.warn(`Error playing ${key}:`, e);
+        }
+      }
+    });
+
+    if (!playedAny) {
+      this.playSynthCrystalShimmer();
+    }
+  }
+
+  public playCrystalShimmer() {
+    this.playHeroHover();
+  }
+
+  /**
+   * Delicate optical crystal shimmer fallback synthesizer
+   */
+  private playSynthCrystalShimmer() {
+    if (this.isMuted) return;
+    if (!this.isUnlocked || !this.ctx || this.ctx.state !== 'running') return;
+    const ctx = this.ctx;
+    if (!this.compressor) return;
+    const now = ctx.currentTime;
 
     try {
       // MASTER CRYSTAL BUS (Highpass filtered at 1800Hz to remove any low/mid rumble, keeping pure glass transparency)

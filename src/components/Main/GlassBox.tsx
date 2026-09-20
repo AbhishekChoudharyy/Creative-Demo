@@ -94,7 +94,7 @@ export const GlassBox: FC = () => {
     setIsHoveredState(true);
     updatePointerLocal(e);
     currentHoverPoint.current.copy(targetHoverPoint.current);
-    soundManager.playCrystalShimmer();
+    soundManager.playHeroHover();
   };
 
   const handlePointerMoveHit = (e: any) => {
