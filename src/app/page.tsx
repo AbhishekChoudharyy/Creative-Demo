@@ -20,8 +20,6 @@ const Main = dynamic(() => import("@/components/Main").then((mod) => mod.Main), 
 });
 
 
-const logoPath = "/og.png";
-
 const navItems = [
   {
     label: "Experience Design",

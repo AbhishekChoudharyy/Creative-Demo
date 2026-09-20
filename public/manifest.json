@@ -1,16 +1,27 @@
 {
-  "name": "OGengine",
-  "short_name": "OGengine",
-  "description": "A high-performance, developer-first 3D engine designed for WebGPU & Vulkan native platforms.",
+  "name": "Origo Atelier",
+  "short_name": "Origo",
+  "description": "From Origin to Excellence — Experiential Design Studio specializing in brand activations, immersive spaces, and 3D design.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#050505",
-  "theme_color": "#050505",
+  "background_color": "#1E90FF",
+  "theme_color": "#1E90FF",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/og.png",
-      "sizes": "any",
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }

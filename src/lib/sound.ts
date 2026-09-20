@@ -26,7 +26,7 @@ class SoundManager {
   constructor() {
     if (typeof window !== 'undefined') {
       // Load initial mute state from local storage
-      const savedMute = localStorage.getItem('og_engine_sfx_muted');
+      const savedMute = localStorage.getItem('origo_atelier_sfx_muted') ?? localStorage.getItem('og_engine_sfx_muted');
       this.isMuted = savedMute === 'true';
 
       // Setup interaction unlock handlers to start context & load assets on first click/tap
@@ -108,7 +108,7 @@ class SoundManager {
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
     if (typeof window !== 'undefined') {
-      localStorage.setItem('og_engine_sfx_muted', String(this.isMuted));
+      localStorage.setItem('origo_atelier_sfx_muted', String(this.isMuted));
     }
     
     // If unmuted, play a quick confirmation click
@@ -122,7 +122,7 @@ class SoundManager {
   public setMuted(muted: boolean) {
     this.isMuted = muted;
     if (typeof window !== 'undefined') {
-      localStorage.setItem('og_engine_sfx_muted', String(this.isMuted));
+      localStorage.setItem('origo_atelier_sfx_muted', String(this.isMuted));
     }
   }
 
