@@ -63,11 +63,13 @@ export default function Home() {
   const navRef = useRef<HTMLDivElement>(null);
   const [scrollCount, setScrollCount] = useState(0);
   const [isOverWhite, setIsOverWhite] = useState(false);
+  const triggerFlashForwardRef = useRef<(() => void) | null>(null);
 
   // Navbar dynamic vertical scroll movement with buttery delay lerp & end fade-out
   useEffect(() => {
     let rafId = 0;
     let isRunning = true;
+    let lastY = window.scrollY;
 
     // Physics interpolation state
     let targetY = 0;
@@ -80,7 +82,15 @@ export default function Home() {
       const maxScroll = doc.scrollHeight - window.innerHeight;
       const progress = maxScroll <= 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / maxScroll));
 
-      setScrollCount(Math.round(progress * 100));
+      const count = Math.round(progress * 100);
+      setScrollCount(count);
+
+      // Trigger flash and forward at 30%–31% scroll count when scrolling forward (downward)
+      const isScrollingDown = window.scrollY > lastY;
+      lastY = window.scrollY;
+      if (isScrollingDown && count >= 30 && count <= 31) {
+        triggerFlashForwardRef.current?.();
+      }
 
       const navEl = navRef.current;
       const navHeight = navEl ? navEl.offsetHeight : 80;
@@ -226,30 +236,32 @@ export default function Home() {
         .set(overlay, { display: 'none' });
     };
 
-    // Work → Shapes: blue flash
+    // Work → Shapes ONLY: blue flash & forward jump
     const shapesColor = window.getComputedStyle(shapesSection).backgroundColor || '#1E90FF';
-    const flashToShapes = () => runFlash(shapesColor, 'shapes');
+    const flashToShapes = () => {
+      const shapesRect = shapesSection.getBoundingClientRect();
+      // Ensure we are scrolling forward towards shapes (shapes is still below)
+      if (shapesRect.top > window.innerHeight * 0.12) {
+        runFlash(shapesColor, 'shapes');
+      }
+    };
 
-    // Shapes → Work: white flash
-    const flashBackToWork = () => runFlash('#FFFFFF', 'work');
+    triggerFlashForwardRef.current = flashToShapes;
 
-    // Work → Shapes: ONLY triggers after scrolling through Work AND reaching well into the buffer gap
+    // Trigger exactly at 30%–31% scroll count for Work → Shapes ONLY
     const stA = ScrollTrigger.create({
-      trigger: gapSection || workSection,
-      start: gapSection ? 'center bottom' : 'bottom top',
-      onEnter: flashToShapes,
-    });
-
-    // Shapes → Work: triggers separately right at the top of the Shapes section when scrolling up
-    const stB = ScrollTrigger.create({
-      trigger: shapesSection,
-      start: 'top top+=25px',
-      onLeaveBack: flashBackToWork,
+      start: () => {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        return maxScroll * 0.305;
+      },
+      onEnter: () => {
+        flashToShapes();
+      },
     });
 
     return () => {
+      triggerFlashForwardRef.current = null;
       stA.kill();
-      stB.kill();
     };
   }, []);
 
