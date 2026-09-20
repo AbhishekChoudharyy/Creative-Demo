@@ -271,34 +271,35 @@ export default function Home() {
         style={{ display: 'none', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       />
       {bootState !== 'booted' && (
-        <div className={`fixed inset-0 bg-[#080808] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
-          {/* Subtle grid background */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+        <div className={`fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
+          <div className="flex flex-col items-center px-6 text-center z-10">
 
-          <div className="flex flex-col items-center max-w-xs w-full px-4 text-center z-10 space-y-12">
-
-            {/* Title and Subtitle */}
-            <div className="space-y-4 flex flex-col items-center">
-              <img
-                src="/logo-white-transparent.png"
-                alt="Origo Atelier"
-                className="w-36 md:w-44 h-auto object-contain"
-              />
-              <p className="text-[10px] text-white/70 tracking-[0.4em] uppercase font-bold">
-                FROM ORIGIN TO EXCELLENCE
-              </p>
+            {/* Brand Lockup: Origo ATELIER (scaled down, Navy Blue #0A1F44 fill) */}
+            <div className="flex items-baseline justify-center gap-2.5 sm:gap-3.5 md:gap-5 select-none text-[#0A1F44] normal-case flex-nowrap">
+              <span
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-none text-[#0A1F44] normal-case"
+                style={{ fontFamily: "'ERF Neot', sans-serif", textTransform: 'none' }}
+              >
+                Origo
+              </span>
+              <span
+                className="text-base sm:text-xl md:text-2xl lg:text-3xl font-extralight uppercase tracking-[0.24em] sm:tracking-[0.28em] leading-none text-[#0A1F44]/85 font-sans"
+                style={{ fontWeight: 200 }}
+              >
+                ATELIER
+              </span>
             </div>
 
-            {/* Content Area */}
-            <div className="w-full h-12 flex items-center justify-center">
+            {/* Content / Action Area */}
+            <div className="mt-8 sm:mt-12 md:mt-14 h-10 flex items-center justify-center">
               {bootState === 'loading' ? (
-                <div className="flex flex-col items-center space-y-3 w-full">
-                  <span className="text-[10px] text-white/50 tracking-[0.25em] font-medium uppercase">
-                    LOADING • {progress}%
+                <div className="flex flex-col items-center gap-2.5">
+                  <span className="text-[11px] sm:text-xs font-mono tracking-[0.3em] text-[#0A1F44]/60 uppercase">
+                    [ LOADING • {progress}% ]
                   </span>
-                  <div className="w-24 h-[1px] bg-white/10 relative overflow-hidden">
+                  <div className="w-24 sm:w-28 h-[1px] bg-[#0A1F44]/15 relative overflow-hidden">
                     <div
-                      className="absolute top-0 bottom-0 left-0 bg-white transition-all duration-150 ease-out"
+                      className="absolute top-0 bottom-0 left-0 bg-[#0A1F44] transition-all duration-150 ease-out"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -313,9 +314,9 @@ export default function Home() {
                     }, 700);
                   }}
                   onMouseEnter={() => soundManager.playHover()}
-                  className="px-8 py-2.5 border border-white/20 hover:border-white text-white hover:bg-white hover:text-[#0A1F44] transition-all duration-300 font-bold uppercase text-[10px] tracking-[0.3em] cursor-pointer focus:outline-none"
+                  className="text-xs sm:text-sm font-mono tracking-[0.3em] text-[#0A1F44]/80 hover:text-[#0A1F44] transition-all duration-300 cursor-pointer focus:outline-none uppercase hover:tracking-[0.4em]"
                 >
-                  ENTER
+                  [ ENTER ]
                 </button>
               )}
             </div>
