@@ -477,7 +477,13 @@ export default function WorkGallery() {
     let stripSpan = 1;
 
     function rebuildStrip() {
-      cards.forEach((c) => scene.remove(c.mesh));
+      cards.forEach((c) => {
+        scene.remove(c.mesh);
+        const origMat = textureMap.get(c.mesh.userData?.projId)?.material;
+        if (c.mesh.material && c.mesh.material !== origMat) {
+          (c.mesh.material as THREE.Material).dispose();
+        }
+      });
       cards = [];
       if (geometry) geometry.dispose();
 
@@ -495,6 +501,7 @@ export default function WorkGallery() {
       for (let i = 0; i < totalCards; i++) {
         const slot = activeSlots[i % activeSlots.length];
         const mesh = new THREE.Mesh(geometry, slot.material);
+        mesh.userData = { projId: slot.project.id };
         scene.add(mesh);
         cards.push({ mesh, baseX: i * pitch });
       }
@@ -549,45 +556,103 @@ export default function WorkGallery() {
     const motion = motionRef.current;
     motion.velocity = 0;
 
-    // Smooth category switcher with zero black flash
+    // Smooth category switcher: Center-card-only animation on Mobile, Full-strip dissolve on Desktop
     switchCategoryRef.current = (newCat: string) => {
       soundManager.playClick();
       if (newCat === activeCategoryRef.current) return;
       activeCategoryRef.current = newCat;
       setActiveCategory(newCat);
 
-      // Smooth cinematic dissolve: softly fade out current cards (background stays visible!)
-      gsap.killTweensOf(shared.uSectionOpacity);
-      gsap.killTweensOf(shared.uStrength);
+      const isMobile = viewportWidth < 768;
 
-      gsap.to(shared.uSectionOpacity, {
-        value: 0,
-        duration: 0.22,
-        ease: 'power2.in',
-        onComplete: () => {
-          currentProjects = newCat === 'ALL'
-            ? ALL_PROJECTS
-            : ALL_PROJECTS.filter((p) => p.cat === newCat);
+      if (isMobile) {
+        // MOBILE ONLY: Side cards stay stable, ONLY the center card executes the entrance animation
+        currentProjects = newCat === 'ALL'
+          ? ALL_PROJECTS
+          : ALL_PROJECTS.filter((p) => p.cat === newCat);
 
-          rebuildStrip();
-          targetUnitRef.current = 0;
-          setCurrentIndex(1);
+        rebuildStrip();
+        targetUnitRef.current = 0;
+        setCurrentIndex(1);
 
-          // Soft bloom & fade back in seamlessly
-          shared.uStrength.value = 0;
-          gsap.to(shared.uSectionOpacity, {
+        // Center card is cards[0] aligned at position.x = 0
+        const centerCard = cards[0];
+        if (centerCard) {
+          // Clone material so only the center card animates
+          centerCard.mesh.material = (centerCard.mesh.material as THREE.ShaderMaterial).clone();
+          const mat = centerCard.mesh.material as THREE.ShaderMaterial;
+          mat.uniforms.uSectionOpacity = { value: 0 };
+          mat.uniforms.uStrength = { value: 0 };
+
+          centerCard.mesh.userData.isEntranceTweening = true;
+          centerCard.mesh.scale.set(0.86, 0.86, 1);
+
+          gsap.killTweensOf(mat.uniforms.uSectionOpacity);
+          gsap.killTweensOf(mat.uniforms.uStrength);
+          gsap.killTweensOf(centerCard.mesh.scale);
+
+          // Center card opacity fade in
+          gsap.to(mat.uniforms.uSectionOpacity, {
             value: 1,
-            duration: 0.38,
+            duration: 0.35,
             ease: 'power2.out',
           });
-          gsap.to(shared.uStrength, {
+
+          // Center card scale-pop punch
+          gsap.to(centerCard.mesh.scale, {
+            x: 1,
+            y: 1,
+            z: 1,
+            duration: 0.50,
+            ease: 'back.out(1.5)',
+            onComplete: () => {
+              if (centerCard.mesh) {
+                centerCard.mesh.userData.isEntranceTweening = false;
+              }
+            },
+          });
+
+          // Center card delicate geometric shatter bloom
+          gsap.to(mat.uniforms.uStrength, {
             value: 1,
-            duration: 1.6,
-            delay: 0.08,
+            duration: 1.2,
+            delay: 0.05,
             ease: 'power2.out',
           });
-        },
-      });
+        }
+      } else {
+        // DESKTOP: Smooth cinematic dissolve across the entire strip
+        gsap.killTweensOf(shared.uSectionOpacity);
+        gsap.killTweensOf(shared.uStrength);
+
+        gsap.to(shared.uSectionOpacity, {
+          value: 0,
+          duration: 0.22,
+          ease: 'power2.in',
+          onComplete: () => {
+            currentProjects = newCat === 'ALL'
+              ? ALL_PROJECTS
+              : ALL_PROJECTS.filter((p) => p.cat === newCat);
+
+            rebuildStrip();
+            targetUnitRef.current = 0;
+            setCurrentIndex(1);
+
+            shared.uStrength.value = 0;
+            gsap.to(shared.uSectionOpacity, {
+              value: 1,
+              duration: 0.38,
+              ease: 'power2.out',
+            });
+            gsap.to(shared.uStrength, {
+              value: 1,
+              duration: 1.6,
+              delay: 0.08,
+              ease: 'power2.out',
+            });
+          },
+        });
+      }
     };
 
     // Smooth navigation function attached to ref for button clicks with ZERO stuckness
@@ -711,6 +776,15 @@ export default function WorkGallery() {
       for (const card of cards) {
         const x = ((card.baseX - motion.offset) % stripSpan + stripSpan) % stripSpan;
         card.mesh.position.x = x - half;
+
+        if (isMobile) {
+          if (!card.mesh.userData?.isEntranceTweening) {
+            const dist = Math.abs(card.mesh.position.x);
+            // Center card is full scale (1.0); cards toward the edges scale down slightly to ~0.90
+            const s = Math.max(0.90, 1.0 - (dist / pitch) * 0.10);
+            card.mesh.scale.set(s, s, 1);
+          }
+        }
       }
 
       renderer?.render(scene, camera);

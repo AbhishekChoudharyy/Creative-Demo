@@ -61,25 +61,50 @@ export default function Home() {
   const [isExiting, setIsExiting] = useState(false);
   const flashRef = useRef<HTMLDivElement>(null);
   const [scrollCount, setScrollCount] = useState(0);
+  const [isOverWhite, setIsOverWhite] = useState(false);
 
-  // Navbar counter: 000 → 100 based on total page scroll distance
+  // Navbar counter & dynamic theme detection (White vs Blue screens)
   useEffect(() => {
-    const updateCount = () => {
+    const updateNavbarState = () => {
       const doc = document.documentElement;
       const maxScroll = doc.scrollHeight - window.innerHeight;
       if (maxScroll <= 0) {
         setScrollCount(0);
-        return;
+      } else {
+        const pct = Math.min(100, Math.max(0, Math.round((window.scrollY / maxScroll) * 100)));
+        setScrollCount(pct);
       }
-      const pct = Math.min(100, Math.max(0, Math.round((window.scrollY / maxScroll) * 100)));
-      setScrollCount(pct);
+
+      // Detect if navbar is currently over a white background section
+      const navY = 40;
+      const introEl = document.getElementById('intro');
+      const workEl = document.getElementById('work');
+      const contactEl = document.getElementById('contact');
+
+      let overWhite = false;
+      if (introEl) {
+        const rect = introEl.getBoundingClientRect();
+        if (rect.top <= navY && rect.bottom >= navY) overWhite = true;
+      }
+      if (workEl) {
+        const rect = workEl.getBoundingClientRect();
+        if (rect.top <= navY && rect.bottom >= navY) overWhite = true;
+      }
+      if (contactEl) {
+        const rect = contactEl.getBoundingClientRect();
+        // Upper zone of contact form is pure white
+        if (rect.top <= navY && rect.top + 340 >= navY) overWhite = true;
+      }
+
+      setIsOverWhite(overWhite);
     };
-    updateCount();
-    window.addEventListener('scroll', updateCount, { passive: true });
-    window.addEventListener('resize', updateCount);
+
+    updateNavbarState();
+    window.addEventListener('scroll', updateNavbarState, { passive: true });
+    window.addEventListener('resize', updateNavbarState);
     return () => {
-      window.removeEventListener('scroll', updateCount);
-      window.removeEventListener('resize', updateCount);
+      window.removeEventListener('scroll', updateNavbarState);
+      window.removeEventListener('resize', updateNavbarState);
     };
   }, []);
 
@@ -332,8 +357,11 @@ export default function Home() {
               Origo
             </span>
             <span
-              className="text-[10px] sm:text-[11.5px] font-extralight uppercase tracking-[0.26em] leading-none text-white font-sans"
-              style={{ fontWeight: 200, color: '#FFFFFF' }}
+              className="text-[10px] sm:text-[11.5px] font-extralight uppercase tracking-[0.26em] leading-none font-sans transition-colors duration-300"
+              style={{
+                fontWeight: 200,
+                color: isOverWhite ? '#1E90FF' : '#FFFFFF',
+              }}
             >
               ATELIER
             </span>
