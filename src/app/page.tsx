@@ -10,7 +10,6 @@ import ImmersiveCarousel from "@/components/NeoBrutalist/ImmersiveCarousel";
 import Team from "@/components/NeoBrutalist/Team";
 import Services from "@/components/NeoBrutalist/Services";
 import ContactForm from "@/components/NeoBrutalist/ContactForm";
-import Footer from "@/components/NeoBrutalist/Footer";
 import CustomCursor from "@/components/CustomCursor";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -375,11 +374,8 @@ export default function Home() {
       <ImmersiveCarousel />
       <Services />
 
-      {/* Contact Form Section */}
+      {/* Unified Contact & Footer Section */}
       <ContactForm />
-
-      {/* Navy Footer */}
-      <Footer />
     </div>
   );
 }

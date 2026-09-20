@@ -3,9 +3,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Send } from 'lucide-react';
+import { Send, ArrowUpRight } from 'lucide-react';
 import { soundManager } from '@/lib/sound';
 import AsciiScramble from './AsciiScramble';
+import Footer from './Footer';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -47,14 +48,14 @@ export default function ContactForm() {
       // Staggered / delayed stacked entrance for all form blocks
       gsap.fromTo(
         '.cf-stack',
-        { y: 110, opacity: 0, scale: 0.95 },
+        { y: 100, opacity: 0, scale: 0.96 },
         {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 1.4,
+          duration: 1.3,
           ease: 'power3.out',
-          stagger: 0.3,
+          stagger: 0.2,
           scrollTrigger: {
             id: 'contact-staggered-reveal',
             trigger: sectionRef.current,
@@ -82,123 +83,141 @@ export default function ContactForm() {
   };
 
   return (
-    <section
+    <footer
       ref={sectionRef}
       id="contact"
-      className="relative z-30 px-8 md:px-16 lg:px-24 py-24 lg:py-32 pb-40 lg:pb-52 text-[#0A1F44] overflow-hidden rounded-t-[36px] sm:rounded-t-[56px] border-t border-white/60 will-change-transform"
+      className="relative z-30 w-full text-[#0A1F44] overflow-hidden rounded-t-[36px] sm:rounded-t-[56px] border-t border-white/60 shadow-[0_-25px_60px_rgba(0,0,0,0.14)] will-change-transform"
       style={{
-        // Form + Footer treated as ONE continuous canvas:
-        // long white → soft sky → brand blue, ending at the page bottom
-        background: 'linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 34%, #EDF5FD 55%, #BFE0FD 72%, #7CB8F9 84%, #1E90FF 100%)',
+        // One continuous organic canvas: Pure White → Soft Ice Sky → Electric Blue
+        background: 'linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 24%, #F0F6FD 40%, #C4E1FD 56%, #70B4F9 70%, #1E90FF 82%, #1E90FF 100%)',
       }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full">
-        {/* LEFT SIDE */}
-        <div className="flex flex-col justify-center">
-          {/* Section Label */}
-          <div className="flex gap-2 items-center mb-12 cf-stack">
-            <p className="text-[#0A1F44] font-heading font-bold text-lg sm:text-2xl uppercase tracking-wider">
-              CONTACT US
+      {/* ── UPPER ZONE: INTERACTIVE CONTACT FORM ── */}
+      <div className="px-6 sm:px-10 md:px-14 lg:px-20 pt-20 sm:pt-28 lg:pt-32 pb-14 sm:pb-18 max-w-[1440px] mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 w-full">
+          {/* LEFT SIDE */}
+          <div className="flex flex-col justify-center">
+            {/* Section Label */}
+            <div className="flex gap-2 items-center mb-8 sm:mb-10 cf-stack">
+              <span className="text-[#0A1F44]/60 font-mono text-xs sm:text-sm tracking-[0.2em] font-semibold uppercase">
+                [ 05 // CONTACT US ]
+              </span>
+            </div>
+
+            <h3
+              className="text-[#0A1F44] font-heading font-black text-3xl sm:text-4xl lg:text-5xl leading-[1.08] uppercase tracking-tight cf-stack"
+              style={{ fontFamily: "'ERF Neot', sans-serif" }}
+            >
+              <AsciiScramble text="Let's " />
+              <span className="text-transparent" style={{ WebkitTextStroke: "1.5px #0A1F44" }}>
+                <AsciiScramble text="Create" />
+              </span>
+              <br />
+              <AsciiScramble text="From The" />
+              <br />
+              <span className="text-[#0A1F44] font-bold">
+                <AsciiScramble text="Origin." />
+              </span>
+            </h3>
+
+            <p className="text-sm sm:text-base font-mono mt-6 mb-8 max-w-md text-[#0A1F44]/80 leading-relaxed cf-stack">
+              Partner with Origo Atelier to transform ideas into immersive brand experiences, activations, and exhibitions. From origin to excellence.
             </p>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 cf-stack">
+              <a
+                href="#work"
+                onMouseEnter={() => soundManager.playHover()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  soundManager.playClick();
+                  const workSection = document.getElementById("work");
+                  workSection?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="group inline-flex items-center gap-3 w-fit"
+              >
+                <span className="px-7 py-3 bg-transparent text-[#0A1F44] font-heading font-bold text-xs sm:text-sm uppercase tracking-wider border-2 border-[#0A1F44] group-hover:bg-[#0A1F44] group-hover:text-white transition-colors duration-300">
+                  Explore Our Work
+                </span>
+                <span className="w-10 h-10 bg-transparent text-[#0A1F44] border-2 border-[#0A1F44] flex items-center justify-center group-hover:rotate-45 group-hover:bg-[#0A1F44] group-hover:text-white transition-all duration-300">
+                  <ArrowUpRight className="w-5 h-5" />
+                </span>
+              </a>
+
+              <a
+                href="mailto:hello@origoatelier.com"
+                onMouseEnter={() => soundManager.playHover()}
+                className="text-xs sm:text-sm font-mono tracking-wider text-[#0A1F44]/75 hover:text-[#0A1F44] underline underline-offset-4 transition-colors py-2"
+              >
+                hello@origoatelier.com
+              </a>
+            </div>
           </div>
 
-          <h3
-            className="text-[#0A1F44] font-heading font-black text-3xl sm:text-4xl lg:text-5xl leading-tight uppercase tracking-tight cf-stack"
-            style={{ fontFamily: "'ERF Neot', sans-serif" }}
-          >
-            <AsciiScramble text="Let's " /><span className="text-transparent" style={{ WebkitTextStroke: "1px #0A1F44" }}><AsciiScramble text="Create" /></span>
-            <br />
-            <AsciiScramble text="From The" />
-            <br />
-            <span className="text-[#0A1F44] font-bold"><AsciiScramble text="Origin." /></span>
-          </h3>
-
-          <p className="text-sm sm:text-base font-mono mt-6 mb-8 max-w-md text-[#0A1F44]/80 leading-relaxed cf-stack">
-            Partner with Origo Atelier to transform ideas into immersive brand experiences, activations, and exhibitions. From origin to excellence.
-          </p>
-
-          <a
-            href="#work"
-            onMouseEnter={() => soundManager.playHover()}
-            onClick={(e) => {
-              e.preventDefault();
-              soundManager.playClick();
-              const workSection = document.getElementById("work");
-              workSection?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="group inline-flex items-center gap-3 w-fit cf-stack"
-          >
-            <span className="px-8 py-3 bg-transparent text-[#0A1F44] font-heading font-bold text-sm uppercase tracking-wider border-2 border-[#0A1F44] hover:bg-[#0A1F44] hover:text-white transition-colors duration-300">
-              Explore Our Work
-            </span>
-            <span className="w-10 h-10 bg-transparent text-[#0A1F44] border-2 border-[#0A1F44] flex items-center justify-center group-hover:rotate-45 group-hover:bg-[#0A1F44] group-hover:text-white transition-all duration-300">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 17L17 7M17 7H7M17 7V17" />
-              </svg>
-            </span>
-          </a>
-        </div>
-
-        {/* RIGHT FORM - Seamless blend without background overlay */}
-        <div className="flex flex-col justify-center">
-          {status === 'success' ? (
-            <div className="flex flex-col items-center justify-center text-center py-16 space-y-6 border border-[#0A1F44] bg-transparent rounded-xl">
-              <div className="w-16 h-16 rounded-full bg-[#0A1F44]/10 border border-[#0A1F44]/20 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0A1F44" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
+          {/* RIGHT SIDE: MINIMALIST FORM */}
+          <div className="flex flex-col justify-center">
+            {status === 'success' ? (
+              <div className="flex flex-col items-center justify-center text-center py-16 px-6 space-y-6 border-2 border-[#0A1F44] bg-white/40 backdrop-blur-md rounded-2xl shadow-xl">
+                <div className="w-16 h-16 rounded-full bg-[#0A1F44]/10 border border-[#0A1F44]/20 flex items-center justify-center">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0A1F44" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-heading font-black text-[#0A1F44] uppercase tracking-tight">Message Received</h3>
+                <p className="text-[#0A1F44]/80 text-sm font-mono max-w-sm leading-relaxed">
+                  Thank you for reaching out. An Origo director will connect with you within 24 hours.
+                </p>
+                <button
+                  onClick={() => {
+                    soundManager.playClick();
+                    setStatus('idle');
+                  }}
+                  onMouseEnter={() => soundManager.playHover()}
+                  className="text-xs font-mono font-bold uppercase tracking-wider text-[#0A1F44] hover:opacity-75 underline transition-opacity pt-2"
+                >
+                  Send another message
+                </button>
               </div>
-              <h3 className="text-2xl font-heading font-bold text-[#0A1F44] uppercase">Message Sent!</h3>
-              <p className="text-[#0A1F44]/85 text-sm font-mono max-w-sm">
-                Thank you for reaching out. We&apos;ll get back to you within 24 hours.
-              </p>
-              <button
-                onClick={() => {
-                  soundManager.playClick();
-                  setStatus('idle');
-                }}
-                onMouseEnter={() => soundManager.playHover()}
-                className="text-xs font-mono text-[#0A1F44] hover:text-white underline transition-colors"
-              >
-                Send another message
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 cf-stack">
-                <FormInput label="Name" name="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
-                <FormInput label="Brand / Company" name="brandName" value={formData.brandName} onChange={(e) => setFormData({ ...formData, brandName: e.target.value })} />
-              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-7">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 cf-stack">
+                  <FormInput label="Name" name="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                  <FormInput label="Brand / Company" name="brandName" value={formData.brandName} onChange={(e) => setFormData({ ...formData, brandName: e.target.value })} />
+                </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 cf-stack">
-                <FormInput label="Email" name="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
-                <FormInput label="Phone" name="phone" type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
-              </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 cf-stack">
+                  <FormInput label="Email" name="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+                  <FormInput label="Phone" name="phone" type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+                </div>
 
-              <div className="cf-stack">
-                <FormInput label="Your Message" name="message" value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} />
-              </div>
+                <div className="cf-stack">
+                  <FormInput label="Your Message / Brief" name="message" value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} />
+                </div>
 
-              <button
-                type="submit"
-                disabled={status === 'sending'}
-                onMouseEnter={() => soundManager.playHover()}
-                className="w-full min-h-[48px] bg-transparent text-[#0A1F44] font-heading uppercase font-bold py-3.5 px-6 border-2 border-[#0A1F44] hover:bg-[#0A1F44] hover:text-white transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 active:translate-x-[2px] active:translate-y-[2px] cf-stack"
-              >
-                <span>{status === 'sending' ? 'Sending...' : 'Send Message'}</span>
-                <Send className="h-4 w-4" />
-              </button>
+                <button
+                  type="submit"
+                  disabled={status === 'sending'}
+                  onMouseEnter={() => soundManager.playHover()}
+                  className="w-full min-h-[50px] bg-transparent text-[#0A1F44] font-heading uppercase font-black text-sm tracking-wider py-3.5 px-6 border-2 border-[#0A1F44] hover:bg-[#0A1F44] hover:text-white transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 active:translate-x-[2px] active:translate-y-[2px] shadow-sm cf-stack"
+                >
+                  <span>{status === 'sending' ? 'Transmitting...' : 'Send Message'}</span>
+                  <Send className="h-4 w-4" />
+                </button>
 
-              {status === 'error' && (
-                <p className="text-red-600 text-xs font-mono font-semibold">Something went wrong. Please try again.</p>
-              )}
-            </form>
-          )}
+                {status === 'error' && (
+                  <p className="text-red-600 text-xs font-mono font-semibold">Something went wrong. Please try again.</p>
+                )}
+              </form>
+            )}
+          </div>
         </div>
       </div>
 
 
-    </section>
+
+      {/* ── LOWER ZONE: FOOTER & 3D INTERACTION ── */}
+      <Footer />
+    </footer>
   );
 }
 
@@ -236,12 +255,12 @@ function FormInput({
           w-full
           min-h-[44px]
           bg-transparent
-          border-b border-[#0A1F44]/20
+          border-b border-[#0A1F44]/25
           py-3
           text-sm
           outline-none
           text-[#0A1F44]
-          placeholder:text-[#0A1F44]/50
+          placeholder:text-[#0A1F44]/55
           focus:border-[#0A1F44]
           transition-colors duration-300
           font-mono
