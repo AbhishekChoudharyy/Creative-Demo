@@ -93,16 +93,10 @@ export default function ContactForm() {
       }}
     >
       {/* ── UPPER ZONE: INTERACTIVE CONTACT FORM ── */}
-      <div className="px-6 sm:px-10 md:px-14 lg:px-20 pt-20 sm:pt-28 lg:pt-32 pb-14 sm:pb-18 max-w-[1440px] mx-auto w-full">
+      <div className="px-6 sm:px-10 md:px-14 lg:px-20 pt-12 sm:pt-16 lg:pt-20 pb-14 sm:pb-18 max-w-[1440px] mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 w-full">
           {/* LEFT SIDE */}
           <div className="flex flex-col justify-center">
-            {/* Section Label */}
-            <div className="flex gap-2 items-center mb-8 sm:mb-10 cf-stack">
-              <span className="text-[#0A1F44]/60 font-mono text-xs sm:text-sm tracking-[0.2em] font-semibold uppercase">
-                [ 05 // CONTACT US ]
-              </span>
-            </div>
 
             <h3
               className="text-[#0A1F44] font-heading font-black text-3xl sm:text-4xl lg:text-5xl leading-[1.08] uppercase tracking-tight cf-stack"
@@ -145,11 +139,11 @@ export default function ContactForm() {
               </a>
 
               <a
-                href="mailto:hello@origoatelier.com"
+                href="mailto:info@origoatelier.in"
                 onMouseEnter={() => soundManager.playHover()}
                 className="text-xs sm:text-sm font-mono tracking-wider text-[#0A1F44]/75 hover:text-[#0A1F44] underline underline-offset-4 transition-colors py-2"
               >
-                hello@origoatelier.com
+                info@origoatelier.in
               </a>
             </div>
           </div>
