@@ -164,14 +164,16 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
-      // Controlled 3D scatter vector: breaks apart cleanly without flying too far away
+      // Controlled 3D scatter vector:
+      // Upar repel na ho — only Left (-X), Right (+X), Downward (-Y) and Depth (Z)
       const dirAngle = Math.random() * Math.PI * 2;
-      const dirElevation = (Math.random() - 0.5) * Math.PI;
       const speed = 0.95 + Math.random() * 0.85;
+      // Downward only: Y is strictly negative (-Y), never upward (+Y)
+      const yScatter = -(0.25 + Math.random() * 0.95) * speed;
       const scatterVector = new THREE.Vector3(
-        Math.cos(dirAngle) * Math.cos(dirElevation) * speed * 1.1,
-        Math.sin(dirElevation) * speed * 0.95,
-        Math.sin(dirAngle) * Math.cos(dirElevation) * speed * 0.75
+        Math.cos(dirAngle) * speed * 1.25, // Left & Right
+        yScatter,                          // Strictly Downward (never up)
+        Math.sin(dirAngle) * speed * 0.85  // Depth Z (front & back)
       );
 
       arr.push({
@@ -214,6 +216,8 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
     tmpDir.copy(tmpTarget).sub(camera.position).normalize();
     const planeDist = -camera.position.z / tmpDir.z;
     tmpTarget.copy(camera.position).add(tmpDir.multiplyScalar(planeDist));
+    // Do not let magnetic pull drag shapes upwards beyond the upper footer boundary
+    tmpTarget.y = Math.min(tmpTarget.y, 0.25);
 
     const dt = Math.min(delta, 0.05);
 
@@ -241,8 +245,13 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
       // Base position rotated into current world orientation
       tmpWorld.copy(item.base).applyEuler(group.rotation);
 
-      // Controlled 3D scatter outward (zyada dur nahi jata, visible rehta hai)
+      // Controlled 3D scatter outward (left, right, downward, depth)
       tmpWorld.addScaledVector(item.scatterVector, scatter * 1.3);
+
+      // Prevent any upward drift during scatter: keep Y at or below initial rest Y
+      if (scatter > 0.02 && tmpWorld.y > item.base.y + 0.05) {
+        tmpWorld.y = item.base.y + 0.05;
+      }
 
       // Magnetic pull: shapes near the cursor bulge toward it
       const dist = tmpWorld.distanceTo(tmpTarget);

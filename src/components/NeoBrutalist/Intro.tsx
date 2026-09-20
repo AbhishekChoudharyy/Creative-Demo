@@ -899,7 +899,7 @@ export default function Intro() {
       <div className="hidden md:flex relative z-10 w-full max-w-[1700px] mx-auto mt-8 mb-16 md:mb-24 justify-end">
         <div className="w-8/12 lg:w-6/12 border-l-2 border-[#0A1F44]/25 pl-8 space-y-3">
           <span className="text-xs uppercase tracking-[0.25em] font-mono font-bold text-[#0A1F44]/60 block">
-            {"// WHAT WE BELIEVE"}
+            {"WHAT WE BELIEVE"}
           </span>
           <p className="text-[17px] font-mono text-[#0A1F44] leading-relaxed">
             <strong className="font-bold text-[#0A1F44]">“Origo” means Origin</strong> – the starting point from which every idea, form and creation begins. Every great design begins with a simple origin and evolves into something extraordinary.

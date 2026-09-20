@@ -4,7 +4,6 @@ import { FC, Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Html, Preload } from '@react-three/drei';
 
-import { DeviceOrientationButton } from '../DeviceOrientationButton';
 import { Scene } from './Scene';
 import styles from './styles.module.css';
 
@@ -50,8 +49,6 @@ export const Main: FC = () => {
 
   return (
     <div ref={containerRef} className={styles.scene}>
-      <DeviceOrientationButton />
-
       <Canvas
         frameloop={isVisible ? 'always' : 'never'}
         dpr={dpr}
