@@ -635,10 +635,7 @@ export default function ImmersiveCarousel() {
           </div>
         </div>
 
-        {/* ── BOTTOM RIGHT CORNER TAG: [ AR ] ── */}
-        <div className="relative z-30 w-full flex justify-end pt-2 sm:pt-1 pointer-events-none text-[10px] sm:text-xs font-mono tracking-widest text-[#0A1F44] font-semibold">
-          [ AR ]
-        </div>
+
       </div>
     </section>
   );
