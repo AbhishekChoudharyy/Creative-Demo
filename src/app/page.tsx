@@ -123,31 +123,6 @@ export default function Home() {
 
       isFlashing = true;
       lastFlashTime = now;
-
-      const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
-
-      // ── MOBILE: Flash overlay completely removed, shapes section fast-forwards instantly ──
-      if (isMobile) {
-        if (destination === 'shapes') {
-          const targetTop = shapesSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
-          window.scrollTo({ top: Math.round(targetTop), behavior: 'instant' as ScrollBehavior });
-          fastForwardSection(shapesSection);
-        } else {
-          const currentWorkTop = workSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
-          const targetTop = currentWorkTop + workSection.offsetHeight - window.innerHeight;
-          window.scrollTo({ top: Math.max(0, Math.round(targetTop)), behavior: 'instant' as ScrollBehavior });
-          fastForwardSection(workSection);
-        }
-
-        setTimeout(() => {
-          isFlashing = false;
-          lastFlashTime = Date.now();
-          ScrollTrigger.refresh();
-        }, 300);
-        return;
-      }
-
-      // ── DESKTOP: Full cinematic color flash ──
       gsap.killTweensOf(overlay);
 
       const tl = gsap.timeline({
@@ -160,7 +135,7 @@ export default function Home() {
 
       tl.set(overlay, { display: 'block', background: color, opacity: 0 })
         // Smooth flash pop to full color
-        .to(overlay, { opacity: 1, duration: 0.15, ease: 'power2.in' })
+        .to(overlay, { opacity: 1, duration: 0.16, ease: 'power2.in' })
         // While fully masked: jump instantly to destination + fast-forward
         .call(
           () => {
@@ -169,20 +144,28 @@ export default function Home() {
               window.scrollTo({ top: Math.round(targetTop), behavior: 'instant' as ScrollBehavior });
               fastForwardSection(shapesSection);
             } else {
-              // Returning to Work: land naturally at the bottom of the gallery where user left off
+              // Returning to Work: frame the 3D cards carousel nicely in view
               const currentWorkTop = workSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
-              const targetTop = currentWorkTop + workSection.offsetHeight - window.innerHeight;
+              const stageEl = workSection.querySelector('.cursor-grab') as HTMLElement | null;
+              let targetTop: number;
+              if (stageEl) {
+                const stageRect = stageEl.getBoundingClientRect();
+                const stageAbsTop = stageRect.top + (window.scrollY || window.pageYOffset);
+                targetTop = stageAbsTop - Math.max(20, (window.innerHeight - stageRect.height) / 2);
+              } else {
+                targetTop = currentWorkTop + Math.max(0, workSection.offsetHeight - window.innerHeight);
+              }
               window.scrollTo({ top: Math.max(0, Math.round(targetTop)), behavior: 'instant' as ScrollBehavior });
               fastForwardSection(workSection);
             }
           },
           undefined,
-          0.15
+          0.16
         )
         // Brief hold so the new section renders stably underneath
-        .to(overlay, { opacity: 1, duration: 0.12, ease: 'none' })
+        .to(overlay, { opacity: 1, duration: 0.10, ease: 'none' })
         // Silky fade out revealing the new section
-        .to(overlay, { opacity: 0, duration: 0.38, ease: 'power2.out' })
+        .to(overlay, { opacity: 0, duration: 0.40, ease: 'power2.out' })
         .set(overlay, { display: 'none' });
     };
 
@@ -193,17 +176,17 @@ export default function Home() {
     // Shapes → Work: white flash
     const flashBackToWork = () => runFlash('#FFFFFF', 'work');
 
-    // Work → Shapes (forward scroll down): triggers a little below the centre of the gap
+    // Work → Shapes: triggers separately right at the bottom of the Work section when scrolling down
     const stA = ScrollTrigger.create({
-      trigger: gapSection || shapesSection,
-      start: gapSection ? '58% center' : 'top bottom-=1px',
+      trigger: workSection,
+      start: 'bottom bottom-=20px',
       onEnter: flashToShapes,
     });
 
-    // Shapes → Work (revert scroll up): triggers a little above the centre of the gap
+    // Shapes → Work: triggers separately right at the top of the Shapes section when scrolling up
     const stB = ScrollTrigger.create({
-      trigger: gapSection || shapesSection,
-      start: gapSection ? '42% center' : 'top top+=1px',
+      trigger: shapesSection,
+      start: 'top top+=20px',
       onLeaveBack: flashBackToWork,
     });
 
