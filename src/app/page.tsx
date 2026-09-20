@@ -139,14 +139,10 @@ export default function Home() {
     };
 
     const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
-    if (isMobile) {
-      // On mobile: Native CSS sticky (sticky top-0 min-h-screen) keeps sections perfectly pinned to the top of the viewport
-      // without any GSAP pin-spacer detachment or blue background exposure.
-      return;
-    }
+    // Extended extra scroll runway: 550px on mobile, 900px on desktop
+    const pinScrollDistance = isMobile ? 550 : 900;
 
-    // ── Desktop: Pinned scroll transition ──
-    const pinScrollDistance = 900;
+    // ── Extra scroll without visible gap: Pin Works at bottom for extra scroll distance ──
     const stPin = ScrollTrigger.create({
       trigger: workSection,
       start: 'bottom bottom',
@@ -154,9 +150,11 @@ export default function Home() {
       pin: true,
       pinSpacing: true,
       onUpdate: (self) => {
+        // Downward (Works → Shapes): triggers right near the bottom end (niche chipka ke)
         if (self.direction === 1 && self.progress >= 0.88 && !isTransitioning) {
           transitionTo('shapes');
         }
+        // Upward (Shapes → Works): triggers right near the top end (upar chipka ke)
         if (self.direction === -1 && self.progress <= 0.12 && !isTransitioning) {
           transitionTo('work');
         }
