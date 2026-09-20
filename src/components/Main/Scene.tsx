@@ -82,7 +82,7 @@ export const Scene: FC = () => {
         <Text
           font="/fonts/OTBrut-Bold.ttf"
           fontSize={isMobile ? viewport.width * 0.185 : viewport.width * 0.102}
-          color="#000000"
+          color="#0A1F44"
           maxWidth={isMobile ? viewport.width * 1.12 : viewport.width * 0.98}
           textAlign="center"
           letterSpacing={-0.035}
@@ -94,7 +94,8 @@ export const Scene: FC = () => {
         </Text>
       </group>
 
-      <group ref={groupRef} scale={responsiveScale}>
+      {/* Start frame: initial tilt comes from GlassBox rotation refs; group kept neutral */}
+      <group ref={groupRef} scale={responsiveScale} position={[0, 0.1, 0]}>
         <GlassBox />
       </group>
     </>

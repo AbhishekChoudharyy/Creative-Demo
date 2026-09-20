@@ -761,7 +761,7 @@ export default function WorkGallery() {
     <section
       ref={sectionRef}
       id="work"
-      className="relative bg-white text-black pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
+      className="relative bg-white text-[#0A1F44] pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
     >
       {/* Attached Panoramic Sky Background Image */}
       <div
@@ -789,13 +789,13 @@ export default function WorkGallery() {
           {/* LEFT SIDE: SELECTED WORKS */}
           <div className="flex flex-col items-start text-left">
             <h2
-              className="text-[5.5vw] xl:text-[5.2vw] leading-[0.96] uppercase text-black font-bold tracking-[-0.03em]"
+              className="text-[5.5vw] xl:text-[5.2vw] leading-[0.96] uppercase text-[#0A1F44] font-bold tracking-[-0.03em]"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               SELECTED
             </h2>
             <h2
-              className="text-[5.5vw] xl:text-[5.2vw] leading-[0.96] uppercase text-black font-bold tracking-[-0.03em] mt-1"
+              className="text-[5.5vw] xl:text-[5.2vw] leading-[0.96] uppercase text-[#0A1F44] font-bold tracking-[-0.03em] mt-1"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               WORKS
@@ -804,7 +804,7 @@ export default function WorkGallery() {
 
           {/* RIGHT SIDE: 3-LINE EDITORIAL PARAGRAPH + FILTER CAPSULE FLUSH RIGHT */}
           <div className="flex flex-col items-end text-right pt-1">
-            <p className="text-[10px] xl:text-[10.5px] font-mono font-medium tracking-[0.06em] text-black/75 uppercase leading-[1.5] mb-3 max-w-sm select-none">
+            <p className="text-[10px] xl:text-[10.5px] font-mono font-medium tracking-[0.06em] text-[#0A1F44]/75 uppercase leading-[1.5] mb-3 max-w-sm select-none">
               IDEAS SHAPED INTO EXPERIENCES.<br />
               A SELECTION OF WORK DRIVEN BY DETAIL,<br />
               INTENT AND VISUAL CLARITY.
@@ -819,14 +819,14 @@ export default function WorkGallery() {
                   soundManager.playClick();
                   desktopFilterScrollRef.current?.scrollBy({ left: -115, behavior: 'smooth' });
                 }}
-                className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-black border border-black/15 shadow-[0_2px_0_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.06)] -translate-y-[0.5px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(0,0,0,0.12)] flex items-center justify-center text-xs font-mono font-bold transition-all duration-150 cursor-pointer select-none"
+                className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-[#0A1F44] border border-[#0A1F44]/15 shadow-[0_2px_0_rgba(10,31,68,0.12),0_4px_8px_rgba(10,31,68,0.06)] -translate-y-[0.5px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(10,31,68,0.12)] flex items-center justify-center text-xs font-mono font-bold transition-all duration-150 cursor-pointer select-none"
                 aria-label="Scroll filter left"
               >
                 ←
               </button>
 
               {/* Compact Curved Outer Capsule Container (Fits exactly 4 categories at a time) */}
-              <div className="w-[342px] xl:w-[354px] overflow-hidden rounded-full border border-white/80 bg-white/95 backdrop-blur-md shadow-[0_3px_16px_rgba(0,0,0,0.06)] p-1">
+              <div className="w-[342px] xl:w-[354px] overflow-hidden rounded-full border border-white/80 bg-white/95 backdrop-blur-md shadow-[0_3px_16px_rgba(10,31,68,0.06)] p-1">
                 <div
                   ref={desktopFilterScrollRef}
                   className="overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-1 rounded-full py-0.5 px-0.5"
@@ -842,8 +842,8 @@ export default function WorkGallery() {
                         onMouseEnter={() => soundManager.playHover()}
                         className={`relative flex-shrink-0 min-h-[30px] px-3.5 xl:px-4 py-1 text-[11px] font-mono font-bold tracking-wider uppercase transition-all duration-150 cursor-pointer select-none rounded-full flex items-center justify-center ${
                           isActive
-                            ? 'bg-black text-white shadow-[0_2.5px_0_#000000,0_5px_10px_rgba(0,0,0,0.35)] -translate-y-[1px]'
-                            : 'text-black/65 hover:text-black hover:bg-black/5 font-medium'
+                            ? 'bg-[#0A1F44] text-white shadow-[0_2.5px_0_#000000,0_5px_10px_rgba(10,31,68,0.35)] -translate-y-[1px]'
+                            : 'text-[#0A1F44]/65 hover:text-[#0A1F44] hover:bg-[#0A1F44]/5 font-medium'
                         }`}
                       >
                         {cat.label}
@@ -860,7 +860,7 @@ export default function WorkGallery() {
                   soundManager.playClick();
                   desktopFilterScrollRef.current?.scrollBy({ left: 115, behavior: 'smooth' });
                 }}
-                className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-black border border-black/15 shadow-[0_2px_0_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.06)] -translate-y-[0.5px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(0,0,0,0.12)] flex items-center justify-center text-xs font-mono font-bold transition-all duration-150 cursor-pointer select-none"
+                className="flex-shrink-0 w-8 h-8 rounded-full bg-white text-[#0A1F44] border border-[#0A1F44]/15 shadow-[0_2px_0_rgba(10,31,68,0.12),0_4px_8px_rgba(10,31,68,0.06)] -translate-y-[0.5px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(10,31,68,0.12)] flex items-center justify-center text-xs font-mono font-bold transition-all duration-150 cursor-pointer select-none"
                 aria-label="Scroll filter right"
               >
                 →
@@ -874,19 +874,19 @@ export default function WorkGallery() {
           {/* Heading & paragraph */}
           <div className="w-full px-6 sm:px-8 flex flex-col items-start text-left select-none">
             <h2
-              className="text-[13vw] sm:text-[9.5vw] leading-[0.96] uppercase text-black font-bold tracking-[-0.03em]"
+              className="text-[13vw] sm:text-[9.5vw] leading-[0.96] uppercase text-[#0A1F44] font-bold tracking-[-0.03em]"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               SELECTED
             </h2>
             <h2
-              className="text-[13vw] sm:text-[9.5vw] leading-[0.96] uppercase text-black font-bold tracking-[-0.03em] mt-1 sm:mt-1.5"
+              className="text-[13vw] sm:text-[9.5vw] leading-[0.96] uppercase text-[#0A1F44] font-bold tracking-[-0.03em] mt-1 sm:mt-1.5"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               WORKS
             </h2>
 
-            <p className="text-[10px] sm:text-[11px] font-mono font-medium tracking-[0.06em] text-black/75 uppercase text-left leading-[1.6] mt-5 sm:mt-6 max-w-sm select-none">
+            <p className="text-[10px] sm:text-[11px] font-mono font-medium tracking-[0.06em] text-[#0A1F44]/75 uppercase text-left leading-[1.6] mt-5 sm:mt-6 max-w-sm select-none">
               IDEAS SHAPED INTO EXPERIENCES.<br />
               A SELECTION OF WORK DRIVEN BY DETAIL,<br />
               INTENT AND VISUAL CLARITY.
@@ -902,14 +902,14 @@ export default function WorkGallery() {
                 soundManager.playClick();
                 filterScrollRef.current?.scrollBy({ left: -140, behavior: 'smooth' });
               }}
-              className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black border border-black/15 shadow-[0_2.5px_0_rgba(0,0,0,0.12),0_4px_10px_rgba(0,0,0,0.06)] -translate-y-[1px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(0,0,0,0.12)] flex items-center justify-center text-xs sm:text-sm font-mono font-bold transition-all duration-150 cursor-pointer select-none"
+              className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-[#0A1F44] border border-[#0A1F44]/15 shadow-[0_2.5px_0_rgba(10,31,68,0.12),0_4px_10px_rgba(10,31,68,0.06)] -translate-y-[1px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(10,31,68,0.12)] flex items-center justify-center text-xs sm:text-sm font-mono font-bold transition-all duration-150 cursor-pointer select-none"
               aria-label="Scroll filter left"
             >
               ←
             </button>
 
             {/* Permanently Curved Outer Capsule Container */}
-            <div className="max-w-[calc(100vw-110px)] sm:max-w-max overflow-hidden rounded-full border border-white/80 bg-white/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.06)] p-1 sm:p-1.5">
+            <div className="max-w-[calc(100vw-110px)] sm:max-w-max overflow-hidden rounded-full border border-white/80 bg-white/95 backdrop-blur-md shadow-[0_4px_20px_rgba(10,31,68,0.06)] p-1 sm:p-1.5">
               <div
                 ref={filterScrollRef}
                 className="overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-1.5 rounded-full py-0.5 px-1"
@@ -926,8 +926,8 @@ export default function WorkGallery() {
                       onMouseEnter={() => soundManager.playHover()}
                       className={`relative flex-shrink-0 min-h-[34px] sm:min-h-[38px] px-4 sm:px-6 py-1.5 sm:py-2 text-[11px] sm:text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer select-none rounded-full flex items-center justify-center ${
                         isActive
-                          ? 'bg-black text-white shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(0,0,0,0.35)] -translate-y-[1px]'
-                          : 'text-black/65 hover:text-black hover:bg-black/5 font-medium'
+                          ? 'bg-[#0A1F44] text-white shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(10,31,68,0.35)] -translate-y-[1px]'
+                          : 'text-[#0A1F44]/65 hover:text-[#0A1F44] hover:bg-[#0A1F44]/5 font-medium'
                       }`}
                     >
                       {cat.label}
@@ -944,7 +944,7 @@ export default function WorkGallery() {
                 soundManager.playClick();
                 filterScrollRef.current?.scrollBy({ left: 140, behavior: 'smooth' });
               }}
-              className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black border border-black/15 shadow-[0_2.5px_0_rgba(0,0,0,0.12),0_4px_10px_rgba(0,0,0,0.06)] -translate-y-[1px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(0,0,0,0.12)] flex items-center justify-center text-xs sm:text-sm font-mono font-bold transition-all duration-150 cursor-pointer select-none"
+              className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-[#0A1F44] border border-[#0A1F44]/15 shadow-[0_2.5px_0_rgba(10,31,68,0.12),0_4px_10px_rgba(10,31,68,0.06)] -translate-y-[1px] active:translate-y-[1px] active:shadow-[0_0.5px_0_rgba(10,31,68,0.12)] flex items-center justify-center text-xs sm:text-sm font-mono font-bold transition-all duration-150 cursor-pointer select-none"
               aria-label="Scroll filter right"
             >
               →
@@ -971,7 +971,7 @@ export default function WorkGallery() {
             type="button"
             onClick={() => slideByRef.current(-1)}
             onMouseEnter={() => soundManager.playHover()}
-            className="group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black text-white border-t border-white/25 border-x border-black border-b border-black shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(0,0,0,0.35)] -translate-y-[1px] hover:-translate-y-[2px] hover:shadow-[0_4.5px_0_#000000,0_9px_18px_rgba(0,0,0,0.45)] active:translate-y-[2px] active:shadow-[0_0.5px_0_#000000,0_2px_4px_rgba(0,0,0,0.25)] transition-all duration-150 flex items-center justify-center cursor-pointer select-none"
+            className="group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#0A1F44] text-white border-t border-white/25 border-x border-[#0A1F44] border-b border-[#0A1F44] shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(10,31,68,0.35)] -translate-y-[1px] hover:-translate-y-[2px] hover:shadow-[0_4.5px_0_#000000,0_9px_18px_rgba(10,31,68,0.45)] active:translate-y-[2px] active:shadow-[0_0.5px_0_#000000,0_2px_4px_rgba(10,31,68,0.25)] transition-all duration-150 flex items-center justify-center cursor-pointer select-none"
             aria-label="Previous Project"
           >
             <svg
@@ -989,7 +989,7 @@ export default function WorkGallery() {
             type="button"
             onClick={() => slideByRef.current(1)}
             onMouseEnter={() => soundManager.playHover()}
-            className="group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black text-white border-t border-white/25 border-x border-black border-b border-black shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(0,0,0,0.35)] -translate-y-[1px] hover:-translate-y-[2px] hover:shadow-[0_4.5px_0_#000000,0_9px_18px_rgba(0,0,0,0.45)] active:translate-y-[2px] active:shadow-[0_0.5px_0_#000000,0_2px_4px_rgba(0,0,0,0.25)] transition-all duration-150 flex items-center justify-center cursor-pointer select-none"
+            className="group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#0A1F44] text-white border-t border-white/25 border-x border-[#0A1F44] border-b border-[#0A1F44] shadow-[0_3.5px_0_#000000,0_7px_14px_rgba(10,31,68,0.35)] -translate-y-[1px] hover:-translate-y-[2px] hover:shadow-[0_4.5px_0_#000000,0_9px_18px_rgba(10,31,68,0.45)] active:translate-y-[2px] active:shadow-[0_0.5px_0_#000000,0_2px_4px_rgba(10,31,68,0.25)] transition-all duration-150 flex items-center justify-center cursor-pointer select-none"
             aria-label="Next Project"
           >
             <svg

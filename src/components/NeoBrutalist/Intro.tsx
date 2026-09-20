@@ -14,8 +14,10 @@ interface AnimatedWordConfig {
 
 export default function Intro() {
   const sectionRef = useRef<HTMLElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
   const posterRef = useRef<HTMLDivElement>(null);
+  const drawCanvasRef = useRef<HTMLCanvasElement>(null);
+  const drawRafRef = useRef<number | null>(null);
+  const lastDrawPointRef = useRef<{ x: number; y: number } | null>(null);
 
   // Individual refs for animated words
   const everyRef = useRef<HTMLSpanElement>(null);
@@ -23,6 +25,7 @@ export default function Intro() {
   const beginsRef = useRef<HTMLSpanElement>(null);
   const withRef = useRef<HTMLSpanElement>(null);
   const ideaRef = useRef<HTMLSpanElement>(null);
+  const anRef = useRef<HTMLSpanElement>(null);
   const fromRef = useRef<HTMLSpanElement>(null);
   const originRef = useRef<HTMLSpanElement>(null);
   const toRef = useRef<HTMLSpanElement>(null);
@@ -41,24 +44,50 @@ export default function Intro() {
   const currentHoveredIdRef = useRef<string | null>(null);
   const lastSoundRef = useRef<number>(0);
 
-  // Animated words config: all active on hover
+  // Animated words config: all active on hover (per-line pairs; same-line words never overlap)
   const animatedWords: AnimatedWordConfig[] = [
-    { id: 'every', ref: everyRef, openDirection: 'right', maxOpenDistance: 80, maxOuterDistance: 30 },
-    { id: 'experience', ref: experienceRef, openDirection: 'left', maxOpenDistance: 80, maxOuterDistance: 30 },
-    { id: 'begins', ref: beginsRef, openDirection: 'right', maxOpenDistance: 75, maxOuterDistance: 35 },
-    { id: 'with', ref: withRef, openDirection: 'left', maxOpenDistance: 75, maxOuterDistance: 30 },
-    { id: 'idea', ref: ideaRef, openDirection: 'right', maxOpenDistance: 75, maxOuterDistance: 30 },
-    { id: 'from', ref: fromRef, openDirection: 'right', maxOpenDistance: 80, maxOuterDistance: 30 },
-    { id: 'origin', ref: originRef, openDirection: 'left', maxOpenDistance: 80, maxOuterDistance: 30 },
-    { id: 'to', ref: toRef, openDirection: 'right', maxOpenDistance: 75, maxOuterDistance: 35 },
-    { id: 'excellence', ref: excellenceRef, openDirection: 'left', maxOpenDistance: 80, maxOuterDistance: 30 },
-    { id: 'shaping', ref: shapingRef, openDirection: 'right', maxOpenDistance: 70, maxOuterDistance: 25 },
-    { id: 'forms', ref: formsRef, openDirection: 'left', maxOpenDistance: 70, maxOuterDistance: 25 },
-    { id: 'that', ref: thatRef, openDirection: 'right', maxOpenDistance: 70, maxOuterDistance: 25 },
-    { id: 'connect', ref: connectRef, openDirection: 'right', maxOpenDistance: 70, maxOuterDistance: 25 },
-    { id: 'inspire', ref: inspireRef, openDirection: 'left', maxOpenDistance: 70, maxOuterDistance: 25 },
-    { id: 'endure', ref: endureRef, openDirection: 'left', maxOpenDistance: 70, maxOuterDistance: 25 },
+    { id: 'every', ref: everyRef, openDirection: 'right', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'experience', ref: experienceRef, openDirection: 'left', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'begins', ref: beginsRef, openDirection: 'right', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'with', ref: withRef, openDirection: 'left', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'idea', ref: ideaRef, openDirection: 'right', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'from', ref: fromRef, openDirection: 'right', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'origin', ref: originRef, openDirection: 'left', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'to', ref: toRef, openDirection: 'right', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'excellence', ref: excellenceRef, openDirection: 'left', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'shaping', ref: shapingRef, openDirection: 'right', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'forms', ref: formsRef, openDirection: 'left', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'that', ref: thatRef, openDirection: 'right', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'connect', ref: connectRef, openDirection: 'right', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'inspire', ref: inspireRef, openDirection: 'left', maxOpenDistance: 320, maxOuterDistance: 320 },
+    { id: 'endure', ref: endureRef, openDirection: 'left', maxOpenDistance: 320, maxOuterDistance: 320 },
   ];
+
+  // Words sharing the same line — a moving word stops before colliding with its line-mates
+  const linePairsRef = useRef<Array<[AnimatedWordConfig, AnimatedWordConfig]>>([]);
+
+  // Desktop-only: words start pulled towards the center so the poster looks
+  // compact ("bhara hua"); on first pointer move they release to natural spread.
+  const compactStartOffsets = useRef<Record<string, number>>({
+    every: -70,
+    experience: 70,
+    begins: -60,
+    with: 60,
+    idea: -45,
+    from: -70,
+    origin: 70,
+    to: -55,
+    excellence: 55,
+    shaping: -50,
+    forms: 50,
+    that: -50,
+    connect: 50,
+    inspire: -45,
+    endure: 45,
+  });
+  const hasReleasedCompactRef = useRef(false);
+
+
 
   const wordDirStateRef = useRef<Record<string, 'left' | 'right'>>({
     every: 'right',
@@ -81,16 +110,17 @@ export default function Intro() {
   const wordClickCountRef = useRef<Record<string, number>>({});
 
   /**
-   * Safe Viewport Clamped Travel Calculation:
-   * - Strict mathematical clamp: NO word can EVER exceed the screen boundary.
-   * - A 24px (mobile) to 48px (desktop) safety padding is strictly enforced at all times.
-   * - Left-anchored words glide inwards to the right; right-anchored words glide inwards to the left.
+   * Safe Travel Calculation:
+   * - Viewport clamp: NO word can exceed the screen boundary.
+   * - Collision clamp: a word never overlaps its same-line partner; it stops
+   *   at the empty space between them (with a small gap).
    */
   const getTargetX = (item: AnimatedWordConfig, el: HTMLElement) => {
     if (typeof window === 'undefined') return 0;
     const isMobile = window.innerWidth < 768;
     const screenWidth = window.innerWidth;
-    const safetyMargin = isMobile ? 24 : 48;
+    const safetyMargin = isMobile ? 20 : 36;
+    const collisionGap = isMobile ? 18 : 56;
 
     // Get current GSAP translation to derive the unshifted base position
     const currentX = (gsap.getProperty(el, 'x') as number) || 0;
@@ -98,27 +128,67 @@ export default function Intro() {
     const baseLeft = rect.left - currentX;
     const baseRight = rect.right - currentX;
 
-    // Calculate maximum allowable shift without bleeding past screen edges:
-    // baseLeft + targetX >= safetyMargin => targetX >= safetyMargin - baseLeft
-    // baseRight + targetX <= screenWidth - safetyMargin => targetX <= (screenWidth - safetyMargin) - baseRight
-    const minAllowedX = safetyMargin - baseLeft;
-    const maxAllowedX = (screenWidth - safetyMargin) - baseRight;
+    // Viewport clamp: baseLeft + targetX >= safetyMargin && baseRight + targetX <= screenWidth - safetyMargin
+    let minAllowedX = safetyMargin - baseLeft;
+    let maxAllowedX = (screenWidth - safetyMargin) - baseRight;
+
+    // Collision clamp against same-line words (use their base positions too)
+    const colliders: Array<{ left: number; right: number; top: number; bottom: number }> = [];
+    for (const [a, b] of linePairsRef.current) {
+      let other: AnimatedWordConfig | null = null;
+      if (a.id === item.id) other = b;
+      else if (b.id === item.id) other = a;
+      if (!other) continue;
+      const otherEl = other.ref.current;
+      if (!otherEl) continue;
+      const otherX = (gsap.getProperty(otherEl, 'x') as number) || 0;
+      const oRect = otherEl.getBoundingClientRect();
+      colliders.push({
+        left: oRect.left - otherX,
+        right: oRect.right - otherX,
+        top: oRect.top,
+        bottom: oRect.bottom,
+      });
+    }
+
+    // IDEA. also avoids the fixed "AN" span on the line above
+    if (item.id === 'idea' && anRef.current) {
+      const anRect = anRef.current.getBoundingClientRect();
+      colliders.push({
+        left: anRect.left,
+        right: anRect.right,
+        top: anRect.top,
+        bottom: anRect.bottom,
+      });
+    }
+
+    for (const col of colliders) {
+      // Vertical overlap check: words on clearly different lines never collide
+      const verticalOverlap = rect.top < col.bottom - 12 && rect.bottom > col.top + 12;
+      if (!verticalOverlap) continue;
+
+      if (col.left >= baseRight) {
+        // Obstacle sits to the right — moving right must stop before touching it
+        maxAllowedX = Math.min(maxAllowedX, col.left - collisionGap - baseRight);
+      } else if (col.right <= baseLeft) {
+        // Obstacle sits to the left — moving left must stop before touching it
+        minAllowedX = Math.max(minAllowedX, col.right + collisionGap - baseLeft);
+      }
+    }
 
     if (minAllowedX >= maxAllowedX) {
-      return 0; // Word is wider than safe viewport
+      return 0; // No free space on this line
     }
 
     const dir = wordDirStateRef.current[item.id] || item.openDirection;
 
-    // Distance tuned for premium, controlled brutalist editorial motion:
-    // Left-anchored words move inwards (+X); right-anchored words move inwards (-X).
-    const maxShift = isMobile
-      ? (dir === item.openDirection ? 35 : 18)
-      : (dir === item.openDirection ? 80 : 35);
+    // Words glide through available empty space, clamped above.
+    const hasLineMate = linePairsRef.current.some(([a, b]) => a.id === item.id || b.id === item.id);
+    const maxShift = isMobile ? 60 : (hasLineMate ? 150 : 240);
 
     const rawX = dir === 'right' ? maxShift : -maxShift;
 
-    // Hard mathematical clamp guarantees 100% viewport safety
+    // Hard mathematical clamp guarantees viewport safety + no overlap
     return Math.max(minAllowedX, Math.min(maxAllowedX, rawX));
   };
 
@@ -192,8 +262,9 @@ export default function Intro() {
         elAny._isTez = true;
         gsap.to(el, {
           x: targetX,
-          duration: 0.85,
-          ease: 'power3.out',
+          duration: 1.6,
+          delay: 0.12,
+          ease: 'power2.out',
           overwrite: 'auto',
         });
       } else {
@@ -202,7 +273,8 @@ export default function Intro() {
           elAny._isSlowTweening = true;
           gsap.to(el, {
             x: targetX,
-            duration: 2.8,
+            duration: 3.6,
+            delay: 0.2,
             ease: 'power2.out',
             overwrite: 'auto',
             onComplete: () => {
@@ -278,8 +350,9 @@ export default function Intro() {
         elAny._isTez = true;
         gsap.to(el, {
           x: targetX,
-          duration: 0.85,
-          ease: 'power3.out',
+          duration: 1.6,
+          delay: 0.12,
+          ease: 'power2.out',
           overwrite: 'auto',
         });
       } else {
@@ -288,7 +361,8 @@ export default function Intro() {
           elAny._isSlowTweening = true;
           gsap.to(el, {
             x: targetX,
-            duration: 2.8,
+            duration: 3.6,
+            delay: 0.2,
             ease: 'power2.out',
             overwrite: 'auto',
             onComplete: () => {
@@ -298,6 +372,61 @@ export default function Intro() {
         }
       }
     });
+  };
+
+  // Pencil drawing line that follows the mouse (navy blue)
+  const drawPencilSegment = (x: number, y: number) => {
+    const canvas = drawCanvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+    const last = lastDrawPointRef.current;
+    ctx.strokeStyle = 'rgba(10, 31, 68, 0.85)';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    if (!last) {
+      ctx.beginPath();
+      ctx.arc(x, y, 0.9, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(10, 31, 68, 0.85)';
+      ctx.fill();
+    } else {
+      const dist = Math.hypot(x - last.x, y - last.y);
+      if (dist < 2.5) return;
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      // Rough hand-drawn pencil feel
+      ctx.lineTo(x + (Math.random() - 0.5) * 1.6, y + (Math.random() - 0.5) * 1.6);
+      ctx.lineWidth = 1.4 + Math.random() * 0.9;
+      ctx.stroke();
+    }
+    lastDrawPointRef.current = { x, y };
+    // Keep the fade loop running WHILE drawing so it always looks like a
+    // short trail behind the cursor instead of a permanent drawing
+    fadePencilDrawing();
+  };
+
+  const fadePencilDrawing = () => {
+    if (drawRafRef.current) return;
+    const canvas = drawCanvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+    const step = () => {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'source-over';
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let hasInk = false;
+      for (let i = 3; i < data.length; i += 16) {
+        if (data[i] > 8) { hasInk = true; break; }
+      }
+      if (hasInk) {
+        drawRafRef.current = requestAnimationFrame(step);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawRafRef.current = null;
+      }
+    };
+    drawRafRef.current = requestAnimationFrame(step);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -311,6 +440,14 @@ export default function Intro() {
     rafRef.current = requestAnimationFrame(() => {
       updateWordAnimations(clientX, clientY);
     });
+
+    // Pencil drawing trail
+    const canvas = drawCanvasRef.current;
+    if (canvas && e.pointerType !== 'touch') {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      drawPencilSegment((clientX - rect.left) * dpr, (clientY - rect.top) * dpr);
+    }
   };
 
   const handlePointerEnter = (e: React.PointerEvent) => {
@@ -328,6 +465,8 @@ export default function Intro() {
       rafRef.current = null;
     }
     currentHoveredIdRef.current = null;
+    lastDrawPointRef.current = null;
+    fadePencilDrawing();
 
     animatedWords.forEach((item) => {
       wordDirStateRef.current[item.id] =
@@ -353,9 +492,91 @@ export default function Intro() {
   };
 
   useEffect(() => {
+    // Build same-line pairs so words never overlap while drifting
+    linePairsRef.current = [
+      [animatedWords[0], animatedWords[1]],   // EVERY / EXPERIENCE
+      [animatedWords[2], animatedWords[3]],   // BEGINS / WITH
+      [animatedWords[5], animatedWords[6]],   // FROM / ORIGIN
+      [animatedWords[7], animatedWords[8]],   // TO / EXCELLENCE.
+      [animatedWords[9], animatedWords[10]],  // SHAPING / FORMS
+      [animatedWords[11], animatedWords[12]], // THAT / CONNECT,
+      [animatedWords[13], animatedWords[14]], // INSPIRE / & ENDURE.
+    ];
+
+    const canvas = drawCanvasRef.current;
+    const section = sectionRef.current;
+    if (!canvas || !section) return;
+
+    const resize = () => {
+      const rect = section.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(section);
+
+    // Compact starting state — DESKTOP ONLY (mobile keeps the original layout)
+    const isFine = window.matchMedia('(pointer: fine)').matches;
+    const releaseCompact = () => {
+      if (hasReleasedCompactRef.current) return;
+      hasReleasedCompactRef.current = true;
+      animatedWords.forEach((item) => {
+        const el = item.ref.current;
+        if (!el) return;
+        gsap.to(el, { x: 0, duration: 1.6, ease: 'power3.out', overwrite: 'auto' });
+      });
+    };
+    if (isFine) {
+      animatedWords.forEach((item) => {
+        const el = item.ref.current;
+        if (!el) return;
+        gsap.set(el, { x: compactStartOffsets.current[item.id] || 0 });
+      });
+      section.addEventListener('pointermove', releaseCompact, { once: true });
+    }
+
+    // Mobile: trigger word drift on every touch movement AND on scroll,
+    // using the live touch point (or section center while scrolling)
+    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+    const handleTouchMove = (e: TouchEvent) => {
+      if (leaveTimerRef.current) {
+        clearTimeout(leaveTimerRef.current);
+        leaveTimerRef.current = null;
+      }
+      const t = e.touches[0];
+      if (!t) return;
+      const { clientX, clientY } = t;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        updateWordAnimations(clientX, clientY);
+      });
+    };
+    const handleScroll = () => {
+      const rect = section.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      const cx = rect.left + rect.width / 2;
+      const cy = Math.min(Math.max(window.innerHeight * 0.45, rect.top), rect.bottom);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        updateWordAnimations(cx, cy);
+      });
+    };
+    if (isCoarse) {
+      section.addEventListener('touchmove', handleTouchMove, { passive: true });
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
     return () => {
+      ro.disconnect();
+      if (isCoarse) {
+        section.removeEventListener('touchmove', handleTouchMove);
+        window.removeEventListener('scroll', handleScroll);
+      }
       if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (drawRafRef.current) cancelAnimationFrame(drawRafRef.current);
     };
   }, []);
 
@@ -363,7 +584,7 @@ export default function Intro() {
     <section
       ref={sectionRef}
       id="intro"
-      className="relative w-full min-h-screen text-black overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pb-6 select-none"
+      className="relative w-full min-h-screen text-[#0A1F44] overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pb-6 select-none"
       style={{
         background: '#FFFFFF',
         fontFamily: "'OT Brut', 'Bodoni Moda', serif",
@@ -378,6 +599,13 @@ export default function Intro() {
         }}
       />
 
+      {/* Pencil drawing canvas — navy line follows the mouse, fades like pencil ink */}
+      <canvas
+        ref={drawCanvasRef}
+        className="absolute inset-0 z-[5] w-full h-full pointer-events-none"
+        aria-hidden="true"
+      />
+
       {/* ══════════════════════════════════════════════
           MAIN EDITORIAL TYPOGRAPHY POSTER
       ══════════════════════════════════════════════ */}
@@ -389,10 +617,10 @@ export default function Intro() {
         className="relative z-10 w-full max-w-[1700px] mx-auto pt-8 sm:pt-12 md:pt-16 flex flex-col md:gap-y-6 cursor-default"
       >
         
-        {/* ── PAIR 1: EVERY ... EXPERIENCE ── */}
+        {/* ── PAIR 1: EVERY (left: 0%) ... EXPERIENCE (right: 100%) ── */}
         <div className="w-full flex flex-col md:flex-row md:justify-between items-start md:items-baseline leading-[0.92] sm:leading-[0.94] md:leading-[0.92] gap-y-2 sm:gap-y-2.5 md:gap-y-0 mb-2 sm:mb-2.5 md:mb-0">
           <h2
-            className="self-start text-left pl-1 sm:pl-3 md:pl-0 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
+            className="self-start text-left pl-1 sm:pl-3 md:pl-0 intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
@@ -406,7 +634,7 @@ export default function Intro() {
             </span>
           </h2>
           <h2
-            className="self-end text-right pr-1 sm:pr-3 md:pr-0 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-right"
+            className="self-end text-right pr-1 sm:pr-3 md:pr-0 intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-right"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
@@ -421,10 +649,10 @@ export default function Intro() {
           </h2>
         </div>
 
-        {/* ── PAIR 2: BEGINS (Mobile: pl-10, Desktop: md:pl-[22%]) ... WITH (Right) ── */}
+        {/* ── PAIR 2: BEGINS (Spine: 33.8%) ... WITH (right: 100%) ── */}
         <div className="w-full flex flex-col md:flex-row md:justify-between items-start md:items-baseline leading-[0.92] sm:leading-[0.94] md:leading-[0.92] gap-y-2 sm:gap-y-2.5 md:gap-y-0 mb-2 sm:mb-2.5 md:mb-0">
           <h2
-            className="self-start text-left pl-10 sm:pl-20 md:pl-[22%] intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
+            className="self-start text-left pl-8 sm:pl-16 md:pl-[33.8%] intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
@@ -438,7 +666,7 @@ export default function Intro() {
             </span>
           </h2>
           <h2
-            className="self-end text-right pr-10 sm:pr-20 md:pr-0 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-right"
+            className="self-end text-right pr-1 sm:pr-3 md:pr-0 intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-right"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
@@ -453,47 +681,45 @@ export default function Intro() {
           </h2>
         </div>
 
-        {/* ── PAIR 3: AN • ... IDEA. ── */}
-        <div className="w-full flex flex-col md:flex-row md:items-baseline leading-[0.92] sm:leading-[0.94] md:leading-[0.92] gap-y-2 sm:gap-y-2.5 md:gap-y-0 mb-2 sm:mb-2.5 md:mb-0">
+        {/* ── ROW 3: AN (left: 0%) ... IDEA. (Spine: 33.8%) ── */}
+        <div className="w-full flex flex-col md:flex-row items-start md:items-baseline leading-[0.92] sm:leading-[0.94] md:leading-[0.92] gap-y-2 sm:gap-y-2.5 md:gap-y-0 mb-2 sm:mb-2.5 md:mb-0 relative">
           <h2
-            className="self-start text-left pl-3 sm:pl-6 md:pl-0 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] flex items-baseline text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
+            className="self-start text-left pl-1 sm:pl-3 md:pl-0 intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
-              onClick={() => triggerWordInteraction('idea')}
-              onPointerDown={() => triggerWordInteraction('idea')}
-              className="cursor-pointer select-none"
-              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
-            >
-              AN
-            </span>
-            <span className="inline-flex items-center px-2 sm:px-4 md:px-5 self-center">
-              <span
-                ref={dotRef}
-                className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-[#FF4500] shadow-[0_0_10px_rgba(255,69,0,0.7)] inline-block"
-              />
-            </span>
-          </h2>
-          <h2
-            className="self-start md:self-auto pl-[40%] sm:pl-[45%] md:pl-[6%] text-left intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
-            style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
-          >
-            <span
-              ref={ideaRef}
+              ref={anRef}
               onClick={() => triggerWordInteraction('idea')}
               onPointerDown={() => triggerWordInteraction('idea')}
               className="inline-block cursor-pointer select-none"
               style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
-              IDEA.
+              AN
             </span>
           </h2>
+
+          <div className="md:absolute md:left-[33.8%] flex items-baseline gap-6 lg:gap-14">
+            <h2
+              className="self-start text-left intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+            >
+              <span
+                ref={ideaRef}
+                onClick={() => triggerWordInteraction('idea')}
+                onPointerDown={() => triggerWordInteraction('idea')}
+                className="inline-block cursor-pointer select-none"
+                style={{ display: 'inline-block', willChange: 'transform', fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
+              >
+                IDEA.
+              </span>
+            </h2>
+          </div>
         </div>
 
-        {/* ── PAIR 4: FROM ... ORIGIN ── */}
+        {/* ── PAIR 4: FROM (indented: 13.6%) ... ORIGIN (inset right: 13.3%) ── */}
         <div className="w-full flex flex-col md:flex-row md:justify-between items-start md:items-baseline leading-[0.92] sm:leading-[0.94] md:leading-[0.92] gap-y-2 sm:gap-y-2.5 md:gap-y-0 mb-2 sm:mb-2.5 md:mb-0">
           <h2
-            className="self-start text-left pl-2 sm:pl-4 md:pl-0 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
+            className="self-start text-left pl-3 sm:pl-6 md:pl-[13.6%] intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
@@ -507,7 +733,7 @@ export default function Intro() {
             </span>
           </h2>
           <h2
-            className="self-end text-right pr-3 sm:pr-6 md:pr-0 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-right"
+            className="self-end text-right pr-3 sm:pr-6 md:pr-[13.3%] intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-right"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
@@ -522,10 +748,10 @@ export default function Intro() {
           </h2>
         </div>
 
-        {/* ── PAIR 5: TO (Mobile: pl-14, Desktop: md:pl-[22%]) ... EXCELLENCE. (Right) ── */}
-        <div className="w-full flex flex-col md:flex-row md:justify-between items-start md:items-baseline leading-[0.92] sm:leading-[0.94] md:leading-[0.92] gap-y-2 sm:gap-y-2.5 md:gap-y-0 mb-2 sm:mb-2.5 md:mb-0">
+        {/* ── PAIR 5: TO (Spine: 33.8%) ... EXCELLENCE. (ends at ~86.4%) ── */}
+        <div className="w-full flex flex-col md:flex-row items-start md:items-baseline leading-[0.92] sm:leading-[0.94] md:leading-[0.92] gap-y-2 sm:gap-y-2.5 md:gap-y-0 mb-2 sm:mb-2.5 md:mb-0">
           <h2
-            className="self-start text-left pl-14 sm:pl-28 md:pl-[22%] intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
+            className="self-start text-left pl-8 sm:pl-16 md:pl-[33.8%] intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
@@ -539,7 +765,7 @@ export default function Intro() {
             </span>
           </h2>
           <h2
-            className="self-end text-right pr-1 sm:pr-2 md:pr-0 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-right"
+            className="self-start text-left pl-4 sm:pl-8 md:pl-[6.5%] intro-reveal-text uppercase text-[#0A1F44] font-bold tracking-[-0.03em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] md:text-[clamp(40px,7.2vw,118px)] scale-y-[1.08] md:scale-y-[1.06] origin-bottom-left"
             style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
           >
             <span
@@ -563,7 +789,7 @@ export default function Intro() {
           {/* SHAPING (mid-left: 18%) ... FORMS (mid-right: 68%) */}
           <div className="w-full flex flex-col items-start leading-[0.92] sm:leading-[0.94] gap-y-2 sm:gap-y-2.5 mb-2 sm:mb-2.5">
             <h2
-              className="self-start text-left pl-6 sm:pl-14 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-left"
+              className="self-start text-left pl-6 sm:pl-14 intro-reveal-text uppercase text-[#0A1F44] font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-left"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               <span
@@ -577,7 +803,7 @@ export default function Intro() {
               </span>
             </h2>
             <h2
-              className="self-end text-right pr-12 sm:pr-24 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-right"
+              className="self-end text-right pr-12 sm:pr-24 intro-reveal-text uppercase text-[#0A1F44] font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-right"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               <span
@@ -595,7 +821,7 @@ export default function Intro() {
           {/* THAT (left: 0%) ... CONNECT, (right: ~85%) */}
           <div className="w-full flex flex-col leading-[0.92] sm:leading-[0.94] gap-y-2 sm:gap-y-2.5 mb-2 sm:mb-2.5">
             <h2
-              className="self-start text-left pl-1 sm:pl-3 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-left"
+              className="self-start text-left pl-1 sm:pl-3 intro-reveal-text uppercase text-[#0A1F44] font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-left"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               <span
@@ -609,7 +835,7 @@ export default function Intro() {
               </span>
             </h2>
             <h2
-              className="self-end text-right pr-4 sm:pr-8 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-right"
+              className="self-end text-right pr-4 sm:pr-8 intro-reveal-text uppercase text-[#0A1F44] font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-right"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               <span
@@ -627,7 +853,7 @@ export default function Intro() {
           {/* INSPIRE (left: ~10%) ... & ENDURE. (right: 98%) */}
           <div className="w-full flex flex-col leading-[0.92] sm:leading-[0.94] gap-y-2 sm:gap-y-2.5">
             <h2
-              className="self-start text-left pl-3 sm:pl-6 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-left"
+              className="self-start text-left pl-3 sm:pl-6 intro-reveal-text uppercase text-[#0A1F44] font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-left"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               <span
@@ -641,7 +867,7 @@ export default function Intro() {
               </span>
             </h2>
             <h2
-              className="self-end text-right pr-1 sm:pr-2 intro-reveal-text uppercase text-black font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-right"
+              className="self-end text-right pr-1 sm:pr-2 intro-reveal-text uppercase text-[#0A1F44] font-semibold tracking-[-0.04em] text-[clamp(36px,min(10.2vw,5.6vh),118px)] scale-y-[1.08] origin-bottom-right"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               <span
@@ -664,14 +890,14 @@ export default function Intro() {
           - DESKTOP ONLY: 100% original full 2 paragraphs exactly as approved
       ══════════════════════════════════════════════ */}
       <div className="hidden md:flex relative z-10 w-full max-w-[1700px] mx-auto mt-8 mb-16 md:mb-24 justify-end">
-        <div className="w-8/12 lg:w-6/12 border-l-2 border-black/25 pl-8 space-y-3">
-          <span className="text-xs uppercase tracking-[0.25em] font-mono font-bold text-black/60 block">
-            // WHAT WE BELIEVE
+        <div className="w-8/12 lg:w-6/12 border-l-2 border-[#0A1F44]/25 pl-8 space-y-3">
+          <span className="text-xs uppercase tracking-[0.25em] font-mono font-bold text-[#0A1F44]/60 block">
+            {"// WHAT WE BELIEVE"}
           </span>
-          <p className="text-[17px] font-mono text-black leading-relaxed">
-            <strong className="font-bold text-black">“Origo” means Origin</strong> – the starting point from which every idea, form and creation begins. Every great design begins with a simple origin and evolves into something extraordinary.
+          <p className="text-[17px] font-mono text-[#0A1F44] leading-relaxed">
+            <strong className="font-bold text-[#0A1F44]">“Origo” means Origin</strong> – the starting point from which every idea, form and creation begins. Every great design begins with a simple origin and evolves into something extraordinary.
           </p>
-          <p className="text-[17px] font-mono text-black/80 leading-relaxed">
+          <p className="text-[17px] font-mono text-[#0A1F44]/80 leading-relaxed">
             We believe in finding the origin of that idea and building from there. The objective is not simply to create something visually impressive, but to create experiences that connect, engage, inspire and endure.
           </p>
         </div>

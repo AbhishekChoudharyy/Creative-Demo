@@ -115,7 +115,7 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="py-16 sm:py-20 bg-[#1E90FF] text-black relative z-20 overflow-hidden will-change-transform"
+      className="py-16 sm:py-20 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform"
     >
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
@@ -132,13 +132,13 @@ export default function Services() {
           {/* LEFT SIDE: WHAT WE DO (Stacked OT Brut Heading - cleanly scaled) */}
           <div className="flex flex-col items-start text-left">
             <h2
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-black font-bold tracking-[-0.03em]"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-[#0A1F44] font-bold tracking-[-0.03em]"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               WHAT
             </h2>
             <h2
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-black font-bold tracking-[-0.03em] mt-1 sm:mt-1.5"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-[#0A1F44] font-bold tracking-[-0.03em] mt-1 sm:mt-1.5"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
               WE DO
@@ -148,7 +148,7 @@ export default function Services() {
           {/* RIGHT SIDE: 3-LINE EDITORIAL PARAGRAPH */}
           <div className="flex flex-col items-start lg:items-end text-left lg:text-right pt-4 lg:pt-2">
             <p
-              className="text-[10px] sm:text-xs font-mono font-medium tracking-[0.06em] text-black/75 uppercase leading-[1.6] max-w-xs select-none"
+              className="text-[10px] sm:text-xs font-mono font-medium tracking-[0.06em] text-[#0A1F44]/75 uppercase leading-[1.6] max-w-xs select-none"
               style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
             >
               EXPERIENTIAL SOLUTIONS THAT INSPIRE,<br />
@@ -158,11 +158,11 @@ export default function Services() {
           </div>
         </div>
 
-        <ul ref={listRef} className="border-t border-black/20">
+        <ul ref={listRef} className="border-t border-[#0A1F44]/20">
           {services.map((service, idx) => (
             <li 
               key={service.id} 
-              className="group border-b border-black/20 relative overflow-hidden cursor-pointer"
+              className="group border-b border-[#0A1F44]/20 relative overflow-hidden cursor-pointer"
               onMouseEnter={() => {
                 handleMouseEnter(service.img);
                 soundManager.playHover();
@@ -179,7 +179,7 @@ export default function Services() {
               <div className="relative z-10 flex justify-between items-center py-5 sm:py-6 md:py-7 px-2 sm:px-4 group-hover:px-4 sm:group-hover:px-6 transition-all duration-300">
                 <div className="flex items-baseline gap-4 sm:gap-6 min-w-0 pr-2">
                   <span
-                    className="text-xs sm:text-sm font-mono text-black/50 group-hover:text-white transition-colors shrink-0 tracking-wider"
+                    className="text-xs sm:text-sm font-mono text-[#0A1F44]/50 group-hover:text-white transition-colors shrink-0 tracking-wider"
                     style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
                   >
                     0{service.id}
@@ -199,7 +199,7 @@ export default function Services() {
                   >
                     {service.category}
                   </span>
-                  <ArrowUpRight className={`w-5 h-5 sm:w-6 sm:h-6 text-black/50 transition-all duration-300 ${openIndex === idx ? 'text-white rotate-90' : 'group-hover:text-white group-hover:rotate-45'}`} />
+                  <ArrowUpRight className={`w-5 h-5 sm:w-6 sm:h-6 text-[#0A1F44]/50 transition-all duration-300 ${openIndex === idx ? 'text-white rotate-90' : 'group-hover:text-white group-hover:rotate-45'}`} />
                 </div>
               </div>
 
@@ -208,7 +208,7 @@ export default function Services() {
                 className={`overflow-hidden transition-all duration-500 ease-out ${openIndex === idx ? 'max-h-[350px] opacity-100' : 'max-h-0 opacity-0'}`}
               >
                 <div className="pb-8 pl-4 pr-4 sm:pl-12 md:pl-16 max-w-2xl">
-                  <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-xl p-5 sm:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)]">
+                  <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-xl p-5 sm:p-6 shadow-[0_8px_32px_0_rgba(10,31,68,0.15)]">
                     <p
                       className="text-sm sm:text-base leading-relaxed font-normal text-white/95"
                       style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}

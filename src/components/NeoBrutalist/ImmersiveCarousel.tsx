@@ -447,7 +447,7 @@ export default function ImmersiveCarousel() {
     <section
       ref={containerRef}
       id="services-carousel"
-      className="relative z-10 w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-black flex flex-col justify-between px-6 sm:px-10 md:px-14 py-6 sm:py-8"
+      className="relative z-10 w-full h-screen overflow-hidden select-none bg-[#1E90FF] text-[#0A1F44] flex flex-col justify-between px-6 sm:px-10 md:px-14 py-6 sm:py-8"
     >
       {/* ── Subtle Ambient Background Texture ── */}
       <div
@@ -455,14 +455,14 @@ export default function ImmersiveCarousel() {
         style={{
           zIndex: 1,
           backgroundImage: `
-            radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px)
+            radial-gradient(rgba(10,31,68,0.12) 1px, transparent 1px)
           `,
           backgroundSize: '24px 24px',
         }}
       />
 
       {/* ── TOP BAR: ONLY OUR SERVICES in top left ── */}
-      <div className="relative z-30 w-full flex items-center justify-between pointer-events-none text-black uppercase">
+      <div className="relative z-30 w-full flex items-center justify-between pointer-events-none text-[#0A1F44] uppercase">
         <span className="text-xs sm:text-sm font-mono font-bold tracking-[0.25em]">
           OUR SERVICES
         </span>
@@ -552,14 +552,14 @@ export default function ImmersiveCarousel() {
           {/* Row: 001 (left) ... IDEATE / CREATE / DELIVER (right) resting just above line */}
           <div className="relative z-10 w-full flex items-end justify-between px-1 sm:px-3 pb-0.5 sm:pb-1 pointer-events-none">
             <span
-              className="text-[13vw] sm:text-[11vw] md:text-[9.5vw] font-black leading-none tracking-tighter text-black select-none whitespace-nowrap"
+              className="text-[13vw] sm:text-[11vw] md:text-[9.5vw] font-black leading-none tracking-tighter text-[#0A1F44] select-none whitespace-nowrap"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
             >
               {currentSlide.num}
             </span>
 
             <span
-              className="text-[13vw] sm:text-[11vw] md:text-[9.5vw] font-black leading-none tracking-tight text-black text-right select-none whitespace-nowrap"
+              className="text-[13vw] sm:text-[11vw] md:text-[9.5vw] font-black leading-none tracking-tight text-[#0A1F44] text-right select-none whitespace-nowrap"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
             >
               {currentSlide.word}
@@ -567,11 +567,11 @@ export default function ImmersiveCarousel() {
           </div>
 
           {/* Crisp dividing line (Passes behind 3D model) */}
-          <div className="relative z-10 w-full border-b border-black mb-3 sm:mb-4 pointer-events-none" />
+          <div className="relative z-10 w-full border-b border-[#0A1F44] mb-3 sm:mb-4 pointer-events-none" />
 
           {/* Lower Two-Column Information Grid */}
           <div className="relative z-30 w-full flex justify-between items-start gap-6 pointer-events-auto">
-            <div className="font-mono text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-black font-semibold space-y-0.5">
+            <div className="font-mono text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-[#0A1F44] font-semibold space-y-0.5">
               {currentSlide.manifesto.map((line, idx) => (
                 <p key={idx} className={idx === 0 ? 'mb-1 font-bold' : ''}>
                   {line}
@@ -583,12 +583,12 @@ export default function ImmersiveCarousel() {
               <button
                 onClick={handleNext}
                 onMouseEnter={() => soundManager.playHover()}
-                className="text-xs font-mono font-bold tracking-widest uppercase text-black hover:opacity-75 transition-opacity cursor-pointer mb-2 sm:mb-3"
+                className="text-xs font-mono font-bold tracking-widest uppercase text-[#0A1F44] hover:opacity-75 transition-opacity cursor-pointer mb-2 sm:mb-3"
               >
                 NEXT
               </button>
 
-              <div className="font-mono text-xs sm:text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-black font-medium space-y-0.5">
+              <div className="font-mono text-xs sm:text-[12px] md:text-[13px] tracking-wider leading-relaxed uppercase text-[#0A1F44] font-medium space-y-0.5">
                 {currentSlide.services.map((item, idx) => (
                   <p key={idx}>{item}</p>
                 ))}
@@ -603,7 +603,7 @@ export default function ImmersiveCarousel() {
         ══════════════════════════════════════════════ */}
         <div className="flex md:hidden flex-col w-full relative z-30">
           {/* Dividing line right underneath the 3D shape */}
-          <div className="w-full border-b border-black mb-3.5 sm:mb-4 pointer-events-none" />
+          <div className="w-full border-b border-[#0A1F44] mb-3.5 sm:mb-4 pointer-events-none" />
 
           {/* Stacked 001 and IDEATE / CREATE / DELIVER with crisp typography hierarchy */}
           <div
@@ -612,13 +612,13 @@ export default function ImmersiveCarousel() {
             title="Tap to advance"
           >
             <span
-              className="text-[17vw] sm:text-[15vw] font-black tracking-tighter text-black select-none leading-[0.88]"
+              className="text-[17vw] sm:text-[15vw] font-black tracking-tighter text-[#0A1F44] select-none leading-[0.88]"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
             >
               {currentSlide.num}
             </span>
             <span
-              className="text-[17vw] sm:text-[15vw] font-black tracking-tight text-black select-none leading-[0.88] mt-1 sm:mt-1.5"
+              className="text-[17vw] sm:text-[15vw] font-black tracking-tight text-[#0A1F44] select-none leading-[0.88] mt-1 sm:mt-1.5"
               style={{ fontFamily: "'OT Brut', 'Bodoni Moda', 'Playfair Display', Didot, serif" }}
             >
               {currentSlide.word}
@@ -626,7 +626,7 @@ export default function ImmersiveCarousel() {
           </div>
 
           {/* Manifesto copy directly below IDEATE */}
-          <div className="font-mono text-[11.5px] sm:text-[12px] tracking-[0.06em] leading-[1.65] uppercase text-black font-semibold space-y-0.5 mt-4 sm:mt-5 pointer-events-none">
+          <div className="font-mono text-[11.5px] sm:text-[12px] tracking-[0.06em] leading-[1.65] uppercase text-[#0A1F44] font-semibold space-y-0.5 mt-4 sm:mt-5 pointer-events-none">
             {currentSlide.manifesto.map((line, idx) => (
               <p key={idx} className={idx === 0 ? 'mb-1 font-bold' : ''}>
                 {line}
@@ -636,7 +636,7 @@ export default function ImmersiveCarousel() {
         </div>
 
         {/* ── BOTTOM RIGHT CORNER TAG: [ AR ] ── */}
-        <div className="relative z-30 w-full flex justify-end pt-2 sm:pt-1 pointer-events-none text-[10px] sm:text-xs font-mono tracking-widest text-black font-semibold">
+        <div className="relative z-30 w-full flex justify-end pt-2 sm:pt-1 pointer-events-none text-[10px] sm:text-xs font-mono tracking-widest text-[#0A1F44] font-semibold">
           [ AR ]
         </div>
       </div>

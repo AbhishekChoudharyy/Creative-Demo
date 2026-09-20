@@ -62,7 +62,7 @@ export default function EyesCTA() {
     <section className="relative min-h-[70vh] flex flex-col justify-center items-center bg-[#f5f5f7] py-20 sm:py-28 md:py-36 text-center overflow-hidden">
       <div className="flex flex-col items-center justify-center px-6 w-full">
         {/* Main Heading */}
-        <h2 className="text-5xl xs:text-6xl sm:text-7xl lg:text-[120px] pointer-events-none font-heading font-white leading-[0.9] text-black uppercase tracking-tight">
+        <h2 className="text-5xl xs:text-6xl sm:text-7xl lg:text-[120px] pointer-events-none font-heading font-white leading-[0.9] text-[#0A1F44] uppercase tracking-tight">
           READY TO
           <br />
           BUILD THE
@@ -86,12 +86,12 @@ export default function EyesCTA() {
             const workSection = document.getElementById("work");
             workSection?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="group mt-12 relative cursor-pointer px-12 sm:px-16 py-3 sm:py-4 rounded-full font-heading font-bold text-sm sm:text-base flex gap-2 text-black justify-center items-center overflow-hidden bg-black/5 border border-black/10 backdrop-blur-md uppercase tracking-wider hover:border-black transition-all duration-300"
+          className="group mt-12 relative cursor-pointer px-12 sm:px-16 py-3 sm:py-4 rounded-full font-heading font-bold text-sm sm:text-base flex gap-2 text-[#0A1F44] justify-center items-center overflow-hidden bg-[#0A1F44]/5 border border-[#0A1F44]/10 backdrop-blur-md uppercase tracking-wider hover:border-[#0A1F44] transition-all duration-300"
         >
           {/* Wipe animation with Black */}
           <span
             className="
-              absolute inset-0 bg-black
+              absolute inset-0 bg-[#0A1F44]
               -translate-y-full
               transition-transform duration-300 ease-out
               group-hover:translate-y-0
@@ -99,9 +99,9 @@ export default function EyesCTA() {
             "
           />
           <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors duration-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-black group-hover:bg-white transition-colors duration-300" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0A1F44] group-hover:bg-white transition-colors duration-300" />
             <span>Explore Origo Atelier</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-black opacity-0 group-hover:opacity-100 group-hover:bg-white transition-all duration-300" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0A1F44] opacity-0 group-hover:opacity-100 group-hover:bg-white transition-all duration-300" />
           </span>
         </a>
       </div>

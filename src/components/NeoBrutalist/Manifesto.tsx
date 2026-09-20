@@ -91,7 +91,7 @@ export default function Manifesto() {
   }, []);
 
   return (
-    <section ref={containerRef} className="h-screen bg-[#1E90FF] text-black overflow-hidden relative flex items-center justify-center">
+    <section ref={containerRef} className="h-screen bg-[#1E90FF] text-[#0A1F44] overflow-hidden relative flex items-center justify-center">
       {/* Background Ambience */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-white/20 rounded-full blur-[150px] animate-pulse"></div>
@@ -103,7 +103,7 @@ export default function Manifesto() {
              key={i}
              ref={el => { textRefs.current[i] = el; }}
              style={{ fontSize: 'clamp(24px, 5.5vw, 68px)' }}
-             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full font-heading font-bold uppercase leading-tight text-black px-4"
+             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full font-heading font-bold uppercase leading-tight text-[#0A1F44] px-4"
            >
              {text}
            </h2>

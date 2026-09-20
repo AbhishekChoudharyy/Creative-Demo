@@ -203,13 +203,13 @@ export const LayersAnimation: FC = () => {
     <div
       ref={containerRef}
       onClick={handleTransition}
-      className="relative w-full min-h-screen bg-[#1E90FF] flex items-center justify-center overflow-hidden cursor-pointer select-none border-t border-black/10"
+      className="relative w-full min-h-screen bg-[#1E90FF] flex items-center justify-center overflow-hidden cursor-pointer select-none border-t border-[#0A1F44]/10"
     >
       {/* Background Grid Accent Lines */}
       <div className="absolute inset-0 grid grid-cols-4 grid-rows-1 pointer-events-none opacity-40">
-        <div className="border-r border-black/10 h-full" />
-        <div className="border-r border-black/10 h-full" />
-        <div className="border-r border-black/10 h-full" />
+        <div className="border-r border-[#0A1F44]/10 h-full" />
+        <div className="border-r border-[#0A1F44]/10 h-full" />
+        <div className="border-r border-[#0A1F44]/10 h-full" />
       </div>
 
       {/* Fullscreen Animation Layers */}
@@ -239,10 +239,10 @@ export const LayersAnimation: FC = () => {
               ref={(el) => { contentRefs.current[i] = el; }}
               className="col-start-1 row-start-1 w-full flex flex-col overflow-hidden"
             >
-              <h2 className="slide-title text-5xl xs:text-6xl sm:text-8xl md:text-[11vw] font-heading font-black tracking-tighter text-black uppercase leading-none select-none">
+              <h2 className="slide-title text-5xl xs:text-6xl sm:text-8xl md:text-[11vw] font-heading font-black tracking-tighter text-[#0A1F44] uppercase leading-none select-none">
                 {slide.title}
               </h2>
-              <p className="slide-desc text-md sm:text-lg md:text-xl font-mono text-black/85 max-w-2xl mt-4 sm:mt-8 leading-relaxed select-none border-l border-black/20 pl-6">
+              <p className="slide-desc text-md sm:text-lg md:text-xl font-mono text-[#0A1F44]/85 max-w-2xl mt-4 sm:mt-8 leading-relaxed select-none border-l border-[#0A1F44]/20 pl-6">
                 {slide.desc}
               </p>
             </div>
@@ -251,24 +251,24 @@ export const LayersAnimation: FC = () => {
       </div>
 
       {/* Interactive HUD labels */}
-      <div className="absolute top-12 left-8 md:left-16 font-mono text-[10px] tracking-[0.2em] text-black/50 uppercase pointer-events-none">
+      <div className="absolute top-12 left-8 md:left-16 font-mono text-[10px] tracking-[0.2em] text-[#0A1F44]/50 uppercase pointer-events-none">
         ORIGO ATELIER // IMMERSIVE LABS
       </div>
       
-      <div className="absolute top-12 right-8 md:right-16 font-mono text-[10px] tracking-[0.2em] text-black/60 uppercase pointer-events-none flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
+      <div className="absolute top-12 right-8 md:right-16 font-mono text-[10px] tracking-[0.2em] text-[#0A1F44]/60 uppercase pointer-events-none flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#0A1F44] animate-pulse" />
         VARIATION_01
       </div>
 
-      <div className="absolute bottom-12 right-8 md:right-16 font-mono text-[10px] tracking-[0.2em] text-black/50 uppercase pointer-events-none">
+      <div className="absolute bottom-12 right-8 md:right-16 font-mono text-[10px] tracking-[0.2em] text-[#0A1F44]/50 uppercase pointer-events-none">
         0{currentIndex + 1} / 0{SLIDES.length}
       </div>
 
       <div className="absolute bottom-12 left-8 md:left-16 pointer-events-none select-none">
-        <div className="bg-black/10 text-black/80 font-mono text-[10px] md:text-xs font-bold px-4 py-2 border border-black/10 rounded-full backdrop-blur-sm flex items-center gap-2.5 transition-all">
+        <div className="bg-[#0A1F44]/10 text-[#0A1F44]/80 font-mono text-[10px] md:text-xs font-bold px-4 py-2 border border-[#0A1F44]/10 rounded-full backdrop-blur-sm flex items-center gap-2.5 transition-all">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-60"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-black/80"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0A1F44] opacity-60"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0A1F44]/80"></span>
           </span>
           <span className="tracking-[0.18em]">CLICK ANYWHERE TO REVEAL</span>
         </div>

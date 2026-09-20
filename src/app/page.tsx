@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { soundManager } from "@/lib/sound";
 
@@ -11,6 +11,10 @@ import Team from "@/components/NeoBrutalist/Team";
 import Services from "@/components/NeoBrutalist/Services";
 import ContactForm from "@/components/NeoBrutalist/ContactForm";
 import Footer from "@/components/NeoBrutalist/Footer";
+import CustomCursor from "@/components/CustomCursor";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 
 const Main = dynamic(() => import("@/components/Main").then((mod) => mod.Main), {
   ssr: false,
@@ -57,6 +61,108 @@ export default function Home() {
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  const flashRef = useRef<HTMLDivElement>(null);
+
+  // ── Cinematic color-flash: Work → Shapes boundary par Shapes section ka
+  // exact blue poore viewport ko le leta hai, phir section reveal hota hai.
+  // Har boundary cross (dono direction) + Shapes ke end pe bhi trigger hota hai.
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const overlay = flashRef.current;
+    const shapesSection = document.getElementById('services-carousel');
+    if (!overlay || !shapesSection) return;
+
+    // Jump instantly (no smooth scrolling) so a section fills the
+    // entire viewport while the screen is fully covered by the flash.
+    const jumpToSection = (el: HTMLElement) => {
+      const targetTop = el.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+      window.scrollTo({ top: targetTop, behavior: 'instant' as ScrollBehavior });
+    };
+
+    // Fast-forward ALL scroll animations inside a section so it appears
+    // fully formed under the flash — no entrance animations playing.
+    const fastForwardSection = (section: HTMLElement) => {
+      ScrollTrigger.getAll().forEach((st) => {
+        const trig = st.trigger as Element | null;
+        const pinned = st.pin as Element | null;
+        const inside =
+          (trig && section.contains(trig)) ||
+          (pinned && section.contains(pinned));
+        if (!inside) return;
+        const anim = (st as unknown as { animation?: gsap.core.Tween }).animation;
+        if (anim) {
+          anim.progress(1);
+        }
+      });
+    };
+
+    // One flash at a time — the two direction flashes stay fully separate
+    let flashActive = false;
+
+    const runFlash = (color: string, target: HTMLElement | null) => {
+      if (flashActive) return;
+      flashActive = true;
+      gsap.killTweensOf(overlay);
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          flashActive = false;
+        },
+      });
+      tl.set(overlay, { display: 'block', background: color, opacity: 0 })
+        // Smooth flash pop to full color
+        .to(overlay, { opacity: 1, duration: 0.12, ease: 'power2.in' })
+        // While fully covered: snap to the target section + fast-forward it
+        .call(
+          () => {
+            if (target) {
+              jumpToSection(target);
+              fastForwardSection(target);
+            }
+          },
+          undefined,
+          0.12
+        )
+        // Hold full color while the section settles underneath
+        .to(overlay, { opacity: 1, duration: 0.18, ease: 'none' })
+        // Smooth fade away, revealing the section in its final state
+        .to(overlay, { opacity: 0, duration: 0.45, ease: 'power2.inOut' })
+        .set(overlay, { display: 'none' });
+    };
+
+    // Work → Shapes: blue flash (Shapes section's own color), full viewport
+    const shapesColor = window.getComputedStyle(shapesSection).backgroundColor || '#1E90FF';
+    const flashToShapes = () => runFlash(shapesColor, shapesSection);
+
+    // Shapes → Work: white flash, Work section fast-forwarded
+    const flashBackToWork = () => {
+      const workSection = document.getElementById('work');
+      if (!workSection) return;
+      runFlash('#FFFFFF', workSection);
+    };
+
+    // Work → Shapes: fires the INSTANT the Work section ends — one scroll
+    // past work's end and the Shapes section takes over the full viewport,
+    // fast-forwarded, with no extra scrolling needed.
+    const stA = ScrollTrigger.create({
+      trigger: shapesSection,
+      start: 'top bottom-=1px',
+      onEnter: flashToShapes,
+    });
+
+    // Shapes → Work: fires only when the Shapes page is already filling the
+    // viewport and the user keeps scrolling up — white flash → Work.
+    const stB = ScrollTrigger.create({
+      trigger: shapesSection,
+      start: 'top top+=1px',
+      onLeaveBack: flashBackToWork,
+    });
+
+    return () => {
+      stA.kill();
+      stB.kill();
+    };
+  }, []);
 
   useEffect(() => {
     setIsMuted(soundManager.getMutedState());
@@ -122,7 +228,16 @@ export default function Home() {
   }, [bootState]);
 
   return (
-    <div className="min-h-screen bg-[#1E90FF] text-black selection:bg-black/10 relative">
+    <div className="min-h-screen bg-[#1E90FF] text-[#0A1F44] selection:bg-[#0A1F44]/10 relative">
+      <CustomCursor />
+
+      {/* Section-change color flash layer (color set dynamically per trigger) */}
+      <div
+        ref={flashRef}
+        aria-hidden="true"
+        className="fixed inset-0 z-[99998] pointer-events-none"
+        style={{ display: 'none' }}
+      />
       {bootState !== 'booted' && (
         <div className={`fixed inset-0 bg-[#080808] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
           {/* Subtle grid background */}
@@ -166,7 +281,7 @@ export default function Home() {
                     }, 700);
                   }}
                   onMouseEnter={() => soundManager.playHover()}
-                  className="px-8 py-2.5 border border-white/20 hover:border-white text-white hover:bg-white hover:text-black transition-all duration-300 font-bold uppercase text-[10px] tracking-[0.3em] cursor-pointer focus:outline-none"
+                  className="px-8 py-2.5 border border-white/20 hover:border-white text-white hover:bg-white hover:text-[#0A1F44] transition-all duration-300 font-bold uppercase text-[10px] tracking-[0.3em] cursor-pointer focus:outline-none"
                 >
                   ENTER
                 </button>
@@ -186,7 +301,7 @@ export default function Home() {
         </div>
 
         {/* Flat Immersive Navbar (Z-Index 30) */}
-        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-black uppercase">
+        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-[#0A1F44] uppercase">
           <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity min-h-[44px]">
             <img
               src="/logo-black-transparent.png"
@@ -195,7 +310,7 @@ export default function Home() {
             />
           </div>
           <span
-            className="font-extrabold text-xs sm:text-sm font-mono absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em] text-black"
+            className="font-extrabold text-xs sm:text-sm font-mono absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em] text-[#0A1F44]"
             style={{ textTransform: 'none' }}
           >
             Origo Atelier
@@ -223,14 +338,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating black dot decoration */}
-        <div className="absolute left-[8%] top-1/2 -translate-y-1/2 flex items-center justify-center select-none pointer-events-none hidden md:flex z-30">
-          <div className="w-2.5 h-2.5 rounded-full bg-black shadow-[0_0_10px_rgba(0,0,0,0.8)] animate-pulse" />
-        </div>
-
         {/* Bottom HUD layout (Z-Index 30) */}
-        <div className="absolute bottom-5 md:bottom-8 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 pointer-events-auto text-[9.5px] md:text-xs font-mono tracking-widest text-black uppercase">
-          <div className="flex-1 hidden md:block text-black/80 font-medium truncate pr-2">
+        <div className="absolute bottom-5 md:bottom-8 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 pointer-events-auto text-[9.5px] md:text-xs font-mono tracking-widest text-[#0A1F44] uppercase">
+          <div className="flex-1 hidden md:block text-[#0A1F44]/80 font-medium truncate pr-2">
             FROM ORIGIN TO EXCELLENCE
           </div>
 
@@ -269,7 +379,7 @@ export default function Home() {
       {/* Contact Form Section */}
       <ContactForm />
 
-      {/* Rebranded Orange Footer */}
+      {/* Navy Footer */}
       <Footer />
     </div>
   );

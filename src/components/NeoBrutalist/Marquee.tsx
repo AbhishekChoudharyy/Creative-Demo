@@ -21,7 +21,7 @@ export default function Marquee() {
   }, []);
 
   return (
-    <div ref={marqueeRef} className="py-8 md:py-12 overflow-hidden bg-black text-white border-y border-zinc-800 select-none">
+    <div ref={marqueeRef} className="py-8 md:py-12 overflow-hidden bg-[#0A1F44] text-white border-y border-zinc-800 select-none">
       <div className="marquee-inner flex whitespace-nowrap w-fit items-center">
         {[...Array(8)].map((_, i) => (
           <div key={i} className="flex items-center gap-16 px-8">
