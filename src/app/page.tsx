@@ -340,20 +340,22 @@ export default function Home() {
             soundManager.playClick();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className="flex items-baseline gap-1.5 sm:gap-2 text-[#0A1F44] select-none cursor-pointer hover:opacity-75 transition-opacity min-h-[44px] normal-case"
+          className="flex items-center select-none cursor-pointer hover:opacity-75 transition-opacity min-h-[44px] normal-case"
         >
-          <span
-            className="text-base sm:text-lg leading-none tracking-[0.02em] font-bold normal-case"
-            style={{ fontFamily: "'ERF Neot', sans-serif", textTransform: 'none' }}
-          >
-            Origo
-          </span>
-          <span
-            className="text-[10px] sm:text-[11.5px] font-extralight uppercase tracking-[0.26em] leading-none text-white font-sans"
-            style={{ fontWeight: 200, color: '#FFFFFF' }}
-          >
-            ATELIER
-          </span>
+          <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <span
+              className="text-base sm:text-lg leading-none tracking-[0.02em] font-bold normal-case"
+              style={{ fontFamily: "'ERF Neot', sans-serif", textTransform: 'none' }}
+            >
+              Origo
+            </span>
+            <span
+              className="text-[10px] sm:text-[11.5px] font-extralight uppercase tracking-[0.26em] leading-none text-white font-sans"
+              style={{ fontWeight: 200, color: '#FFFFFF' }}
+            >
+              ATELIER
+            </span>
+          </div>
         </div>
 
         {/* Right Navigation Controls */}
@@ -361,9 +363,45 @@ export default function Home() {
           <button
             onClick={handleToggleMute}
             onMouseEnter={() => soundManager.playHover()}
+            aria-label={isMuted ? 'Unmute sound' : 'Mute sound'}
             className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-medium px-0.5 sm:px-1"
           >
-            [ SOUND {isMuted ? 'OFF' : 'ON'} ]
+            {/* Mobile: Sleek Mute / Unmute Icon */}
+            <span className="sm:hidden flex items-center justify-center">
+              {isMuted ? (
+                <svg
+                  className="w-4 h-4 text-[#0A1F44]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" fillOpacity="0.2" />
+                  <line x1="22" y1="9" x2="16" y2="15" />
+                  <line x1="16" y1="9" x2="22" y2="15" />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4 text-[#0A1F44]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" fillOpacity="0.2" />
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                </svg>
+              )}
+            </span>
+            {/* Desktop: [ SOUND ON / OFF ] */}
+            <span className="hidden sm:inline">
+              [ SOUND {isMuted ? 'OFF' : 'ON'} ]
+            </span>
           </button>
           <span className="opacity-80 inline">[ {String(scrollCount).padStart(3, '0')} ]</span>
           <button

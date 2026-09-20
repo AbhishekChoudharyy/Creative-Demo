@@ -10,7 +10,7 @@ export const Scene: FC = () => {
   const { width } = useThree((state) => state.size);
   const viewport = useThree((state) => state.viewport);
   const isMobile = width < 768;
-  const responsiveScale = isMobile ? Math.max(0.96, Math.min(viewport.width * 0.35, 1.02)) : 1.38;
+  const responsiveScale = isMobile ? Math.max(0.82, Math.min(viewport.width * 0.30, 0.88)) : 1.38;
 
   return (
     <>
