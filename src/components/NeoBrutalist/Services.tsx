@@ -205,16 +205,24 @@ export default function Services() {
 
               {/* Dropdown Paragraph container with White Transmissive Glassmorphism */}
               <div 
-                className={`overflow-hidden transition-all duration-500 ease-out ${openIndex === idx ? 'max-h-[350px] opacity-100' : 'max-h-0 opacity-0'}`}
+                className={`overflow-hidden transition-all duration-500 ease-out ${openIndex === idx ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'}`}
               >
                 <div className="pb-8 pl-4 pr-4 sm:pl-12 md:pl-16 max-w-2xl">
-                  <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-xl p-5 sm:p-6 shadow-[0_8px_32px_0_rgba(10,31,68,0.15)]">
-                    <p
-                      className="text-sm sm:text-base leading-relaxed font-normal text-white/95"
-                      style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
-                    >
-                      {service.desc}
-                    </p>
+                  <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-xl p-4 sm:p-6 shadow-[0_8px_32px_0_rgba(10,31,68,0.15)]">
+                    <div className="flex flex-row items-start gap-3 sm:gap-5">
+                      <p
+                        className="text-[11px] sm:text-sm leading-[1.55] sm:leading-relaxed font-normal text-white/95 flex-1"
+                        style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
+                      >
+                        {service.desc}
+                      </p>
+                      {/* Mobile-only preview image — same image as the desktop hover reveal */}
+                      <img
+                        src={service.img}
+                        alt={service.title}
+                        className="md:hidden w-28 h-36 sm:w-32 sm:h-40 rounded-xl object-cover shrink-0 border border-white/30 shadow-lg"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

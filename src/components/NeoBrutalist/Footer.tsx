@@ -1,25 +1,50 @@
 'use client';
 
-import FuzzyText from './FuzzyText';
+import TextPressure from './TextPressure';
 
 export default function Footer() {
   return (
     <footer
-      className="relative select-none overflow-hidden rounded-t-[36px] sm:rounded-t-[56px] -mt-10 z-40"
-      style={{ background: '#1E90FF' }}
+      className="relative select-none overflow-hidden z-[45]"
+      style={{
+        // Continuation of the form's gradient: brand blue at the very end
+        background: 'linear-gradient(180deg, #1E90FF 0%, #1E90FF 100%)',
+      }}
     >
-      <div className="min-h-[42vh] px-6 sm:px-10 lg:px-16 py-16 flex items-center justify-center">
-        <FuzzyText
-          fontSize="clamp(2.6rem, 11vw, 10.5rem)"
-          fontWeight={900}
-          fontFamily="'ERF Neot', 'OT Brut', sans-serif"
-          color="#FFFFFF"
-          baseIntensity={0.18}
-          hoverIntensity={0.6}
-          enableHover
-        >
-          Origo Atelier
-        </FuzzyText>
+      <div className="min-h-[36vh] px-4 sm:px-10 lg:px-24 pt-10 pb-20 flex items-end justify-center">
+        {/* ORIGO starts BOLD, ATELIER stays THIN — same line, one flow */}
+        <div className="relative w-full flex items-end gap-3 sm:gap-5">
+          <div className="relative h-[110px] sm:h-[150px] md:h-[200px]" style={{ flex: '5 1 0%' }}>
+            <TextPressure
+              text="ORIGO"
+              fontFamily="'ERF Neot', 'OT Brut', sans-serif"
+              flex
+              width={false}
+              weight={false}
+              italic={false}
+              alpha={false}
+              stroke={false}
+              scale
+              textColor="#FFFFFF"
+              minFontSize={24}
+            />
+          </div>
+          <div className="relative h-[110px] sm:h-[150px] md:h-[200px]" style={{ flex: '7 1 0%' }}>
+            <TextPressure
+              text="ATELIER"
+              fontFamily="'FF Identification Std Five C Regular', 'FF Identification Std', 'Manrope', sans-serif"
+              flex
+              width={false}
+              weight={false}
+              italic={false}
+              alpha={false}
+              stroke={false}
+              scale
+              textColor="#FFFFFF"
+              minFontSize={24}
+            />
+          </div>
+        </div>
       </div>
     </footer>
   );

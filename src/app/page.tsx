@@ -62,6 +62,28 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const flashRef = useRef<HTMLDivElement>(null);
+  const [scrollCount, setScrollCount] = useState(0);
+
+  // Navbar counter: 000 → 100 based on total page scroll distance
+  useEffect(() => {
+    const updateCount = () => {
+      const doc = document.documentElement;
+      const maxScroll = doc.scrollHeight - window.innerHeight;
+      if (maxScroll <= 0) {
+        setScrollCount(0);
+        return;
+      }
+      const pct = Math.min(100, Math.max(0, Math.round((window.scrollY / maxScroll) * 100)));
+      setScrollCount(pct);
+    };
+    updateCount();
+    window.addEventListener('scroll', updateCount, { passive: true });
+    window.addEventListener('resize', updateCount);
+    return () => {
+      window.removeEventListener('scroll', updateCount);
+      window.removeEventListener('resize', updateCount);
+    };
+  }, []);
 
   // ── Cinematic color-flash: Work → Shapes boundary par Shapes section ka
   // exact blue poore viewport ko le leta hai, phir section reveal hota hai.
@@ -292,73 +314,50 @@ export default function Home() {
         </div>
       )}
 
+      {/* Sticky Navbar (fixed, always on top of every section) */}
+      <div className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-[#0A1F44] uppercase mix-blend-normal">
+        <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity min-h-[44px]">
+          <img
+            src="/logo-black-transparent.png"
+            alt="Origo Atelier"
+            className="h-11 md:h-14 w-auto object-contain"
+          />
+        </div>
+        <span
+          className="font-extrabold text-xs sm:text-sm font-mono absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em] text-[#0A1F44]"
+          style={{ textTransform: 'none' }}
+        >
+          Origo Atelier
+        </span>
+        <div className="flex items-center gap-4 sm:gap-8">
+          <button
+            onClick={handleToggleMute}
+            onMouseEnter={() => soundManager.playHover()}
+            className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-medium px-1"
+          >
+            [ SOUND {isMuted ? 'OFF' : 'ON'} ]
+          </button>
+          <span className="opacity-80 hidden md:inline">[ {String(scrollCount).padStart(3, '0')} ]</span>
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              const contactSection = document.getElementById("contact");
+              contactSection?.scrollIntoView({ behavior: "smooth" });
+            }}
+            onMouseEnter={() => soundManager.playHover()}
+            className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-bold px-1"
+          >
+            CONTACT
+          </button>
+        </div>
+      </div>
+
       <div className="noise-overlay"></div>
       {/* SECTION 1: HERO */}
       <section className="relative min-h-screen flex flex-col justify-between overflow-hidden px-6 lg:px-8 bg-[#1E90FF]">
         {/* Ball of Glass Interactive 3D Canvas Background (Z-Index 20) */}
         <div className="absolute inset-0 z-20 w-full h-full">
           <Main />
-        </div>
-
-        {/* Flat Immersive Navbar (Z-Index 30) */}
-        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-[#0A1F44] uppercase">
-          <div className="flex items-center gap-3 cursor-pointer hover:opacity-75 transition-opacity min-h-[44px]">
-            <img
-              src="/logo-black-transparent.png"
-              alt="Origo Atelier"
-              className="h-11 md:h-14 w-auto object-contain"
-            />
-          </div>
-          <span
-            className="font-extrabold text-xs sm:text-sm font-mono absolute left-1/2 -translate-x-1/2 hidden sm:inline tracking-[0.2em] text-[#0A1F44]"
-            style={{ textTransform: 'none' }}
-          >
-            Origo Atelier
-          </span>
-          <div className="flex items-center gap-4 sm:gap-8">
-            <button
-              onClick={handleToggleMute}
-              onMouseEnter={() => soundManager.playHover()}
-              className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-medium px-1"
-            >
-              [ SOUND {isMuted ? 'OFF' : 'ON'} ]
-            </button>
-            <span className="opacity-80 hidden md:inline">[ 001 ]</span>
-            <button
-              onClick={() => {
-                soundManager.playClick();
-                const contactSection = document.getElementById("contact");
-                contactSection?.scrollIntoView({ behavior: "smooth" });
-              }}
-              onMouseEnter={() => soundManager.playHover()}
-              className="min-h-[44px] inline-flex items-center hover:opacity-75 transition-opacity cursor-pointer font-bold px-1"
-            >
-              CONTACT
-            </button>
-          </div>
-        </div>
-
-        {/* Bottom HUD layout (Z-Index 30) */}
-        <div className="absolute bottom-5 md:bottom-8 left-0 right-0 z-30 flex items-center justify-between px-5 sm:px-8 pointer-events-auto text-[9.5px] md:text-xs font-mono tracking-widest text-[#0A1F44] uppercase">
-          <div className="flex-1 hidden md:block text-[#0A1F44]/80 font-medium truncate pr-2">
-            FROM ORIGIN TO EXCELLENCE
-          </div>
-
-          <div
-            onClick={() => {
-              soundManager.playClick();
-              const workSection = document.getElementById("work");
-              workSection?.scrollIntoView({ behavior: "smooth" });
-            }}
-            onMouseEnter={() => soundManager.playHover()}
-            className="flex-1 min-h-[44px] flex flex-col justify-center items-center gap-1 cursor-pointer hover:opacity-75 transition-opacity text-center font-bold px-2"
-          >
-            <span>EXPLORE OUR WORK ↓</span>
-          </div>
-
-          <div className="flex-1 text-right font-medium">
-            [ 3D ]
-          </div>
         </div>
 
         {/* Soft atmospheric dissolve into Intro pure white canvas (removes any dark seam) */}

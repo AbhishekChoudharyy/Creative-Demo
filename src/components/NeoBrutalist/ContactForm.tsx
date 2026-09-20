@@ -87,7 +87,9 @@ export default function ContactForm() {
       id="contact"
       className="relative z-30 px-8 md:px-16 lg:px-24 py-24 lg:py-32 pb-40 lg:pb-52 text-[#0A1F44] overflow-hidden rounded-t-[36px] sm:rounded-t-[56px] border-t border-white/60 will-change-transform"
       style={{
-        background: 'linear-gradient(180deg, #FFFFFF 0%, #EDF5FD 26%, #7CB8F9 68%, #1E90FF 100%)',
+        // Form + Footer treated as ONE continuous canvas:
+        // long white → soft sky → brand blue, ending at the page bottom
+        background: 'linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 34%, #EDF5FD 55%, #BFE0FD 72%, #7CB8F9 84%, #1E90FF 100%)',
       }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full">

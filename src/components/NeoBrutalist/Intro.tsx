@@ -529,10 +529,17 @@ export default function Intro() {
       });
     };
     if (isFine) {
+      const safety = 36;
       animatedWords.forEach((item) => {
         const el = item.ref.current;
         if (!el) return;
-        gsap.set(el, { x: compactStartOffsets.current[item.id] || 0 });
+        const raw = compactStartOffsets.current[item.id] || 0;
+        const rect = el.getBoundingClientRect();
+        // Clamp so corner words never leave the screen
+        const min = safety - rect.left;
+        const max = window.innerWidth - safety - rect.right;
+        const clamped = Math.max(min, Math.min(max, raw));
+        gsap.set(el, { x: clamped });
       });
       section.addEventListener('pointermove', releaseCompact, { once: true });
     }
