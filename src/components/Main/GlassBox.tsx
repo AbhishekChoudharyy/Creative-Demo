@@ -284,8 +284,7 @@ export const GlassBox: FC = () => {
         />
       </mesh>
 
-      {/* ── INTERACTIVE "HOLD AND DRAG" CURSOR FOLLOWER CIRCLE (Magnifying Glass Pop) ──
-          Spawns tiny (scale 6%) and pops out with an elastic spring into a large optical magnifying glass */}
+      {/* ── INTERACTIVE "HOLD AND DRAG" CURSOR FOLLOWER CIRCLE (Fully Transparent Without Border) ── */}
       <group ref={ringRef} position={[0, 0, 0.28]}>
         <Html center style={{ pointerEvents: 'none' }}>
           <div
@@ -296,21 +295,9 @@ export const GlassBox: FC = () => {
               transform: isHoveredState ? 'scale(1)' : 'scale(0.06)',
               opacity: isHoveredState ? 1 : 0,
             }}
-            className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full border-[1.8px] border-white flex items-center justify-center select-none pointer-events-none shadow-[0_0_35px_rgba(255,255,255,0.25),inset_0_0_25px_rgba(255,255,255,0.12)] bg-gradient-to-tr from-white/[0.04] via-transparent to-white/[0.10] backdrop-blur-[0.5px]"
+            className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full border-0 border-transparent bg-transparent shadow-none flex items-center justify-center select-none pointer-events-none"
           >
-            {/* Concentric inner optical reticle ring */}
-            <div className="absolute inset-2 sm:inset-2.5 rounded-full border border-white/30 pointer-events-none" />
-
-            {/* Precision optical tick marks at cardinal positions */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-2 sm:h-2.5 bg-white/80 pointer-events-none" />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0.5 h-2 sm:h-2.5 bg-white/80 pointer-events-none" />
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-2 sm:w-2.5 bg-white/80 pointer-events-none" />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-0.5 w-2 sm:w-2.5 bg-white/80 pointer-events-none" />
-
-            {/* Subtle center optical crosshair hint */}
-            <div className="absolute w-2 h-2 rounded-full border border-white/40 pointer-events-none" />
-
-            {/* Magnifying Glass Center Callout */}
+            {/* Center Callout: Clean floating label without border / background */}
             <span className="relative z-10 text-[10.5px] sm:text-[11.5px] font-mono font-bold tracking-[0.24em] text-white uppercase text-center select-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] px-3">
               HOLD AND DRAG
             </span>

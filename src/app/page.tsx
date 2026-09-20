@@ -85,95 +85,82 @@ export default function Home() {
   // ── Cinematic color-flash: Work → Shapes boundary par Shapes section ka
   // exact blue poore viewport ko le leta hai, phir section reveal hota hai.
   // Har boundary cross (dono direction) + Shapes ke end pe bhi trigger hota hai.
+  // ── Cinematic color-flash: Work ↔ Shapes boundary ──
+  // Highly optimized for mobile: ignoreMobileResize, momentum cooldown, GPU accelerated layer, and natural landing.
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
     const overlay = flashRef.current;
     const shapesSection = document.getElementById('services-carousel');
-    if (!overlay || !shapesSection) return;
+    const workSection = document.getElementById('work');
+    const gapSection = document.getElementById('works-shapes-gap');
+    if (!overlay || !shapesSection || !workSection) return;
 
-    // Jump instantly (no smooth scrolling) so a section fills the
-    // entire viewport while the screen is fully covered by the flash.
-    const jumpToSection = (el: HTMLElement) => {
-      const targetTop = el.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
-      window.scrollTo({ top: targetTop, behavior: 'instant' as ScrollBehavior });
-    };
+    let isFlashing = false;
+    let lastFlashTime = 0;
+    const COOLDOWN_MS = 850;
 
-    // Fast-forward ALL scroll animations inside a section so it appears
-    // fully formed under the flash — no entrance animations playing.
-    const fastForwardSection = (section: HTMLElement) => {
-      ScrollTrigger.getAll().forEach((st) => {
-        const trig = st.trigger as Element | null;
-        const pinned = st.pin as Element | null;
-        const inside =
-          (trig && section.contains(trig)) ||
-          (pinned && section.contains(pinned));
-        if (!inside) return;
-        const anim = (st as unknown as { animation?: gsap.core.Tween }).animation;
-        if (anim) {
-          anim.progress(1);
-        }
-      });
-    };
+    const runFlash = (color: string, destination: 'shapes' | 'work') => {
+      const now = Date.now();
+      if (isFlashing || now - lastFlashTime < COOLDOWN_MS) return;
 
-    // One flash at a time — the two direction flashes stay fully separate
-    let flashActive = false;
-
-    const runFlash = (color: string, target: HTMLElement | null) => {
-      if (flashActive) return;
-      flashActive = true;
+      isFlashing = true;
+      lastFlashTime = now;
       gsap.killTweensOf(overlay);
 
       const tl = gsap.timeline({
         onComplete: () => {
-          flashActive = false;
+          isFlashing = false;
+          lastFlashTime = Date.now();
+          ScrollTrigger.refresh();
         },
       });
+
       tl.set(overlay, { display: 'block', background: color, opacity: 0 })
         // Smooth flash pop to full color
-        .to(overlay, { opacity: 1, duration: 0.12, ease: 'power2.in' })
-        // While fully covered: snap to the target section + fast-forward it
+        .to(overlay, { opacity: 1, duration: 0.15, ease: 'power2.in' })
+        // While fully masked: jump instantly to destination
         .call(
           () => {
-            if (target) {
-              jumpToSection(target);
-              fastForwardSection(target);
+            if (destination === 'shapes') {
+              const targetTop = shapesSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+              window.scrollTo({ top: Math.round(targetTop), behavior: 'instant' as ScrollBehavior });
+            } else {
+              // Returning to Work: land naturally at the bottom of the gallery where user left off
+              const currentWorkTop = workSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+              const targetTop = currentWorkTop + workSection.offsetHeight - window.innerHeight;
+              window.scrollTo({ top: Math.max(0, Math.round(targetTop)), behavior: 'instant' as ScrollBehavior });
             }
           },
           undefined,
-          0.12
+          0.15
         )
-        // Hold full color while the section settles underneath
-        .to(overlay, { opacity: 1, duration: 0.18, ease: 'none' })
-        // Smooth fade away, revealing the section in its final state
-        .to(overlay, { opacity: 0, duration: 0.45, ease: 'power2.inOut' })
+        // Brief hold so the new section renders stably underneath
+        .to(overlay, { opacity: 1, duration: 0.12, ease: 'none' })
+        // Silky fade out revealing the new section
+        .to(overlay, { opacity: 0, duration: 0.38, ease: 'power2.out' })
         .set(overlay, { display: 'none' });
     };
 
-    // Work → Shapes: blue flash (Shapes section's own color), full viewport
+    // Work → Shapes: blue flash
     const shapesColor = window.getComputedStyle(shapesSection).backgroundColor || '#1E90FF';
-    const flashToShapes = () => runFlash(shapesColor, shapesSection);
+    const flashToShapes = () => runFlash(shapesColor, 'shapes');
 
-    // Shapes → Work: white flash, Work section fast-forwarded
-    const flashBackToWork = () => {
-      const workSection = document.getElementById('work');
-      if (!workSection) return;
-      runFlash('#FFFFFF', workSection);
-    };
+    // Shapes → Work: white flash
+    const flashBackToWork = () => runFlash('#FFFFFF', 'work');
 
-    // Work → Shapes: fires the INSTANT the Work section ends — one scroll
-    // past work's end and the Shapes section takes over the full viewport,
-    // fast-forwarded, with no extra scrolling needed.
+    // Work → Shapes: triggers cleanly inside the extra buffer gap without clashing with Works
     const stA = ScrollTrigger.create({
-      trigger: shapesSection,
-      start: 'top bottom-=1px',
+      trigger: gapSection || shapesSection,
+      start: gapSection ? 'center bottom' : 'top bottom-=1px',
       onEnter: flashToShapes,
     });
 
-    // Shapes → Work: fires only when the Shapes page is already filling the
-    // viewport and the user keeps scrolling up — white flash → Work.
+    // Shapes → Work: triggers when scrolling back up through the buffer gap
     const stB = ScrollTrigger.create({
-      trigger: shapesSection,
-      start: 'top top+=1px',
+      trigger: gapSection || shapesSection,
+      start: gapSection ? 'center top' : 'top top+=1px',
       onLeaveBack: flashBackToWork,
     });
 
@@ -254,8 +241,8 @@ export default function Home() {
       <div
         ref={flashRef}
         aria-hidden="true"
-        className="fixed inset-0 z-[99998] pointer-events-none"
-        style={{ display: 'none' }}
+        className="fixed inset-0 z-[99998] pointer-events-none will-change-[opacity] transform-gpu"
+        style={{ display: 'none', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       />
       {bootState !== 'booted' && (
         <div className={`fixed inset-0 bg-[#080808] z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
@@ -369,6 +356,14 @@ export default function Home() {
       {/* Neo-Brutalist Portfolio Sections */}
       <Intro />
       <WorkGallery />
+
+      {/* Extra scroll buffer gap between Works and Shapes — houses the cinematic flash transition */}
+      <div
+        id="works-shapes-gap"
+        className="relative w-full h-[28vh] sm:h-[36vh] md:h-[44vh] bg-[#1E90FF] pointer-events-none select-none"
+        aria-hidden="true"
+      />
+
       <ImmersiveCarousel />
       <Services />
 

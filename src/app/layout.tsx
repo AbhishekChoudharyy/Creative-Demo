@@ -7,7 +7,15 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Determine canonical base URL dynamically to ensure WhatsApp and social crawlers resolve images correctly
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null) ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+  'https://origoatelier.com';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Origo Atelier | From Origin to Excellence",
   description: "Origo Atelier is a premier experiential design studio. We transform ideas into bold immersive experiences, spatial activations, anamorphic 3D, and exhibitions. From origin to excellence.",
   keywords: [
@@ -22,7 +30,7 @@ export const metadata: Metadata = {
     "From Origin to Excellence",
     "London"
   ],
-  authors: [{ name: "Origo Atelier", url: "https://origoatelier.com" }],
+  authors: [{ name: "Origo Atelier", url: siteUrl }],
   creator: "Origo Atelier",
   publisher: "Origo Atelier",
   formatDetection: {
@@ -30,14 +38,13 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://origoatelier.com'),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Origo Atelier | From Origin to Excellence",
     description: "Every experience begins with an idea. We find the origin and engineer excellence. Experiential design studio specializing in brand activations and immersive spaces.",
-    url: "https://origoatelier.com",
+    url: siteUrl,
     siteName: "Origo Atelier",
     images: [
       {
@@ -100,6 +107,16 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+        {/* WhatsApp & Social Media Preview Meta Tags */}
+        <meta property="og:image" content={`${siteUrl}/og-image.png`} />
+        <meta property="og:image:secure_url" content={`${siteUrl}/og-image.png`} />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Origo Atelier — From Origin to Excellence" />
+        <link rel="image_src" href={`${siteUrl}/og-square.png`} />
+        <meta itemProp="image" content={`${siteUrl}/og-square.png`} />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

@@ -763,21 +763,59 @@ export default function WorkGallery() {
       id="work"
       className="relative bg-white text-[#0A1F44] pt-8 sm:pt-14 md:pt-22 pb-12 sm:pb-16 md:pb-24 overflow-hidden select-none"
     >
-      {/* Attached Panoramic Sky Background Image */}
+      {/* ── DIAGONAL BLUE GRADIENT BAND (Top-Left to Bottom-Right) ── */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        {/* Soft atmospheric cloud texture rotated along the diagonal */}
+        <div
+          className="absolute -top-[50%] -left-[35%] w-[170%] h-[200%] pointer-events-none"
+          style={{
+            backgroundImage: 'url(/works-carousel-bg.png)',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 40%',
+            transform: 'rotate(25deg)',
+            opacity: 0.70,
+            filter: 'blur(10px)',
+          }}
+        />
+
+        {/* Thick luminous diagonal gradient beam (Direction: Top-Left to Bottom-Right) */}
+        <div
+          className="absolute -top-[55%] -left-[35%] w-[170%] h-[210%] pointer-events-none"
+          style={{
+            transform: 'rotate(25deg)',
+            background:
+              'linear-gradient(180deg, transparent 0%, transparent 33%, rgba(30, 144, 255, 0.08) 39%, rgba(30, 144, 255, 0.35) 44%, rgba(30, 144, 255, 0.75) 50%, rgba(30, 144, 255, 0.35) 56%, rgba(30, 144, 255, 0.08) 61%, transparent 67%, transparent 100%)',
+            filter: 'blur(35px)',
+          }}
+        />
+
+        {/* Intense core watercolor wash through the diagonal axis */}
+        <div
+          className="absolute top-1/2 left-1/2 w-[160%] h-[360px] pointer-events-none"
+          style={{
+            transform: 'translate(-50%, -50%) rotate(25deg)',
+            background:
+              'radial-gradient(ellipse 75% 55% at 50% 50%, rgba(30, 144, 255, 0.65) 0%, rgba(56, 163, 255, 0.40) 45%, rgba(30, 144, 255, 0.08) 75%, transparent 100%)',
+            filter: 'blur(45px)',
+          }}
+        />
+      </div>
+
+      {/* Gentle top edge dissolve to blend seamlessly with Intro white */}
       <div
-        className="absolute inset-0 pointer-events-none z-0 bg-cover bg-top"
+        className="absolute top-0 left-0 right-0 h-20 sm:h-28 pointer-events-none z-[1]"
         style={{
-          backgroundImage: 'url(/works-carousel-bg.png)',
-          backgroundRepeat: 'no-repeat',
+          background: 'linear-gradient(to bottom, #FFFFFF 0%, rgba(255, 255, 255, 0.85) 45%, rgba(255, 255, 255, 0.25) 75%, transparent 100%)',
         }}
       />
 
-      {/* Top Atmospheric Dissolve: Pure White from Intro smoothly dissolving into Works Sky */}
+      {/* ── TOP-RIGHT WHITISH VEIL (Keeps the area to the right of SELECTED WORKS clean & whitish on mobile & desktop) ── */}
       <div
-        className="absolute top-0 left-0 right-0 h-48 sm:h-64 md:h-80 pointer-events-none z-[1]"
+        className="absolute top-0 right-0 w-full sm:w-[80%] lg:w-[65%] h-[380px] sm:h-[440px] pointer-events-none z-[1]"
         style={{
           background:
-            'linear-gradient(to bottom, #FFFFFF 0%, rgba(255, 255, 255, 0.95) 25%, rgba(255, 255, 255, 0.60) 55%, rgba(255, 255, 255, 0.15) 80%, transparent 100%)',
+            'radial-gradient(ellipse 95% 90% at 100% 0%, #FFFFFF 0%, #FFFFFF 55%, rgba(255, 255, 255, 0.95) 72%, rgba(255, 255, 255, 0.45) 88%, transparent 100%)',
         }}
       />
 
