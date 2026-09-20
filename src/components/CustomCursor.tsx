@@ -88,7 +88,7 @@ export default function CustomCursor() {
       <div
         className="w-3.5 h-3.5 rounded-full border-0 border-none outline-none"
         style={{
-          background: 'rgba(10, 31, 68, 0.35)',
+          background: '#0A1F44',
           boxShadow: 'none',
           border: 'none',
           outline: 'none',

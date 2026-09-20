@@ -23,6 +23,13 @@ class SoundManager {
   // Crystal shimmer rate limiting — prevents duplicate triggers while cursor remains over sphere
   private lastCrystalShimmerTime: number = 0;
 
+  // Background ambient music
+  private bgAudio: HTMLAudioElement | null = null;
+  private isBgPlaying: boolean = false;
+  private baseBgVolume: number = 0.35;
+  private bgFadeDuration: number = 2.0; // 2s ease-in and ease-out
+  private bgVolumeTimer: ReturnType<typeof setInterval> | null = null;
+
   constructor() {
     if (typeof window !== 'undefined') {
       // Load initial mute state from local storage
@@ -39,6 +46,8 @@ class SoundManager {
       window.addEventListener('touchstart', unlock, { once: true });
       window.addEventListener('pointerdown', unlock, { once: true });
       window.addEventListener('pointermove', unlock, { once: true });
+
+      this.initBackgroundMusic();
     }
   }
 
@@ -107,12 +116,166 @@ class SoundManager {
     } else {
       this.isUnlocked = true;
     }
+
+    if (this.isBgPlaying && !this.isMuted && this.bgAudio && (this.bgAudio.paused || this.bgAudio.ended)) {
+      if (this.bgAudio.ended) {
+        this.bgAudio.currentTime = 0;
+      }
+      this.bgAudio.play().catch(() => {});
+    }
+  }
+
+  private initBackgroundMusic() {
+    if (typeof window === 'undefined' || this.bgAudio) return;
+
+    try {
+      this.bgAudio = new Audio(encodeURI('/sounds/bg sound.mp3'));
+      this.bgAudio.loop = true;
+      this.bgAudio.volume = 0; // Starts at 0 for initial smooth ease-in
+      this.bgAudio.preload = 'auto';
+
+      // Explicitly autoplay / replay when track ends
+      this.bgAudio.addEventListener('ended', () => {
+        if (this.isBgPlaying && !this.isMuted && this.bgAudio) {
+          this.bgAudio.currentTime = 0;
+          this.bgAudio.play().catch(() => {});
+        }
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (!this.bgAudio) return;
+        if (document.hidden) {
+          if (this.isBgPlaying) {
+            this.stopBgVolumeEasing();
+            this.bgAudio.pause();
+          }
+        } else {
+          if (this.isBgPlaying && !this.isMuted) {
+            if (this.bgAudio.ended) {
+              this.bgAudio.currentTime = 0;
+            }
+            this.bgAudio.play().catch(() => {});
+            this.startBgVolumeEasing();
+          }
+        }
+      });
+    } catch (err) {
+      console.warn('Failed to initialize background music:', err);
+    }
+  }
+
+  /**
+   * Continuous ease-in at track beginning and ease-out at track ending for smooth looping
+   */
+  private startBgVolumeEasing() {
+    if (this.bgVolumeTimer) return;
+
+    this.bgVolumeTimer = setInterval(() => {
+      if (!this.bgAudio || !this.isBgPlaying || this.isMuted) {
+        this.stopBgVolumeEasing();
+        return;
+      }
+
+      const t = this.bgAudio.currentTime;
+      const dur = this.bgAudio.duration;
+      const fadeDur = this.bgFadeDuration;
+      let factor = 1.0;
+
+      if (!dur || isNaN(dur) || dur <= fadeDur * 2) {
+        // While duration is loading or if audio is short, ease in from start
+        if (t < fadeDur) {
+          const f = Math.max(0, Math.min(1, t / fadeDur));
+          factor = (1 - Math.cos(f * Math.PI)) / 2;
+        }
+      } else {
+        const remaining = dur - t;
+
+        // Auto restart right as sound reaches silent tail to trigger seamless loop
+        if (remaining <= 0.05) {
+          this.bgAudio.currentTime = 0;
+          return;
+        }
+
+        if (t < fadeDur) {
+          // Starting Ease-In (0 -> 1)
+          const f = Math.max(0, Math.min(1, t / fadeDur));
+          factor = (1 - Math.cos(f * Math.PI)) / 2;
+        } else if (remaining < fadeDur) {
+          // Ending Ease-Out (1 -> 0)
+          const f = Math.max(0, Math.min(1, remaining / fadeDur));
+          factor = (1 - Math.cos(f * Math.PI)) / 2;
+        }
+      }
+
+      const targetVol = Math.max(0, Math.min(1, this.baseBgVolume * factor));
+      this.bgAudio.volume = targetVol;
+    }, 40);
+  }
+
+  private stopBgVolumeEasing() {
+    if (this.bgVolumeTimer) {
+      clearInterval(this.bgVolumeTimer);
+      this.bgVolumeTimer = null;
+    }
+  }
+
+  /**
+   * Start looping background ambient music with ease-in
+   */
+  public playBackgroundMusic() {
+    this.isBgPlaying = true;
+    this.initBackgroundMusic();
+    if (this.isMuted || !this.bgAudio) return;
+
+    this.bgAudio.muted = false;
+    if (this.bgAudio.ended) {
+      this.bgAudio.currentTime = 0;
+    }
+    this.startBgVolumeEasing();
+    this.bgAudio.play().catch((err) => {
+      console.log('Background music waiting for user gesture:', err);
+    });
+  }
+
+  /**
+   * Pause looping background ambient music
+   */
+  public pauseBackgroundMusic() {
+    this.isBgPlaying = false;
+    this.stopBgVolumeEasing();
+    if (this.bgAudio) {
+      this.bgAudio.pause();
+    }
+  }
+
+  /**
+   * Adjust background music volume (0.0 to 1.0)
+   */
+  public setBackgroundMusicVolume(vol: number) {
+    this.baseBgVolume = Math.max(0, Math.min(1, vol));
+    if (this.bgAudio && (!this.isBgPlaying || this.isMuted)) {
+      this.bgAudio.volume = this.baseBgVolume;
+    }
   }
 
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
     if (typeof window !== 'undefined') {
       localStorage.setItem('origo_atelier_sfx_muted', String(this.isMuted));
+    }
+
+    if (this.bgAudio) {
+      if (this.isMuted) {
+        this.stopBgVolumeEasing();
+        this.bgAudio.muted = true;
+        this.bgAudio.pause();
+      } else {
+        this.bgAudio.muted = false;
+        if (this.isBgPlaying) {
+          this.startBgVolumeEasing();
+          this.bgAudio.play().catch(() => {});
+        }
+      }
     }
     
     // If unmuted, play a quick confirmation click
@@ -127,6 +290,16 @@ class SoundManager {
     this.isMuted = muted;
     if (typeof window !== 'undefined') {
       localStorage.setItem('origo_atelier_sfx_muted', String(this.isMuted));
+    }
+    if (this.bgAudio) {
+      this.bgAudio.muted = muted;
+      if (muted) {
+        this.stopBgVolumeEasing();
+        this.bgAudio.pause();
+      } else if (this.isBgPlaying) {
+        this.startBgVolumeEasing();
+        this.bgAudio.play().catch(() => {});
+      }
     }
   }
 
@@ -681,7 +854,6 @@ class SoundManager {
     this.lastCrystalShimmerTime = now;
 
     const heroKeys = ['heroSound1', 'heroSound2', 'heroSound3'];
-    let playedAny = false;
 
     heroKeys.forEach((key) => {
       const buffer = this.buffers.get(key);
@@ -694,16 +866,11 @@ class SoundManager {
           source.connect(gainNode);
           gainNode.connect(this.compressor!);
           source.start(ctx.currentTime);
-          playedAny = true;
         } catch (e) {
           console.warn(`Error playing ${key}:`, e);
         }
       }
     });
-
-    if (!playedAny) {
-      this.playSynthCrystalShimmer();
-    }
   }
 
   public playCrystalShimmer() {
@@ -787,30 +954,7 @@ class SoundManager {
    * Hover out: Very subtle receding glass resonance (clean descending harmonic tail, 0.22s, low volume).
    */
   public playCrystalRecede() {
-    if (this.isMuted) return;
-    if (!this.isUnlocked || !this.ctx || this.ctx.state !== 'running') return;
-    const ctx = this.ctx;
-    if (!this.compressor) return;
-
-    try {
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-
-      // Gentle descending resonance curve
-      osc.frequency.setValueAtTime(2600, now);
-      osc.frequency.exponentialRampToValueAtTime(1750, now + 0.22);
-
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(0.018, now + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
-
-      osc.connect(gain);
-      gain.connect(this.compressor);
-      osc.start(now);
-      osc.stop(now + 0.25);
-    } catch (e) {}
+    // Disabled: hero 3d hover/leave exclusively uses Sound 1-2-3
   }
 
   public playGlassFracture() {

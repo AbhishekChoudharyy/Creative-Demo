@@ -267,6 +267,12 @@ export default function Home() {
     };
   }, [bootState]);
 
+  useEffect(() => {
+    if (bootState === 'booted' && !isMuted) {
+      soundManager.playBackgroundMusic();
+    }
+  }, [bootState, isMuted]);
+
   return (
     <div className="min-h-screen bg-[#1E90FF] text-[#0A1F44] selection:bg-[#0A1F44]/10 relative">
       <CustomCursor />
@@ -322,6 +328,7 @@ export default function Home() {
                 <button
                   onClick={() => {
                     soundManager.playBootSound();
+                    soundManager.playBackgroundMusic();
                     setIsExiting(true);
                     setTimeout(() => {
                       setBootState('booted');

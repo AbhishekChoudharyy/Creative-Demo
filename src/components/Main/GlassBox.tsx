@@ -106,9 +106,6 @@ export const GlassBox: FC = () => {
     if (!isHovered.current) return;
     isHovered.current = false;
     setIsHoveredState(false);
-    if (fractureProgress.current > 0.08) {
-      soundManager.playCrystalRecede();
-    }
   };
 
   useEffect(() => {
