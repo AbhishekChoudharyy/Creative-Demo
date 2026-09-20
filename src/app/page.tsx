@@ -60,23 +60,59 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const flashRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
   const [scrollCount, setScrollCount] = useState(0);
   const [isOverWhite, setIsOverWhite] = useState(false);
 
-  // Navbar counter & dynamic theme detection (White vs Blue screens)
+  // Navbar dynamic vertical scroll movement with buttery delay lerp & end fade-out
   useEffect(() => {
-    const updateNavbarState = () => {
+    let rafId = 0;
+    let isRunning = true;
+
+    // Physics interpolation state
+    let targetY = 0;
+    let currentY = 0;
+    let targetOpacity = 1;
+    let currentOpacity = 1;
+
+    const updateTargets = () => {
       const doc = document.documentElement;
       const maxScroll = doc.scrollHeight - window.innerHeight;
-      if (maxScroll <= 0) {
-        setScrollCount(0);
+      const progress = maxScroll <= 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / maxScroll));
+
+      setScrollCount(Math.round(progress * 100));
+
+      const navEl = navRef.current;
+      const navHeight = navEl ? navEl.offsetHeight : 80;
+      const maxTravel = Math.max(0, window.innerHeight - navHeight);
+      targetY = progress * maxTravel;
+
+      // Gracefully fade out towards the very end of the page (starts at 90%, completely hidden at 100%)
+      if (progress > 0.90) {
+        const fadeRatio = (progress - 0.90) / (1 - 0.90);
+        targetOpacity = Math.max(0, 1 - fadeRatio);
       } else {
-        const pct = Math.min(100, Math.max(0, Math.round((window.scrollY / maxScroll) * 100)));
-        setScrollCount(pct);
+        targetOpacity = 1;
+      }
+    };
+
+    const loop = () => {
+      if (!isRunning) return;
+
+      // Buttery smooth organic inertia lerp with gentle delay (0.075 damping)
+      currentY += (targetY - currentY) * 0.075;
+      currentOpacity += (targetOpacity - currentOpacity) * 0.085;
+
+      const navEl = navRef.current;
+      if (navEl) {
+        navEl.style.transform = `translate3d(0, ${currentY.toFixed(2)}px, 0)`;
+        navEl.style.opacity = currentOpacity < 0.005 ? '0' : currentOpacity.toFixed(3);
+        navEl.style.pointerEvents = currentOpacity < 0.08 ? 'none' : 'auto';
       }
 
-      // Detect if navbar is currently over a white background section
-      const navY = 40;
+      // Check section background at current interpolated position for contrast
+      const navHeight = navEl ? navEl.offsetHeight : 80;
+      const checkY = currentY + navHeight / 2;
       const introEl = document.getElementById('intro');
       const workEl = document.getElementById('work');
       const contactEl = document.getElementById('contact');
@@ -84,27 +120,35 @@ export default function Home() {
       let overWhite = false;
       if (introEl) {
         const rect = introEl.getBoundingClientRect();
-        if (rect.top <= navY && rect.bottom >= navY) overWhite = true;
+        if (rect.top <= checkY && rect.bottom >= checkY) overWhite = true;
       }
       if (workEl) {
         const rect = workEl.getBoundingClientRect();
-        if (rect.top <= navY && rect.bottom >= navY) overWhite = true;
+        if (rect.top <= checkY && rect.bottom >= checkY) overWhite = true;
       }
       if (contactEl) {
         const rect = contactEl.getBoundingClientRect();
-        // Upper zone of contact form is pure white
-        if (rect.top <= navY && rect.top + 340 >= navY) overWhite = true;
+        if (rect.top <= checkY && rect.top + 340 >= checkY) overWhite = true;
       }
 
       setIsOverWhite(overWhite);
+
+      rafId = requestAnimationFrame(loop);
     };
 
-    updateNavbarState();
-    window.addEventListener('scroll', updateNavbarState, { passive: true });
-    window.addEventListener('resize', updateNavbarState);
+    updateTargets();
+    currentY = targetY;
+    currentOpacity = targetOpacity;
+    rafId = requestAnimationFrame(loop);
+
+    window.addEventListener('scroll', updateTargets, { passive: true });
+    window.addEventListener('resize', updateTargets);
+
     return () => {
-      window.removeEventListener('scroll', updateNavbarState);
-      window.removeEventListener('resize', updateNavbarState);
+      isRunning = false;
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', updateTargets);
+      window.removeEventListener('resize', updateTargets);
     };
   }, []);
 
@@ -346,8 +390,11 @@ export default function Home() {
         </div>
       )}
 
-      {/* Sticky Navbar (fixed, always on top of every section) */}
-      <div className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-[#0A1F44] uppercase mix-blend-normal">
+      {/* Sticky Navbar (scrolls down from start of viewport to end of viewport, staying at bottom at end of site) */}
+      <div
+        ref={navRef}
+        className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest text-[#0A1F44] uppercase mix-blend-normal will-change-transform"
+      >
         {/* Brand Lockup: Origo ATELIER (Replaces logo image, active on desktop & mobile) */}
         <div
           onClick={() => {
@@ -420,7 +467,7 @@ export default function Home() {
               [ SOUND {isMuted ? 'OFF' : 'ON'} ]
             </span>
           </button>
-          <span className="opacity-80 inline">[ {String(scrollCount).padStart(3, '0')} ]</span>
+          <span className="opacity-80 inline font-mono">[ {String(scrollCount).padStart(3, '0')} ]</span>
           <button
             onClick={() => {
               soundManager.playClick();
