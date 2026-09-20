@@ -108,12 +108,17 @@ p, a, li, label, input, textarea, button, small {
   font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif;
 }
 
-span:not(#intro *):not([style*="OT Brut"] *):not(h1 *):not(h2 *):not(h3 *) {
+span:not(#intro *):not([style*="OT Brut"] *):not([style*="ERF Neot"] *):not(.font-erf *):not(.font-erf):not(h1 *):not(h2 *):not(h3 *) {
   font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif;
 }
 
 .font-heading {
   font-family: 'ERF Neot', var(--font-syne), sans-serif !important;
+}
+
+.font-erf,
+.font-erf * {
+  font-family: 'ERF Neot', sans-serif !important;
 }
 
 .font-mono {
@@ -509,3 +514,27 @@ span:not(#intro *):not([style*="OT Brut"] *):not(h1 *):not(h2 *):not(h3 *) {
 @utility animate-rumble {
   animation: engine-rumble 0.08s linear infinite;
 }
+
+@keyframes reactbits-shine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.reactbits-shine-text {
+  background: linear-gradient(
+    115deg,
+    #0A1F44 0%,
+    #0A1F44 40%,
+    #2563EB 50%,
+    #0A1F44 60%,
+    #0A1F44 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: reactbits-shine 5s ease-in-out infinite;
+}

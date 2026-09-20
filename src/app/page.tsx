@@ -11,6 +11,7 @@ import Team from "@/components/NeoBrutalist/Team";
 import Services from "@/components/NeoBrutalist/Services";
 import ContactForm from "@/components/NeoBrutalist/ContactForm";
 import CustomCursor from "@/components/CustomCursor";
+import BlurText from "@/components/NeoBrutalist/BlurText";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -274,20 +275,26 @@ export default function Home() {
         <div className={`fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
           <div className="flex flex-col items-center px-6 text-center z-10">
 
-            {/* Brand Lockup: Origo ATELIER (scaled down, Navy Blue #0A1F44 fill) */}
-            <div className="flex items-baseline justify-center gap-2.5 sm:gap-3.5 md:gap-5 select-none text-[#0A1F44] normal-case flex-nowrap">
-              <span
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-none text-[#0A1F44] normal-case"
+            {/* Brand Lockup: Exact spacing and proportional size matching reference image */}
+            <div className="inline-flex flex-col items-stretch w-fit max-w-[90vw] select-none text-[#0A1F44] normal-case">
+              <BlurText
+                text="Origo"
+                delay={60}
+                duration={0.75}
+                stagger={0.06}
+                direction="bottom"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-none text-[#0A1F44] normal-case font-erf text-left"
                 style={{ fontFamily: "'ERF Neot', sans-serif", textTransform: 'none' }}
-              >
-                Origo
-              </span>
-              <span
-                className="text-base sm:text-xl md:text-2xl lg:text-3xl font-extralight uppercase tracking-[0.24em] sm:tracking-[0.28em] leading-none text-[#0A1F44]/85 font-sans"
-                style={{ fontWeight: 200 }}
-              >
-                ATELIER
-              </span>
+              />
+              <BlurText
+                text="ATELIER"
+                delay={260}
+                duration={0.75}
+                stagger={0.045}
+                direction="bottom"
+                className="w-full flex justify-between items-center text-[10px] sm:text-xs md:text-sm lg:text-base font-bold uppercase leading-none text-[#1E90FF] font-sans mt-2 sm:mt-2.5 md:mt-3"
+                style={{ fontWeight: 700, color: '#1E90FF' }}
+              />
             </div>
 
             {/* Content / Action Area */}
@@ -342,8 +349,8 @@ export default function Home() {
             Origo
           </span>
           <span
-            className="text-[10px] sm:text-[11.5px] font-extralight uppercase tracking-[0.26em] leading-none opacity-85 font-sans"
-            style={{ fontWeight: 200 }}
+            className="text-[10px] sm:text-[11.5px] font-extralight uppercase tracking-[0.26em] leading-none text-white font-sans"
+            style={{ fontWeight: 200, color: '#FFFFFF' }}
           >
             ATELIER
           </span>
