@@ -100,23 +100,7 @@ export default function Home() {
 
     let isFlashing = false;
     let lastFlashTime = 0;
-    const COOLDOWN_MS = 850;
-
-    // Fast-forward scroll animations inside a section so it appears fully formed immediately
-    const fastForwardSection = (section: HTMLElement) => {
-      ScrollTrigger.getAll().forEach((st) => {
-        const trig = st.trigger as Element | null;
-        const pinned = st.pin as Element | null;
-        const inside =
-          (trig && section.contains(trig)) ||
-          (pinned && section.contains(pinned));
-        if (!inside) return;
-        const anim = (st as unknown as { animation?: gsap.core.Tween }).animation;
-        if (anim) {
-          anim.progress(1);
-        }
-      });
-    };
+    const COOLDOWN_MS = 1000;
 
     const runFlash = (color: string, destination: 'shapes' | 'work') => {
       const now = Date.now();
@@ -135,15 +119,14 @@ export default function Home() {
       });
 
       tl.set(overlay, { display: 'block', background: color, opacity: 0 })
-        // Smooth flash pop to full color
-        .to(overlay, { opacity: 1, duration: 0.16, ease: 'power2.in' })
-        // While fully masked: jump instantly to destination + fast-forward
+        // Smooth cinematic transition into full color
+        .to(overlay, { opacity: 1, duration: 0.28, ease: 'power2.inOut' })
+        // While fully masked: jump instantly to destination
         .call(
           () => {
             if (destination === 'shapes') {
               const targetTop = shapesSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
               window.scrollTo({ top: Math.round(targetTop), behavior: 'instant' as ScrollBehavior });
-              fastForwardSection(shapesSection);
             } else {
               // Returning to Work: frame the 3D cards carousel nicely in view
               const currentWorkTop = workSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
@@ -157,16 +140,15 @@ export default function Home() {
                 targetTop = currentWorkTop + Math.max(0, workSection.offsetHeight - window.innerHeight);
               }
               window.scrollTo({ top: Math.max(0, Math.round(targetTop)), behavior: 'instant' as ScrollBehavior });
-              fastForwardSection(workSection);
             }
           },
           undefined,
-          0.16
+          0.28
         )
         // Brief hold so the new section renders stably underneath
         .to(overlay, { opacity: 1, duration: 0.10, ease: 'none' })
         // Silky fade out revealing the new section
-        .to(overlay, { opacity: 0, duration: 0.40, ease: 'power2.out' })
+        .to(overlay, { opacity: 0, duration: 0.45, ease: 'power2.out' })
         .set(overlay, { display: 'none' });
     };
 
@@ -177,17 +159,17 @@ export default function Home() {
     // Shapes → Work: white flash
     const flashBackToWork = () => runFlash('#FFFFFF', 'work');
 
-    // Work → Shapes: triggers separately right at the bottom of the Work section when scrolling down
+    // Work → Shapes: ONLY triggers after scrolling through Work AND reaching well into the buffer gap
     const stA = ScrollTrigger.create({
-      trigger: workSection,
-      start: 'bottom bottom-=20px',
+      trigger: gapSection || workSection,
+      start: gapSection ? 'center bottom' : 'bottom top',
       onEnter: flashToShapes,
     });
 
     // Shapes → Work: triggers separately right at the top of the Shapes section when scrolling up
     const stB = ScrollTrigger.create({
       trigger: shapesSection,
-      start: 'top top+=20px',
+      start: 'top top+=25px',
       onLeaveBack: flashBackToWork,
     });
 
@@ -439,10 +421,10 @@ export default function Home() {
       <Intro />
       <WorkGallery />
 
-      {/* Extra scroll buffer gap between Works and Shapes — houses the cinematic flash transition */}
+      {/* Extra scroll buffer gap between Works and Shapes — houses the cinematic transition */}
       <div
         id="works-shapes-gap"
-        className="relative w-full h-[28vh] sm:h-[36vh] md:h-[44vh] bg-[#1E90FF] pointer-events-none select-none"
+        className="relative w-full h-[65vh] sm:h-[80vh] md:h-[95vh] bg-[#1E90FF] pointer-events-none select-none"
         aria-hidden="true"
       />
 
