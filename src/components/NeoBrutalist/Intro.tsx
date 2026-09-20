@@ -374,19 +374,19 @@ export default function Intro() {
     });
   };
 
-  // Pencil drawing line that follows the mouse (navy blue)
+  // Pencil drawing line that follows the mouse (main background blue: #1E90FF)
   const drawPencilSegment = (x: number, y: number) => {
     const canvas = drawCanvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
     const last = lastDrawPointRef.current;
-    ctx.strokeStyle = 'rgba(10, 31, 68, 0.85)';
+    ctx.strokeStyle = '#1E90FF';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     if (!last) {
       ctx.beginPath();
-      ctx.arc(x, y, 0.9, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(10, 31, 68, 0.85)';
+      ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+      ctx.fillStyle = '#1E90FF';
       ctx.fill();
     } else {
       const dist = Math.hypot(x - last.x, y - last.y);
@@ -395,7 +395,7 @@ export default function Intro() {
       ctx.moveTo(last.x, last.y);
       // Rough hand-drawn pencil feel
       ctx.lineTo(x + (Math.random() - 0.5) * 1.6, y + (Math.random() - 0.5) * 1.6);
-      ctx.lineWidth = 1.4 + Math.random() * 0.9;
+      ctx.lineWidth = 1.6 + Math.random() * 0.9;
       ctx.stroke();
     }
     lastDrawPointRef.current = { x, y };
