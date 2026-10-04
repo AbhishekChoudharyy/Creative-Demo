@@ -30,6 +30,7 @@ export const GlassBox: FC = () => {
   const [isHoveredState, setIsHoveredState] = useState(false);
   const hoverTimer = useRef(0);
   const fractureProgress = useRef(0);
+  const progressVelocity = useRef(0);
   const hasFracturedSoundPlayed = useRef(false);
   const hasReassembleSoundPlayed = useRef(false);
   const currentHoverPoint = useRef<THREE.Vector2>(new THREE.Vector2(0, 0));
@@ -54,7 +55,7 @@ export const GlassBox: FC = () => {
       bevelEnabled: true,
       bevelThickness: 0.08,
       bevelSize: 0.06,
-      bevelSegments: isMobile ? 6 : 16,
+      bevelSegments: isMobile ? 8 : 16,
       curveSegments: isMobile ? 64 : 128,
     });
     g.center();
@@ -206,26 +207,26 @@ export const GlassBox: FC = () => {
     group.rotation.z = 0.10;
 
     // ── BUTTERY-SMOOTH PROCEDURAL GLASS FRACTURE & MAGNETIC REWIND ──
-    const dt = Math.min(delta, 0.05);
+    const dt = Math.min(delta, 0.033);
+    const targetP = isHovered.current ? 1.0 : 0.0;
+    const springK = isHovered.current ? 88.0 : 96.0;
+    const damping = isHovered.current ? 12.8 : 14.0;
+    const force = (targetP - fractureProgress.current) * springK;
+    progressVelocity.current += (force - progressVelocity.current * damping) * dt;
+    fractureProgress.current += progressVelocity.current * dt;
 
-    if (isHovered.current) {
-      // Smooth physical rise into fractured state with organic easing
-      fractureProgress.current += (1.0 - fractureProgress.current) * Math.min(1.0, dt * 7.5);
-      if (fractureProgress.current > 0.99) {
-        fractureProgress.current = 1.0;
-      }
-    } else {
-      // Smooth magnetic rewind back into unified crystal
-      fractureProgress.current += (0.0 - fractureProgress.current) * Math.min(1.0, dt * 7.0);
-      if (fractureProgress.current < 0.005) {
-        fractureProgress.current = 0.0;
-      }
+    if (fractureProgress.current < 0.0008) {
+      fractureProgress.current = 0.0;
+      progressVelocity.current = 0.0;
+    } else if (fractureProgress.current > 0.9992) {
+      fractureProgress.current = 1.0;
+      progressVelocity.current = 0.0;
     }
 
     const p = fractureProgress.current;
 
     // Smoothly track the localized hover point across the crystal face with buttery liquid inertia
-    currentHoverPoint.current.lerp(targetHoverPoint.current, 0.14);
+    currentHoverPoint.current.lerp(targetHoverPoint.current, 0.12);
 
     // Position the interactive "HOLD AND DRAG" circular follower ring over the cursor
     if (ringRef.current) {
@@ -234,7 +235,7 @@ export const GlassBox: FC = () => {
 
     // Switch between intact circle geometry and 3D fractured shards geometry
     if (boxRef.current) {
-      if (p <= 0.001) {
+      if (p <= 0.0008) {
         if (boxRef.current.geometry !== circleGeom) {
           boxRef.current.geometry = circleGeom;
         }
@@ -248,16 +249,9 @@ export const GlassBox: FC = () => {
       }
     }
 
-    // Instant physical crack seam flash right as the real crystal breaks open
-    if (crackLinesRef.current && crackLineMatRef.current) {
-      if (p > 0.005 && p < 0.45) {
-        crackLinesRef.current.visible = true;
-        const flashIntensity = Math.sin((p / 0.45) * Math.PI) * 0.75;
-        crackLineMatRef.current.opacity = flashIntensity;
-      } else {
-        crackLinesRef.current.visible = false;
-        crackLineMatRef.current.opacity = 0;
-      }
+    // Pure crystal aesthetic: suppress harsh wireframe flash for a clean, luxury look
+    if (crackLinesRef.current) {
+      crackLinesRef.current.visible = false;
     }
   });
 
@@ -266,14 +260,15 @@ export const GlassBox: FC = () => {
       ref={groupRef}
       onPointerDown={handlePointerDown}
     >
-      {/* Invisible hit-test proxy mesh ensuring smooth, flicker-free hover detection across the hollow ring */}
+      {/* Invisible hit-test proxy mesh ensuring smooth, flicker-free hover detection across the entire circle INCLUDING hollow center */}
       <mesh
         onPointerEnter={handlePointerEnter}
         onPointerMove={handlePointerMoveHit}
         onPointerLeave={handlePointerLeave}
         position={[0, 0, 0]}
+        rotation={[Math.PI / 2, 0, 0]}
       >
-        <torusGeometry args={[0.88, 0.35, 16, 48]} />
+        <cylinderGeometry args={[1.28, 1.28, 0.45, 48]} />
         <meshBasicMaterial visible={false} />
       </mesh>
 
@@ -299,8 +294,8 @@ export const GlassBox: FC = () => {
           attenuationColor="#ffffff"
           attenuationDistance={100.0}
           reflectivity={0.65}
-          resolution={isMobile ? 512 : 2048}
-          samples={isMobile ? 6 : 16}
+          resolution={isMobile ? 512 : 1024}
+          samples={isMobile ? 3 : 6}
         />
       </mesh>
 
@@ -318,7 +313,7 @@ export const GlassBox: FC = () => {
               opacity: isHoveredState ? 1 : 0,
               filter: isHoveredState ? 'blur(0px)' : 'blur(6px)',
             }}
-            className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full border-[1.8px] border-white flex items-center justify-center select-none pointer-events-none shadow-[0_0_35px_rgba(255,255,255,0.25),inset_0_0_25px_rgba(255,255,255,0.12)] bg-gradient-to-tr from-white/[0.04] via-transparent to-white/[0.10] backdrop-blur-[0.5px]"
+            className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full border-[1.8px] border-white flex items-center justify-center select-none pointer-events-none shadow-[0_0_35px_rgba(255,255,255,0.25),inset_0_0_25px_rgba(255,255,255,0.12)] bg-gradient-to-tr from-white/[0.04] via-transparent to-white/[0.10]"
           >
             {/* Concentric inner optical reticle ring */}
             <div className="absolute inset-2 sm:inset-2.5 rounded-full border border-white/30 pointer-events-none" />

@@ -46,7 +46,7 @@ export function generateFractureSystem(): MergedFractureSystem {
   // - Mid-left wing
   // - Upper-left accent
   const angles = [0.65, 1.55, 2.25, 2.85, 3.85, 4.80, 5.45, 6.25, 0.65 + Math.PI * 2];
-  const arcSteps = isMobile ? 10 : 20;
+  const arcSteps = isMobile ? 12 : 20;
 
   const shardsData: {
     geom: THREE.BufferGeometry;
@@ -60,7 +60,7 @@ export function generateFractureSystem(): MergedFractureSystem {
 
   const crackLinePoints: THREE.Vector3[] = [];
 
-  // Helper to sample circular arc points along specified radius
+  // Helper to sample circular arc points along specified radius with high smoothness
   const sampleArc = (startRad: number, endRad: number, steps: number, radius: number): THREE.Vector2[] => {
     const pts: THREE.Vector2[] = [];
     for (let i = 0; i <= steps; i++) {
@@ -70,34 +70,34 @@ export function generateFractureSystem(): MergedFractureSystem {
     return pts;
   };
 
-  // Precompute faceted intermediate break points along each seam (creates architectural angular cuts)
+  // Precompute smooth intermediate break points along each seam (clean architectural cuts)
   const cutPoints: THREE.Vector2[] = [];
   const rMid = (R + R_inner) / 2;
   for (let i = 0; i < 8; i++) {
     const a = angles[i];
-    // Alternate slight clockwise / counter-clockwise facet offset
-    const aFacet = a + (i % 2 === 0 ? 0.038 : -0.038);
+    // Gentle smooth facet offset avoiding any sharp pinched vertices
+    const aFacet = a + (i % 2 === 0 ? 0.016 : -0.016);
     cutPoints.push(new THREE.Vector2(Math.cos(aFacet) * rMid, Math.sin(aFacet) * rMid));
   }
 
-  // Outward displacement distances tuned for controlled, elegant separation ("itna dur bhi nhi")
+  // Refined outward displacement distances for a controlled, elegant, high-end separation
   const shardKinematics = [
     // 0. Top Crown Chunk (bursts up and outward +Y, tilts back)
-    { out: new THREE.Vector3(0.42, 0.90, 0.32), hinge: new THREE.Vector3(0.96, -0.15, 0), turn: -0.42, dist: 0.38 },
+    { out: new THREE.Vector3(0.38, 0.88, 0.28), hinge: new THREE.Vector3(0.96, -0.15, 0), turn: -0.32, dist: 0.28 },
     // 1. Top-Right Wing (bursts up-right)
-    { out: new THREE.Vector3(-0.32, 0.94, 0.20), hinge: new THREE.Vector3(-0.55, 0.82, 0.12), turn: 0.36, dist: 0.34 },
+    { out: new THREE.Vector3(-0.28, 0.92, 0.18), hinge: new THREE.Vector3(-0.55, 0.82, 0.12), turn: 0.28, dist: 0.26 },
     // 2. Mid-Right Chip (bursts up-left)
-    { out: new THREE.Vector3(-0.82, 0.57, 0.30), hinge: new THREE.Vector3(0.12, 0.98, -0.10), turn: -0.30, dist: 0.28 },
+    { out: new THREE.Vector3(-0.80, 0.54, 0.25), hinge: new THREE.Vector3(0.12, 0.98, -0.10), turn: -0.24, dist: 0.23 },
     // 3. Lower-Right Chunky Wing (bursts far-left)
-    { out: new THREE.Vector3(-0.96, -0.26, 0.20), hinge: new THREE.Vector3(0.68, 0.72, 0.08), turn: 0.35, dist: 0.35 },
+    { out: new THREE.Vector3(-0.92, -0.24, 0.18), hinge: new THREE.Vector3(0.68, 0.72, 0.08), turn: 0.26, dist: 0.26 },
     // 4. Bottom Monument Chunk (heavy slab bursts down-left and outward)
-    { out: new THREE.Vector3(-0.38, -0.92, 0.35), hinge: new THREE.Vector3(0.98, 0.08, 0), turn: 0.44, dist: 0.40 },
+    { out: new THREE.Vector3(-0.35, -0.90, 0.30), hinge: new THREE.Vector3(0.98, 0.08, 0), turn: 0.32, dist: 0.29 },
     // 5. Lower-Left Wedge (bursts down-right)
-    { out: new THREE.Vector3(0.38, -0.92, 0.20), hinge: new THREE.Vector3(-0.62, 0.76, -0.12), turn: -0.32, dist: 0.30 },
+    { out: new THREE.Vector3(0.35, -0.90, 0.18), hinge: new THREE.Vector3(-0.62, 0.76, -0.12), turn: -0.25, dist: 0.24 },
     // 6. Mid-Left Wing (bursts far-right)
-    { out: new THREE.Vector3(0.88, -0.47, 0.30), hinge: new THREE.Vector3(0.18, 0.97, 0.10), turn: 0.38, dist: 0.36 },
+    { out: new THREE.Vector3(0.85, -0.44, 0.25), hinge: new THREE.Vector3(0.18, 0.97, 0.10), turn: 0.28, dist: 0.27 },
     // 7. Upper-Left Accent (bursts up-right)
-    { out: new THREE.Vector3(0.94, 0.34, 0.20), hinge: new THREE.Vector3(0.82, 0.56, -0.10), turn: -0.30, dist: 0.32 },
+    { out: new THREE.Vector3(0.90, 0.32, 0.18), hinge: new THREE.Vector3(0.82, 0.56, -0.10), turn: -0.24, dist: 0.25 },
   ];
 
   for (let i = 0; i < 8; i++) {
@@ -147,8 +147,8 @@ export function generateFractureSystem(): MergedFractureSystem {
       bevelEnabled: true,
       bevelThickness,
       bevelSize,
-      bevelSegments: isMobile ? 5 : 12,
-      curveSegments: isMobile ? 32 : 48,
+      bevelSegments: isMobile ? 4 : 8,
+      curveSegments: isMobile ? 16 : 32,
     });
     g.translate(0, 0, -depth / 2);
     g.computeVertexNormals();
@@ -268,24 +268,24 @@ export function generateFractureSystem(): MergedFractureSystem {
     }
 
     // 2. Compute target break amounts with localized cursor affinity ("chipak ke rhta h"):
-    // Closest shard breaks moderately, while remaining shards break only subtly
-    const BASE_BREAK = 0.12; // Controlled baseline fracture for non-focused parts
+    // Refined subtle baseline fracture for architectural integrity, closest shard responds smoothly
+    const BASE_BREAK = 0.08;
     for (let i = 0; i < numShards; i++) {
       if (progress <= 0.001 || !hoverPoint) {
         targetAmounts[i] = 0.0;
       } else {
         const relativeDist = shardDistances[i] - minDist;
         // Exponential falloff centered on the closest shard
-        const focusWeight = Math.exp(-relativeDist * 3.4);
+        const focusWeight = Math.exp(-relativeDist * 3.2);
         targetAmounts[i] = progress * (BASE_BREAK + (1.0 - BASE_BREAK) * focusWeight);
       }
 
-      // Organic wave delay ("delay h halka") & buttery smooth inertia damping:
-      // Nearest shard reacts with immediate responsiveness; distant shards react with slight organic lag
+      // Organic wave delay & buttery smooth inertia damping:
+      // Nearest shard reacts with snappy responsiveness; distant shards follow with silky organic lag
       const relativeDist = hoverPoint ? Math.max(0, shardDistances[i] - minDist) : 0;
       const springRate = progress > 0.001
-        ? Math.max(4.5, 9.2 - relativeDist * 3.6) // Smooth delayed propagation across ring
-        : 7.8; // Silky rewind rate when unhovering
+        ? Math.max(8.0, 16.0 - relativeDist * 4.5) // Fast, snappy, responsive wave propagation
+        : 16.0; // Fast silky rewind rate when unhovering
 
       currentAmounts[i] += (targetAmounts[i] - currentAmounts[i]) * Math.min(1.0, deltaSeconds * springRate);
       if (progress <= 0.001 && currentAmounts[i] < 0.002) {

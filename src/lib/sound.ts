@@ -86,6 +86,11 @@ class SoundManager {
       heroSound1: '/sounds/Sound (1).mp3',
       heroSound2: '/sounds/Sound (2).mp3',
       heroSound3: '/sounds/Sound (3).mp3',
+      glassSmash1: '/sounds/GLASS SMASH 1 - RVSD.mp3',
+      glassSmash2: '/sounds/GLASS SMASH 2 - RVSD.mp3',
+      glassSmash3: '/sounds/GLASS SMASH 3 - RVSD.mp3',
+      glassSmash4: '/sounds/GLASS SMASH 4 - RVSD.mp3',
+      glassSmash5: '/sounds/GLASS SMASH 5 - RVSD.mp3',
     };
 
     for (const [key, path] of Object.entries(soundAssets)) {
@@ -837,40 +842,81 @@ class SoundManager {
   /**
    * Hero 3D Hover Sound: Plays Sound (1).mp3, Sound (2).mp3, and Sound (3).mp3 simultaneously together on every hover
    */
-  public playHeroHover(volume: number = 0.70) {
+  private activeSmashGains: GainNode[] = [];
+  private activeSmashAudios: HTMLAudioElement[] = [];
+
+  /**
+   * Play specific Glass Smash stage (1 to 5) with smooth crossfade and zero clashing/hoch-poch:
+   * GLASS SMASH 1 - RVSD.mp3 to GLASS SMASH 5 - RVSD.mp3
+   */
+  public playGlassSmash(stage: number, volume: number = 0.32) {
     if (this.isMuted) return;
     this.unlockContext();
-    if (!this.ctx) return;
-    const ctx = this.ctx;
-    if (!this.compressor) return;
+    const s = Math.max(1, Math.min(5, Math.floor(stage)));
+    const key = `glassSmash${s}`;
 
-    if (ctx.state === 'suspended') {
-      ctx.resume().catch(() => {});
+    // Gracefully fade previous smash sounds so there's zero "hoch poch" / acoustic pileup
+    if (this.ctx) {
+      const now = this.ctx.currentTime;
+      this.activeSmashGains.forEach((g) => {
+        try {
+          g.gain.setValueAtTime(g.gain.value, now);
+          g.gain.linearRampToValueAtTime(0.001, now + 0.14);
+        } catch (e) {}
+      });
+      this.activeSmashGains = [];
     }
 
-    // Rate-limiting: allow crisp triggers on each entry
-    const now = ctx.currentTime;
-    if (now - this.lastCrystalShimmerTime < 0.22) return;
-    this.lastCrystalShimmerTime = now;
+    this.activeSmashAudios.forEach((a) => {
+      try {
+        a.pause();
+        a.currentTime = 0;
+      } catch (e) {}
+    });
+    this.activeSmashAudios = [];
 
-    const heroKeys = ['heroSound1', 'heroSound2', 'heroSound3'];
-
-    heroKeys.forEach((key) => {
+    if (this.ctx && this.compressor) {
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
       const buffer = this.buffers.get(key);
       if (buffer) {
         try {
-          const source = ctx.createBufferSource();
+          const source = this.ctx.createBufferSource();
           source.buffer = buffer;
-          const gainNode = ctx.createGain();
-          gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+          const gainNode = this.ctx.createGain();
+          gainNode.gain.setValueAtTime(volume, this.ctx.currentTime);
           source.connect(gainNode);
-          gainNode.connect(this.compressor!);
-          source.start(ctx.currentTime);
+          gainNode.connect(this.compressor);
+          source.start(this.ctx.currentTime);
+          this.activeSmashGains.push(gainNode);
+          return;
         } catch (e) {
-          console.warn(`Error playing ${key}:`, e);
+          console.warn(`Error playing buffer ${key}:`, e);
         }
       }
-    });
+    }
+
+    // HTMLAudioElement fallback for guaranteed zero-delay playback
+    try {
+      const audio = new Audio(encodeURI(`/sounds/GLASS SMASH ${s} - RVSD.mp3`));
+      audio.volume = Math.max(0, Math.min(1, volume));
+      audio.play().catch(() => {});
+      this.activeSmashAudios.push(audio);
+    } catch (e) {}
+  }
+
+  private lastHeroHoverTime: number = 0;
+
+  /**
+   * Hero 3D Hover Sound: Plays GLASS SMASH 4 only, rate-limited to fire at most once per hover session
+   */
+  public playHeroHover(volume: number = 0.18) {
+    if (this.isMuted) return;
+    const now = Date.now();
+    if (now - this.lastHeroHoverTime < 1200) return;
+    this.lastHeroHoverTime = now;
+    this.playGlassSmash(4, volume);
   }
 
   public playCrystalShimmer() {

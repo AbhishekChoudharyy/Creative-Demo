@@ -29,7 +29,7 @@ export const Scene: FC = () => {
       <directionalLight position={[0, 6, -4]} intensity={1.2} color="#ffffff" />
 
       {/* High-Resolution Studio Environment with Soft Circular Softboxes (zero harsh horizontal bars) */}
-      <Environment resolution={1024}>
+      <Environment resolution={isMobile ? 256 : 1024}>
         {/* Overhead broad studio softbox for smooth, glossy corner curvature */}
         <Lightformer
           form="circle"
