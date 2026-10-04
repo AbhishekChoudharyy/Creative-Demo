@@ -38,19 +38,24 @@ export const GlassBox: FC = () => {
   // Precomputed procedural 3D crystal fracture system
   const fractureSystem = useMemo(() => generateFractureSystem(), []);
 
-  // Extruded beveled solid circular lens/disc (exact default state)
+  // Extruded beveled hollow circular ring (refined hollow proportions & silky curve resolution)
   const circleGeom = useMemo(() => {
     const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
     const s = new THREE.Shape();
     s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
 
+    // Refined concentric inner circular hole (wider hollow aperture)
+    const hole = new THREE.Path();
+    hole.absarc(0, 0, 0.70, 0, Math.PI * 2, true);
+    s.holes.push(hole);
+
     const g = new THREE.ExtrudeGeometry(s, {
       depth: 0.22,
       bevelEnabled: true,
-      bevelThickness: 0.10,
-      bevelSize: 0.08,
-      bevelSegments: isMobile ? 4 : 10,
-      curveSegments: isMobile ? 32 : 64,
+      bevelThickness: 0.08,
+      bevelSize: 0.06,
+      bevelSegments: isMobile ? 5 : 12,
+      curveSegments: isMobile ? 48 : 96,
     });
     g.center();
     g.computeVertexNormals();
@@ -242,14 +247,14 @@ export const GlassBox: FC = () => {
       ref={groupRef}
       onPointerDown={handlePointerDown}
     >
-      {/* Invisible hit-test proxy mesh ensuring solid, flicker-free hover detection across the entire crystal volume */}
+      {/* Invisible hit-test proxy mesh ensuring smooth, flicker-free hover detection across the hollow ring */}
       <mesh
         onPointerEnter={handlePointerEnter}
         onPointerMove={handlePointerMoveHit}
         onPointerLeave={handlePointerLeave}
         position={[0, 0, 0]}
       >
-        <sphereGeometry args={[1.35, 32, 16]} />
+        <torusGeometry args={[0.92, 0.35, 16, 48]} />
         <meshBasicMaterial visible={false} />
       </mesh>
 

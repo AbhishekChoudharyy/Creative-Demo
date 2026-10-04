@@ -21,18 +21,20 @@ export interface MergedFractureSystem {
 }
 
 /**
- * Procedural 3D crystal fracture system:
- * - 8 Architectural beveled crystal slabs designed to physically turn, hinge, and peel
- *   outward from their exact crack seams directly from the solid crystal!
- * - 100% mathematical rest alignment (when progress = 0, forms the exact seamless circle)
+ * Procedural 3D Crystal Hollow Ring Fracture System:
+ * - 8 Architectural beveled crystal ring segments designed to physically turn, hinge, and peel
+ *   outward from their exact radial crack seams directly from the hollow ring!
+ * - 100% mathematical rest alignment with hollow center (when progress = 0, forms the exact seamless ring)
+ * - Retains the center hole (radius 0.55) completely open and hollow at all times
  * - Dynamic shockwave propagation & impact-driven recoil
  */
 export function generateFractureSystem(): MergedFractureSystem {
   const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
-  const R = 1.15; // Exact radius matching circleGeom
+  const R = 1.15; // Exact outer radius matching circleGeom
+  const R_inner = 0.70; // Exact inner radius matching hollow circleGeom hole
   const depth = 0.22;
-  const bevelThickness = 0.10;
-  const bevelSize = 0.085;
+  const bevelThickness = 0.08;
+  const bevelSize = 0.06;
 
   const shardsData: {
     geom: THREE.BufferGeometry;
@@ -46,82 +48,35 @@ export function generateFractureSystem(): MergedFractureSystem {
 
   const crackLinePoints: THREE.Vector3[] = [];
 
-  // Helper to sample circular arc points along outer perimeter
-  const sampleArc = (startRad: number, endRad: number, steps: number = isMobile ? 5 : 8): THREE.Vector2[] => {
+  // Helper to sample circular arc points along specified radius
+  const sampleArc = (startRad: number, endRad: number, steps: number, radius: number): THREE.Vector2[] => {
     const pts: THREE.Vector2[] = [];
-    if (endRad <= startRad) endRad += Math.PI * 2;
     for (let i = 0; i <= steps; i++) {
       const a = startRad + (i / steps) * (endRad - startRad);
-      pts.push(new THREE.Vector2(Math.cos(a) * R, Math.sin(a) * R));
+      pts.push(new THREE.Vector2(Math.cos(a) * radius, Math.sin(a) * radius));
     }
     return pts;
   };
 
-  // ── KEY ARCHITECTURAL FRACTURE JUNCTION NODES (100% Interlocking, 0 Missing Holes) ──
-  const a0 = 0.52;   // ~30° (Top-Right)
-  const a1 = 1.38;   // ~79° (Top-Center)
-  const a2 = 2.26;   // ~130° (Top-Left)
-  const a3 = 3.32;   // ~190° (Mid-Left)
-  const a4 = 4.22;   // ~242° (Bottom-Left)
-  const a5 = 5.12;   // ~293° (Bottom-Center)
-  const a6 = 5.92;   // ~339° (Bottom-Right)
+  // 8 Architectural radial sector angles spanning the full 360-degree circle
+  const angles = [0.38, 1.18, 1.96, 2.75, 3.53, 4.32, 5.10, 5.89, 0.38 + Math.PI * 2];
+  const arcSteps = isMobile ? 6 : 10;
 
-  // Inner architectural junction nodes
-  const N0 = new THREE.Vector2(0.42, 0.38);    // Upper Right inner
-  const N1 = new THREE.Vector2(0.04, 0.50);    // Top Center inner
-  const N2 = new THREE.Vector2(-0.42, 0.42);   // Upper Left inner
-  const N3 = new THREE.Vector2(-0.48, -0.06);  // Mid Left inner
-  const N4 = new THREE.Vector2(-0.38, -0.44);  // Bottom Left inner
-  const N5 = new THREE.Vector2(0.06, -0.48);   // Bottom Center inner
-  const N6 = new THREE.Vector2(0.48, -0.38);   // Bottom Right inner
-  const N7 = new THREE.Vector2(0.52, 0.08);    // Mid Right inner
+  for (let i = 0; i < 8; i++) {
+    const aStart = angles[i];
+    const aEnd = angles[i + 1];
+    const aMid = (aStart + aEnd) / 2;
 
-  // Center core facet nodes (Surrounding the central heart diamond)
-  const C_TOP = new THREE.Vector2(-0.02, 0.20);
-  const C_LEFT = new THREE.Vector2(-0.20, -0.02);
-  const C_BOT = new THREE.Vector2(0.02, -0.18);
-  const C_RIGHT = new THREE.Vector2(0.22, 0.04);
+    // Crack line along the radial seam between adjacent ring shards (outer rim to inner hole)
+    crackLinePoints.push(
+      new THREE.Vector3(Math.cos(aStart) * R, Math.sin(aStart) * R, 0.12),
+      new THREE.Vector3(Math.cos(aStart) * R_inner, Math.sin(aStart) * R_inner, 0.12)
+    );
 
-  // Precompute crack line segments
-  const addCrack = (p1: THREE.Vector2, p2: THREE.Vector2) => {
-    crackLinePoints.push(new THREE.Vector3(p1.x, p1.y, 0.12), new THREE.Vector3(p2.x, p2.y, 0.12));
-  };
-  addCrack(new THREE.Vector2(Math.cos(a1) * R, Math.sin(a1) * R), N1);
-  addCrack(N1, N0);
-  addCrack(N0, new THREE.Vector2(Math.cos(a0) * R, Math.sin(a0) * R));
-  addCrack(N1, N2);
-  addCrack(N2, new THREE.Vector2(Math.cos(a2) * R, Math.sin(a2) * R));
-  addCrack(N2, N3);
-  addCrack(N3, new THREE.Vector2(Math.cos(a3) * R, Math.sin(a3) * R));
-  addCrack(N3, N4);
-  addCrack(N4, new THREE.Vector2(Math.cos(a4) * R, Math.sin(a4) * R));
-  addCrack(N4, N5);
-  addCrack(N5, new THREE.Vector2(Math.cos(a5) * R, Math.sin(a5) * R));
-  addCrack(N5, N6);
-  addCrack(N6, new THREE.Vector2(Math.cos(a6) * R, Math.sin(a6) * R));
-  addCrack(N6, N7);
-  addCrack(N7, N0);
-  addCrack(N1, C_TOP);
-  addCrack(C_TOP, C_RIGHT);
-  addCrack(C_RIGHT, N7);
-  addCrack(C_RIGHT, C_BOT);
-  addCrack(C_BOT, N5);
-  addCrack(C_BOT, C_LEFT);
-  addCrack(C_LEFT, N3);
-  addCrack(C_LEFT, C_TOP);
-  addCrack(N2, C_TOP);
-  addCrack(N4, C_BOT);
-
-  // Helper to build, extrude, and register an architectural 3D crystal block with hinge turning kinematics
-  const registerShard = (
-    pts: THREE.Vector2[],
-    hingeOrigin: THREE.Vector3,
-    hingeAxis: THREE.Vector3,
-    turnAngle: number,
-    outwardVector: THREE.Vector3,
-    outwardDist: number
-  ) => {
-    if (pts.length < 3) return;
+    // Build closed 2D polygon of the hollow ring segment
+    const outerArc = sampleArc(aStart, aEnd, arcSteps, R);
+    const innerArc = sampleArc(aEnd, aStart, arcSteps, R_inner);
+    const pts = [...outerArc, ...innerArc];
 
     let cx = 0;
     let cy = 0;
@@ -142,170 +97,42 @@ export function generateFractureSystem(): MergedFractureSystem {
     const g = new THREE.ExtrudeGeometry(shape, {
       depth,
       bevelEnabled: true,
-      bevelThickness: 0.10,
-      bevelSize: 0.08,
-      bevelSegments: isMobile ? 3 : 6,
-      curveSegments: isMobile ? 24 : 36,
+      bevelThickness,
+      bevelSize,
+      bevelSegments: isMobile ? 4 : 8,
+      curveSegments: isMobile ? 32 : 48,
     });
-    // Center ONLY along Z so that X and Y coordinates retain 100% exact polygon alignment!
     g.translate(0, 0, -depth / 2);
     g.computeVertexNormals();
 
-    const nonIndexed = g.toNonIndexed();
-    g.dispose();
+    const nonIndexed = g.index ? g.toNonIndexed() : g;
+    if (g !== nonIndexed) g.dispose();
 
     const restPos = new THREE.Vector3(cx, cy, 0);
+
+    // Radial outward push vector with subtle alternating Z depth
+    const outwardVec = new THREE.Vector3(
+      Math.cos(aMid),
+      Math.sin(aMid),
+      i % 2 === 0 ? 0.14 : -0.14
+    ).normalize();
+
+    // Hinge axis tangential to the ring arc
+    const hingeAxis = new THREE.Vector3(-Math.sin(aMid), Math.cos(aMid), 0).normalize();
+    const hingeOrigin = new THREE.Vector3(Math.cos(aMid) * R_inner, Math.sin(aMid) * R_inner, 0);
 
     shardsData.push({
       geom: nonIndexed,
       restPos,
       hingeOrigin,
-      hingeAxis: hingeAxis.clone().normalize(),
-      turnAngle,
-      outwardVector: outwardVector.clone().normalize(),
-      outwardDist,
+      hingeAxis,
+      turnAngle: i % 2 === 0 ? 0.28 : -0.28,
+      outwardVector: outwardVec,
+      outwardDist: 0.44,
     });
-  };
+  }
 
-  // ── 1. BLOCK 1: TOP ARCHITECTURAL CROWN CAP ──
-  const arcTop = sampleArc(a0, a2, 12);
-  const ptsTopPlate = [
-    ...arcTop,
-    N2,
-    N1,
-    N0,
-  ];
-  registerShard(
-    ptsTopPlate,
-    new THREE.Vector3(0, 0.44, 0),
-    new THREE.Vector3(1, 0, 0),
-    -0.32, // ~18° tilt backward
-    new THREE.Vector3(0.0, 1.0, -0.16),
-    0.48
-  );
-
-  // ── 2. BLOCK 2: UPPER-LEFT CHUNKY FLANK ──
-  const arcUpperLeft = sampleArc(a2, a3, 8);
-  const ptsUpperLeft = [
-    ...arcUpperLeft,
-    N3,
-    C_LEFT,
-    C_TOP,
-    N2,
-  ];
-  registerShard(
-    ptsUpperLeft,
-    new THREE.Vector3(N3.x, N3.y, 0),
-    new THREE.Vector3(-0.15, 0.98, 0.1),
-    0.35, // ~20° peel open to left
-    new THREE.Vector3(-0.86, 0.50, 0.14),
-    0.46
-  );
-
-  // ── 3. BLOCK 3: LOWER-LEFT FLANK ──
-  const arcLowerLeft = sampleArc(a3, a4, 8);
-  const ptsLowerLeft = [
-    ...arcLowerLeft,
-    N4,
-    C_BOT,
-    C_LEFT,
-    N3,
-  ];
-  registerShard(
-    ptsLowerLeft,
-    new THREE.Vector3(N4.x, N4.y, 0),
-    new THREE.Vector3(0.2, 0.96, -0.1),
-    0.32,
-    new THREE.Vector3(-0.86, -0.50, -0.14),
-    0.46
-  );
-
-  // ── 4. BLOCK 4: BOTTOM ARCHITECTURAL RIM SLAB ──
-  const arcBot = sampleArc(a4, a5, 10);
-  const ptsBotPlate = [
-    ...arcBot,
-    N5,
-    C_BOT,
-    N4,
-  ];
-  registerShard(
-    ptsBotPlate,
-    new THREE.Vector3(0, -0.48, 0),
-    new THREE.Vector3(1, 0, 0),
-    0.35, // ~20° tilt forward & down
-    new THREE.Vector3(0.0, -1.0, 0.16),
-    0.48
-  );
-
-  // ── 5. BLOCK 5: LOWER-RIGHT FACETED WING ──
-  const arcLowerRight = sampleArc(a5, a6, 8);
-  const ptsLowerRight = [
-    ...arcLowerRight,
-    N6,
-    C_RIGHT,
-    C_BOT,
-    N5,
-  ];
-  registerShard(
-    ptsLowerRight,
-    new THREE.Vector3(N5.x, N5.y, 0),
-    new THREE.Vector3(0.7, 0.7, 0),
-    -0.34,
-    new THREE.Vector3(0.86, -0.50, -0.14),
-    0.48
-  );
-
-  // ── 6. BLOCK 6: UPPER-RIGHT ANGULAR WING ──
-  const arcUpperRight = sampleArc(a6, a0, 8);
-  const ptsUpperRight = [
-    ...arcUpperRight,
-    N0,
-    N7,
-    N6,
-  ];
-  registerShard(
-    ptsUpperRight,
-    new THREE.Vector3(N7.x, N7.y, 0),
-    new THREE.Vector3(-0.25, 0.95, 0),
-    -0.35, // ~20° peel open to right
-    new THREE.Vector3(0.88, 0.46, 0.16),
-    0.52
-  );
-
-  // ── 7. BLOCK 7: UPPER-CENTER FACETED PRISM ──
-  const ptsCenterPrism = [
-    N1,
-    N0,
-    N7,
-    C_RIGHT,
-    C_TOP,
-  ];
-  registerShard(
-    ptsCenterPrism,
-    new THREE.Vector3(N1.x, N1.y, 0),
-    new THREE.Vector3(0.35, -0.92, 0.15),
-    0.26, // Gentle turn
-    new THREE.Vector3(0.08, 0.75, -0.18), // Pushes up and back into depth!
-    0.44
-  );
-
-  // ── 8. BLOCK 8: CENTER HEART DIAMOND (Inside "HOLD AND DRAG" circle) ──
-  const ptsCenterHeart = [
-    C_TOP,
-    C_RIGHT,
-    C_BOT,
-    C_LEFT,
-  ];
-  registerShard(
-    ptsCenterHeart,
-    new THREE.Vector3(C_LEFT.x, C_LEFT.y, 0),
-    new THREE.Vector3(0.85, 0.45, 0.25),
-    0.22,
-    new THREE.Vector3(0.0, -0.05, 0.28), // Lifts cleanly forward (+Z) toward camera!
-    0.38
-  );
-
-  // ── MERGE ALL 8 ARCHITECTURAL BLOCKS INTO A SINGLE BUFFERGEOMETRY ──
+  // ── MERGE ALL 8 HOLLOW RING BLOCKS INTO A SINGLE BUFFERGEOMETRY ──
   let totalVertices = 0;
   for (const s of shardsData) {
     totalVertices += s.geom.attributes.position.count;
@@ -441,7 +268,7 @@ export function generateFractureSystem(): MergedFractureSystem {
       );
       repelOffsets[i].set(0, 0, 0);
 
-      // Strong directional recoil away from cursor touch point
+      // Directional recoil away from cursor touch point
       if (hoverPoint && localPeak > 0.05) {
         cursorVec.set(s.restPosition.x - hoverPoint.x, s.restPosition.y - hoverPoint.y, 0);
         const cDist = cursorVec.length();
@@ -452,8 +279,7 @@ export function generateFractureSystem(): MergedFractureSystem {
       }
     }
 
-    // 2. Pairwise 3D collision repulsion: SHAPES NEVER OVERLAP!
-    // If pieces get close, actively repel them apart in XY and separate their Z depths
+    // 2. Pairwise 3D collision repulsion between adjacent ring shards
     for (let i = 0; i < numShards; i++) {
       for (let j = i + 1; j < numShards; j++) {
         const amtA = shardAmounts[i];
@@ -461,7 +287,7 @@ export function generateFractureSystem(): MergedFractureSystem {
         if (amtA > 0.04 && amtB > 0.04) {
           diffVec.subVectors(activePositions[i], activePositions[j]);
           const dist = diffVec.length();
-          const minSafeDistance = 0.92; // Safe 3D clearance radius
+          const minSafeDistance = 0.46; // Safe 3D clearance for ring segments
 
           if (dist < minSafeDistance) {
             const overlap = minSafeDistance - dist;
@@ -486,13 +312,11 @@ export function generateFractureSystem(): MergedFractureSystem {
       }
     }
 
-    // 3. Apply physical HINGE TURNING matrix to vertex buffers:
-    // Shards turn, hinge, and peel directly outward from their crack seams!
+    // 3. Apply physical HINGE TURNING matrix to vertex buffers
     for (let i = 0; i < numShards; i++) {
       const s = shardsMeta[i];
       const shardAmount = shardAmounts[i];
 
-      // Construct turn transformation around the physical crack seam hinge
       const hx = s.hingeOrigin.x - s.restPosition.x;
       const hy = s.hingeOrigin.y - s.restPosition.y;
       const hz = s.hingeOrigin.z - s.restPosition.z;
