@@ -114,8 +114,8 @@ function ShapeMesh({ shape }: { shape: string }) {
       s.closePath();
 
       // Subdivided inner cutout hole matching hero's wall thickness with subtle rounded corners
-      const w_in = 0.68;
-      const h_in = 0.68;
+      const w_in = 0.52;
+      const h_in = 0.52;
       const r_in = 0.08;
       const hole = new THREE.Path();
       hole.moveTo(-w_in + r_in, -h_in);
@@ -130,10 +130,10 @@ function ShapeMesh({ shape }: { shape: string }) {
       s.holes.push(hole);
 
       const g = new THREE.ExtrudeGeometry(s, {
-        depth: 0.40,
+        depth: 0.58,
         bevelEnabled: true,
-        bevelThickness: 0.08,
-        bevelSize: 0.06,
+        bevelThickness: 0.10,
+        bevelSize: 0.08,
         bevelSegments: 16,
         curveSegments: 32,
         steps: 6,
@@ -143,10 +143,10 @@ function ShapeMesh({ shape }: { shape: string }) {
       return g;
     }
 
-    // 2. Hollow Triangle Frame with subtle rounded corners
+    // 2. Hollow Triangle Frame with subtle rounded corners (slightly larger size)
     if (shape === 'triangle') {
-      const R_out = 1.48;
-      const cr_out = 0.18; // subtle rounded corners on triangle
+      const R_out = 1.66;
+      const cr_out = 0.20; // subtle rounded corners on triangle
       const cornersOut = [
         new THREE.Vector2(0, R_out),
         new THREE.Vector2(R_out * Math.cos(-Math.PI / 6), R_out * Math.sin(-Math.PI / 6)),
@@ -178,8 +178,8 @@ function ShapeMesh({ shape }: { shape: string }) {
       s.closePath();
 
       // Inner triangular cutout hole with subtle rounded corners
-      const R_in = 0.78;
-      const cr_in = 0.10;
+      const R_in = 0.88;
+      const cr_in = 0.11;
       const cornersIn = [
         new THREE.Vector2(0, R_in),
         new THREE.Vector2(R_in * Math.cos(7 * Math.PI / 6), R_in * Math.sin(7 * Math.PI / 6)),
@@ -212,10 +212,10 @@ function ShapeMesh({ shape }: { shape: string }) {
       s.holes.push(hole);
 
       const g = new THREE.ExtrudeGeometry(s, {
-        depth: 0.40,
+        depth: 0.58,
         bevelEnabled: true,
-        bevelThickness: 0.08,
-        bevelSize: 0.06,
+        bevelThickness: 0.10,
+        bevelSize: 0.08,
         bevelSegments: 16,
         curveSegments: 32,
         steps: 6,
@@ -225,19 +225,19 @@ function ShapeMesh({ shape }: { shape: string }) {
       return g;
     }
 
-    // 3. Hollow Circle / Tyre Ring (100% matching hero 3D tyre shape & proportions)
+    // 3. Hollow Circle / Tyre Ring (slightly larger size and extra chunky thickness)
     const s = new THREE.Shape();
-    s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
+    s.absarc(0, 0, 1.30, 0, Math.PI * 2, false);
 
     const hole = new THREE.Path();
-    hole.absarc(0, 0, 0.62, 0, Math.PI * 2, true);
+    hole.absarc(0, 0, 0.70, 0, Math.PI * 2, true);
     s.holes.push(hole);
 
     const g = new THREE.ExtrudeGeometry(s, {
-      depth: 0.40,
+      depth: 0.58,
       bevelEnabled: true,
-      bevelThickness: 0.08,
-      bevelSize: 0.06,
+      bevelThickness: 0.10,
+      bevelSize: 0.08,
       bevelSegments: 16,
       curveSegments: 128,
       steps: 6,
@@ -288,13 +288,17 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
   // Unified Liquid Material for Circle, Rectangle and Triangle
   const liquidMaterial = useMemo(() => {
     const mat = new THREE.MeshPhysicalMaterial({
-      color: '#0a0a0a',
-      roughness: 0.26,
-      metalness: 0.08,
-      clearcoat: 0.55,
-      clearcoatRoughness: 0.15,
-      reflectivity: 0.75,
-      envMapIntensity: 0.85,
+      color: '#080808',
+      roughness: 0.25,
+      metalness: 0.10,
+      clearcoat: 0.60,
+      clearcoatRoughness: 0.12,
+      reflectivity: 0.80,
+      envMapIntensity: 0.90,
+      side: THREE.DoubleSide,
+      transparent: false,
+      depthWrite: true,
+      depthTest: true,
     });
 
     mat.onBeforeCompile = (shader) => {
@@ -315,12 +319,18 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
           if (dist >= bulgeRadius) return 0.0;
 
           float normDist = dist / bulgeRadius;
+          float falloff = smoothstep(1.0, 0.0, normDist);
           // Smooth cosine bell dome (calm, steady, matching reference Image 3)
           float dome = 0.5 * (1.0 + cos(normDist * 3.14159265));
           // Viscous perimeter crease indentation matching Image 3
-          float crease = -sin(normDist * 3.14159265) * (1.0 - normDist) * 0.035;
+          float crease = -sin(normDist * 3.14159265) * (1.0 - normDist) * 0.025;
 
-          return (dome * (0.20 + drag * 0.12) + crease) * hAmt;
+          // Slow organic liquid undulation
+          float slowLiquid = sin(t * 1.5 + normDist * 4.5) * 0.018 * (1.0 - normDist);
+
+          // Strictly positive outward displacement so geometry is 100% solid and never cuts inwards
+          float disp = max(0.0, (dome * (0.20 + drag * 0.10) + crease + slowLiquid) * falloff);
+          return disp * hAmt;
         }
       ` + shader.vertexShader;
 
@@ -328,18 +338,23 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
         '#include <beginnormal_vertex>',
         `
         #include <beginnormal_vertex>
-        vec3 vTangent = normalize(abs(normal.y) < 0.99 ? cross(normal, vec3(0.0, 1.0, 0.0)) : cross(normal, vec3(1.0, 0.0, 0.0)));
-        vec3 vBitangent = normalize(cross(normal, vTangent));
-        float delta = 0.015;
-        vec3 p1 = position + vTangent * delta;
-        vec3 p2 = position + vBitangent * delta;
         float d0 = getLiquidDisplacement(position, normal, uTime, uHoverPoint, uHover, uDragSpeed);
-        float d1 = getLiquidDisplacement(p1, normal, uTime, uHoverPoint, uHover, uDragSpeed);
-        float d2 = getLiquidDisplacement(p2, normal, uTime, uHoverPoint, uHover, uDragSpeed);
         vec3 displacedP0 = position + normal * d0;
-        vec3 displacedP1 = p1 + normal * d1;
-        vec3 displacedP2 = p2 + normal * d2;
-        objectNormal = normalize(cross(displacedP1 - displacedP0, displacedP2 - displacedP0));
+        if (d0 > 0.0001) {
+          vec3 vTangent = normalize(abs(normal.y) < 0.99 ? cross(normal, vec3(0.0, 1.0, 0.0)) : cross(normal, vec3(1.0, 0.0, 0.0)));
+          vec3 vBitangent = normalize(cross(normal, vTangent));
+          float delta = 0.02;
+          vec3 p1 = position + vTangent * delta;
+          vec3 p2 = position + vBitangent * delta;
+          float d1 = getLiquidDisplacement(p1, normal, uTime, uHoverPoint, uHover, uDragSpeed);
+          float d2 = getLiquidDisplacement(p2, normal, uTime, uHoverPoint, uHover, uDragSpeed);
+          vec3 displacedP1 = p1 + normal * d1;
+          vec3 displacedP2 = p2 + normal * d2;
+          vec3 computedNorm = cross(displacedP1 - displacedP0, displacedP2 - displacedP0);
+          if (length(computedNorm) > 0.00001) {
+            objectNormal = normalize(computedNorm);
+          }
+        }
         `
       );
 
@@ -351,7 +366,7 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
       );
     };
 
-    mat.customProgramCacheKey = () => 'liquid_unified_v3';
+    mat.customProgramCacheKey = () => 'liquid_unified_v4';
     return mat;
   }, []);
 
@@ -437,24 +452,26 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
 
     liquidUniforms.current.uTime.value = t;
 
+    // Slow, silky liquid hover transition
     const targetHoverVal = isHovered.current || isDragging.current ? 1.0 : 0.0;
     liquidUniforms.current.uHover.value = THREE.MathUtils.lerp(
       liquidUniforms.current.uHover.value,
       targetHoverVal,
-      0.08
+      0.035
     );
 
-    hoverPointCurrent.current.lerp(hoverPointTarget.current, 0.12);
+    // Viscous liquid pointer inertia
+    hoverPointCurrent.current.lerp(hoverPointTarget.current, 0.055);
     liquidUniforms.current.uHoverPoint.value.copy(hoverPointCurrent.current);
 
     if (ringRef.current) {
-      ringRef.current.position.set(hoverPointCurrent.current.x, hoverPointCurrent.current.y, 0.32);
+      ringRef.current.position.set(hoverPointCurrent.current.x, hoverPointCurrent.current.y, 0.44);
     }
 
     liquidUniforms.current.uDragSpeed.value = THREE.MathUtils.lerp(
       liquidUniforms.current.uDragSpeed.value,
       0.0,
-      0.08
+      0.06
     );
 
     const baseY = isMobile ? 0.65 : 0;
@@ -546,35 +563,22 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
         </mesh>
       ))}
 
-      {/* ── INTERACTIVE "HOLD AND DRAG" CURSOR FOLLOWER CIRCLE (Matching 3D Hero) ── */}
-      <group ref={ringRef} position={[0, 0, 0.32]}>
+      {/* ── INTERACTIVE "HOLD AND DRAG" CURSOR FOLLOWER CIRCLE (Matching Reference Image) ── */}
+      <group ref={ringRef} position={[0, 0, 0.44]}>
         <Html center style={{ pointerEvents: 'none' }}>
           <div
             style={{
               transformOrigin: 'center center',
               transition: isHoveredState
-                ? 'transform 0.48s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.28s ease-out, filter 0.28s ease-out'
-                : 'transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease-in, filter 0.22s ease-in',
+                ? 'transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease-out'
+                : 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.20s ease-in',
               transform: isHoveredState ? 'scale(1)' : 'scale(0)',
               opacity: isHoveredState ? 1 : 0,
-              filter: isHoveredState ? 'blur(0px)' : 'blur(6px)',
             }}
-            className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full border-[1.8px] border-white flex items-center justify-center select-none pointer-events-none shadow-[0_0_35px_rgba(255,255,255,0.25),inset_0_0_25px_rgba(255,255,255,0.12)] bg-gradient-to-tr from-white/[0.04] via-transparent to-white/[0.10]"
+            className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full border-[1.8px] border-white flex items-center justify-center select-none pointer-events-none shadow-[0_0_20px_rgba(255,255,255,0.2)]"
           >
-            {/* Concentric inner optical reticle ring */}
-            <div className="absolute inset-2 sm:inset-2.5 rounded-full border border-white/30 pointer-events-none" />
-
-            {/* Precision optical tick marks at cardinal positions */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-2 sm:h-2.5 bg-white/80 pointer-events-none" />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0.5 h-2 sm:h-2.5 bg-white/80 pointer-events-none" />
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-2 sm:w-2.5 bg-white/80 pointer-events-none" />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-0.5 w-2 sm:w-2.5 bg-white/80 pointer-events-none" />
-
-            {/* Subtle center optical crosshair hint */}
-            <div className="absolute w-2 h-2 rounded-full border border-white/40 pointer-events-none" />
-
-            {/* Magnifying Glass Center Callout */}
-            <span className="relative z-10 text-[10.5px] sm:text-[11.5px] font-mono font-bold tracking-[0.24em] text-white uppercase text-center select-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] px-3">
+            {/* Magnifying Glass Center Callout matching reference image */}
+            <span className="relative z-10 text-[11px] sm:text-[12px] font-mono font-bold tracking-[0.24em] text-white uppercase text-center select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] px-3">
               HOLD AND DRAG
             </span>
           </div>
