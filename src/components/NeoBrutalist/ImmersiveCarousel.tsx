@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { ContactShadows, Environment, Lightformer, Preload } from '@react-three/drei';
+import { ContactShadows, Environment, Html, Lightformer, Preload } from '@react-three/drei';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -87,90 +87,160 @@ const SLIDES = [
    - Hollow metallic frames with beveled profiles matching reference blueprint
    - Only the perimeter lines/beams are rendered, completely see-through in the center
 ───────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   Tubular 3D Shapes with Liquid Molten Vertex Displacement:
+   - Torus for Circle, Rounded Tubular Square, Rounded Tubular Triangle
+   - Tube radius 0.36 matching hero 3D thickness with circular cross-section
+   - Interactive liquid molten bulge & ripple shader displacement on hover/drag
+───────────────────────────────────────────────────────────── */
 function ShapeMesh({ shape }: { shape: string }) {
   const geom = useMemo(() => {
-    // 1. Hollow Square / Rectangle Frame
+    // 1. Hollow Square / Rectangle Frame with subtle rounded corners
     if (shape === 'rectangle') {
-      const s = new THREE.Shape();
       const w_out = 1.15;
       const h_out = 1.15;
-      s.moveTo(-w_out, -h_out);
-      s.lineTo(w_out, -h_out);
-      s.lineTo(w_out, h_out);
-      s.lineTo(-w_out, h_out);
-      s.closePath();
+      const r_out = 0.14; // subtle elegant rounded corners
 
-      // Inner cutout hole (Frame beam thickness ~0.23)
-      const w_in = 0.92;
-      const h_in = 0.92;
-      const hole = new THREE.Path();
-      hole.moveTo(-w_in, -h_in);
-      hole.lineTo(-w_in, h_in);
-      hole.lineTo(w_in, h_in);
-      hole.lineTo(w_in, -h_in);
-      hole.closePath();
-      s.holes.push(hole);
-
-      const g = new THREE.ExtrudeGeometry(s, {
-        depth: 0.22,
-        bevelEnabled: true,
-        bevelThickness: 0.05,
-        bevelSize: 0.05,
-        bevelSegments: 8,
-      });
-      g.center();
-      g.computeVertexNormals();
-      return g;
-    }
-
-    // 2. Hollow Triangle Frame
-    if (shape === 'triangle') {
       const s = new THREE.Shape();
-      const R_out = 1.48;
-      s.moveTo(0, R_out);
-      s.lineTo(R_out * Math.cos(-Math.PI / 6), R_out * Math.sin(-Math.PI / 6));
-      s.lineTo(R_out * Math.cos(7 * Math.PI / 6), R_out * Math.sin(7 * Math.PI / 6));
+      s.moveTo(-w_out + r_out, -h_out);
+      s.lineTo(w_out - r_out, -h_out);
+      s.quadraticCurveTo(w_out, -h_out, w_out, -h_out + r_out);
+      s.lineTo(w_out, h_out - r_out);
+      s.quadraticCurveTo(w_out, h_out, w_out - r_out, h_out);
+      s.lineTo(-w_out + r_out, h_out);
+      s.quadraticCurveTo(-w_out, h_out, -w_out, h_out - r_out);
+      s.lineTo(-w_out, -h_out + r_out);
+      s.quadraticCurveTo(-w_out, -h_out, -w_out + r_out, -h_out);
       s.closePath();
 
-      // Inner triangular cutout hole
-      const R_in = 0.98;
+      // Subdivided inner cutout hole matching hero's wall thickness with subtle rounded corners
+      const w_in = 0.68;
+      const h_in = 0.68;
+      const r_in = 0.08;
       const hole = new THREE.Path();
-      hole.moveTo(0, R_in);
-      hole.lineTo(R_in * Math.cos(7 * Math.PI / 6), R_in * Math.sin(7 * Math.PI / 6));
-      hole.lineTo(R_in * Math.cos(-Math.PI / 6), R_in * Math.sin(-Math.PI / 6));
+      hole.moveTo(-w_in + r_in, -h_in);
+      hole.quadraticCurveTo(-w_in, -h_in, -w_in, -h_in + r_in);
+      hole.lineTo(-w_in, h_in - r_in);
+      hole.quadraticCurveTo(-w_in, h_in, -w_in + r_in, h_in);
+      hole.lineTo(w_in - r_in, h_in);
+      hole.quadraticCurveTo(w_in, h_in, w_in, h_in - r_in);
+      hole.lineTo(w_in, -h_in + r_in);
+      hole.quadraticCurveTo(w_in, -h_in, w_in - r_in, -h_in);
       hole.closePath();
       s.holes.push(hole);
 
       const g = new THREE.ExtrudeGeometry(s, {
-        depth: 0.22,
+        depth: 0.40,
         bevelEnabled: true,
-        bevelThickness: 0.05,
-        bevelSize: 0.05,
-        bevelSegments: 8,
+        bevelThickness: 0.08,
+        bevelSize: 0.06,
+        bevelSegments: 16,
+        curveSegments: 32,
+        steps: 6,
       });
       g.center();
       g.computeVertexNormals();
       return g;
     }
 
-    // 3. Hollow Circle / Ring Frame
-    const s = new THREE.Shape();
-    const R_out = 1.25;
-    s.absarc(0, 0, R_out, 0, Math.PI * 2, false);
+    // 2. Hollow Triangle Frame with subtle rounded corners
+    if (shape === 'triangle') {
+      const R_out = 1.48;
+      const cr_out = 0.18; // subtle rounded corners on triangle
+      const cornersOut = [
+        new THREE.Vector2(0, R_out),
+        new THREE.Vector2(R_out * Math.cos(-Math.PI / 6), R_out * Math.sin(-Math.PI / 6)),
+        new THREE.Vector2(R_out * Math.cos(7 * Math.PI / 6), R_out * Math.sin(7 * Math.PI / 6)),
+      ];
 
-    // Inner circular cutout hole
-    const R_in = 1.02;
+      const s = new THREE.Shape();
+      for (let i = 0; i < 3; i++) {
+        const curr = cornersOut[i];
+        const next = cornersOut[(i + 1) % 3];
+        const prev = cornersOut[(i + 2) % 3];
+        const dirFromPrev = new THREE.Vector2().subVectors(curr, prev).normalize();
+        const dirToNext = new THREE.Vector2().subVectors(next, curr).normalize();
+        const pStart = new THREE.Vector2().copy(curr).addScaledVector(dirFromPrev, -cr_out);
+        const pEnd = new THREE.Vector2().copy(curr).addScaledVector(dirToNext, cr_out);
+
+        if (i === 0) {
+          s.moveTo(pEnd.x, pEnd.y);
+        } else {
+          s.lineTo(pStart.x, pStart.y);
+          s.quadraticCurveTo(curr.x, curr.y, pEnd.x, pEnd.y);
+        }
+      }
+      const c0 = cornersOut[0];
+      const pStart0 = new THREE.Vector2().copy(c0).addScaledVector(new THREE.Vector2().subVectors(c0, cornersOut[2]).normalize(), -cr_out);
+      const pEnd0 = new THREE.Vector2().copy(c0).addScaledVector(new THREE.Vector2().subVectors(cornersOut[1], c0).normalize(), cr_out);
+      s.lineTo(pStart0.x, pStart0.y);
+      s.quadraticCurveTo(c0.x, c0.y, pEnd0.x, pEnd0.y);
+      s.closePath();
+
+      // Inner triangular cutout hole with subtle rounded corners
+      const R_in = 0.78;
+      const cr_in = 0.10;
+      const cornersIn = [
+        new THREE.Vector2(0, R_in),
+        new THREE.Vector2(R_in * Math.cos(7 * Math.PI / 6), R_in * Math.sin(7 * Math.PI / 6)),
+        new THREE.Vector2(R_in * Math.cos(-Math.PI / 6), R_in * Math.sin(-Math.PI / 6)),
+      ];
+
+      const hole = new THREE.Path();
+      for (let i = 0; i < 3; i++) {
+        const curr = cornersIn[i];
+        const next = cornersIn[(i + 1) % 3];
+        const prev = cornersIn[(i + 2) % 3];
+        const dirFromPrev = new THREE.Vector2().subVectors(curr, prev).normalize();
+        const dirToNext = new THREE.Vector2().subVectors(next, curr).normalize();
+        const pStart = new THREE.Vector2().copy(curr).addScaledVector(dirFromPrev, -cr_in);
+        const pEnd = new THREE.Vector2().copy(curr).addScaledVector(dirToNext, cr_in);
+
+        if (i === 0) {
+          hole.moveTo(pEnd.x, pEnd.y);
+        } else {
+          hole.lineTo(pStart.x, pStart.y);
+          hole.quadraticCurveTo(curr.x, curr.y, pEnd.x, pEnd.y);
+        }
+      }
+      const h0 = cornersIn[0];
+      const hpStart0 = new THREE.Vector2().copy(h0).addScaledVector(new THREE.Vector2().subVectors(h0, cornersIn[2]).normalize(), -cr_in);
+      const hpEnd0 = new THREE.Vector2().copy(h0).addScaledVector(new THREE.Vector2().subVectors(cornersIn[1], h0).normalize(), cr_in);
+      hole.lineTo(hpStart0.x, hpStart0.y);
+      hole.quadraticCurveTo(h0.x, h0.y, hpEnd0.x, hpEnd0.y);
+      hole.closePath();
+      s.holes.push(hole);
+
+      const g = new THREE.ExtrudeGeometry(s, {
+        depth: 0.40,
+        bevelEnabled: true,
+        bevelThickness: 0.08,
+        bevelSize: 0.06,
+        bevelSegments: 16,
+        curveSegments: 32,
+        steps: 6,
+      });
+      g.center();
+      g.computeVertexNormals();
+      return g;
+    }
+
+    // 3. Hollow Circle / Tyre Ring (100% matching hero 3D tyre shape & proportions)
+    const s = new THREE.Shape();
+    s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
+
     const hole = new THREE.Path();
-    hole.absarc(0, 0, R_in, 0, Math.PI * 2, true);
+    hole.absarc(0, 0, 0.62, 0, Math.PI * 2, true);
     s.holes.push(hole);
 
     const g = new THREE.ExtrudeGeometry(s, {
-      depth: 0.22,
+      depth: 0.40,
       bevelEnabled: true,
-      bevelThickness: 0.05,
-      bevelSize: 0.05,
-      bevelSegments: 10,
-      curveSegments: 96,
+      bevelThickness: 0.08,
+      bevelSize: 0.06,
+      bevelSegments: 16,
+      curveSegments: 128,
+      steps: 6,
     });
     g.center();
     g.computeVertexNormals();
@@ -181,7 +251,7 @@ function ShapeMesh({ shape }: { shape: string }) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Interactive Chrome Metal 3D Model (100% Preserved)
+   Interactive Black Liquid Molten 3D Models (All 3 Shapes)
 ───────────────────────────────────────────────────────────── */
 interface ShapeProps {
   slideIndex: number;
@@ -194,12 +264,96 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
 
   const groupRef = useRef<THREE.Group>(null!);
   const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const ringRef = useRef<THREE.Group>(null);
+  const [isHoveredState, setIsHoveredState] = useState(false);
 
   const isDragging = useRef(false);
   const hasDragged = useRef(false);
   const prevPtr = useRef({ x: 0, y: 0 });
   const targetRot = useRef({ x: 0.18, y: -0.62 });
   const currentRot = useRef({ x: 0.18, y: -0.62 });
+
+  // Interaction tracking
+  const isHovered = useRef(false);
+  const hoverPointTarget = useRef(new THREE.Vector3(0, 0.85, 0.45));
+  const hoverPointCurrent = useRef(new THREE.Vector3(0, 0.85, 0.45));
+
+  const liquidUniforms = useRef({
+    uTime: { value: 0 },
+    uHover: { value: 0.0 },
+    uHoverPoint: { value: new THREE.Vector3(0, 0.85, 0.45) },
+    uDragSpeed: { value: 0 },
+  });
+
+  // Unified Liquid Material for Circle, Rectangle and Triangle
+  const liquidMaterial = useMemo(() => {
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: '#0a0a0a',
+      roughness: 0.26,
+      metalness: 0.08,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.15,
+      reflectivity: 0.75,
+      envMapIntensity: 0.85,
+    });
+
+    mat.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = liquidUniforms.current.uTime;
+      shader.uniforms.uHover = liquidUniforms.current.uHover;
+      shader.uniforms.uHoverPoint = liquidUniforms.current.uHoverPoint;
+      shader.uniforms.uDragSpeed = liquidUniforms.current.uDragSpeed;
+
+      shader.vertexShader = `
+        uniform float uTime;
+        uniform float uHover;
+        uniform vec3 uHoverPoint;
+        uniform float uDragSpeed;
+
+        float getLiquidDisplacement(vec3 p, vec3 n, float t, vec3 hPt, float hAmt, float drag) {
+          float dist = length(p - hPt);
+          float bulgeRadius = 1.35;
+          if (dist >= bulgeRadius) return 0.0;
+
+          float normDist = dist / bulgeRadius;
+          // Smooth cosine bell dome (calm, steady, matching reference Image 3)
+          float dome = 0.5 * (1.0 + cos(normDist * 3.14159265));
+          // Viscous perimeter crease indentation matching Image 3
+          float crease = -sin(normDist * 3.14159265) * (1.0 - normDist) * 0.035;
+
+          return (dome * (0.20 + drag * 0.12) + crease) * hAmt;
+        }
+      ` + shader.vertexShader;
+
+      shader.vertexShader = shader.vertexShader.replace(
+        '#include <beginnormal_vertex>',
+        `
+        #include <beginnormal_vertex>
+        vec3 vTangent = normalize(abs(normal.y) < 0.99 ? cross(normal, vec3(0.0, 1.0, 0.0)) : cross(normal, vec3(1.0, 0.0, 0.0)));
+        vec3 vBitangent = normalize(cross(normal, vTangent));
+        float delta = 0.015;
+        vec3 p1 = position + vTangent * delta;
+        vec3 p2 = position + vBitangent * delta;
+        float d0 = getLiquidDisplacement(position, normal, uTime, uHoverPoint, uHover, uDragSpeed);
+        float d1 = getLiquidDisplacement(p1, normal, uTime, uHoverPoint, uHover, uDragSpeed);
+        float d2 = getLiquidDisplacement(p2, normal, uTime, uHoverPoint, uHover, uDragSpeed);
+        vec3 displacedP0 = position + normal * d0;
+        vec3 displacedP1 = p1 + normal * d1;
+        vec3 displacedP2 = p2 + normal * d2;
+        objectNormal = normalize(cross(displacedP1 - displacedP0, displacedP2 - displacedP0));
+        `
+      );
+
+      shader.vertexShader = shader.vertexShader.replace(
+        '#include <begin_vertex>',
+        `
+        vec3 transformed = displacedP0;
+        `
+      );
+    };
+
+    mat.customProgramCacheKey = () => 'liquid_unified_v3';
+    return mat;
+  }, []);
 
   useEffect(() => {
     if (slideIndex === 0) {
@@ -225,6 +379,14 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
   };
 
   useEffect(() => {
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('hide-cursor-for-3d');
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     const onMove = (e: PointerEvent) => {
       if (!isDragging.current) return;
       const dx = e.clientX - prevPtr.current.x;
@@ -233,7 +395,9 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
       targetRot.current.x += dy * 0.055;
       targetRot.current.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, targetRot.current.x));
       prevPtr.current = { x: e.clientX, y: e.clientY };
-      soundManager.updateDrag(Math.sqrt(dx * dx + dy * dy));
+      const speed = Math.sqrt(dx * dx + dy * dy);
+      soundManager.updateDrag(speed);
+      liquidUniforms.current.uDragSpeed.value = Math.min(3.0, liquidUniforms.current.uDragSpeed.value + speed * 0.04);
     };
 
     const onUp = () => {
@@ -242,6 +406,12 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
         soundManager.playClick();
       }
       isDragging.current = false;
+      if (!isHovered.current) {
+        setIsHoveredState(false);
+        if (typeof document !== 'undefined') {
+          document.body.classList.remove('hide-cursor-for-3d');
+        }
+      }
       unlockScroll();
     };
 
@@ -264,6 +434,28 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
+
+    liquidUniforms.current.uTime.value = t;
+
+    const targetHoverVal = isHovered.current || isDragging.current ? 1.0 : 0.0;
+    liquidUniforms.current.uHover.value = THREE.MathUtils.lerp(
+      liquidUniforms.current.uHover.value,
+      targetHoverVal,
+      0.08
+    );
+
+    hoverPointCurrent.current.lerp(hoverPointTarget.current, 0.12);
+    liquidUniforms.current.uHoverPoint.value.copy(hoverPointCurrent.current);
+
+    if (ringRef.current) {
+      ringRef.current.position.set(hoverPointCurrent.current.x, hoverPointCurrent.current.y, 0.32);
+    }
+
+    liquidUniforms.current.uDragSpeed.value = THREE.MathUtils.lerp(
+      liquidUniforms.current.uDragSpeed.value,
+      0.0,
+      0.08
+    );
 
     const baseY = isMobile ? 0.65 : 0;
     groupRef.current.position.y = baseY + Math.sin(t * 1.0) * 0.035;
@@ -295,10 +487,51 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     }
   };
 
+  const handlePointerMoveHit = (e: any) => {
+    if (e.point && groupRef.current) {
+      const local = groupRef.current.worldToLocal(e.point.clone());
+      hoverPointTarget.current.copy(local);
+      isHovered.current = true;
+      setIsHoveredState(true);
+      if (typeof document !== 'undefined') {
+        document.body.classList.add('hide-cursor-for-3d');
+      }
+    }
+  };
+
+  const handlePointerOver = (e: any) => {
+    isHovered.current = true;
+    setIsHoveredState(true);
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('hide-cursor-for-3d');
+    }
+    if (e.point && groupRef.current) {
+      const local = groupRef.current.worldToLocal(e.point.clone());
+      hoverPointTarget.current.copy(local);
+    }
+  };
+
+  const handlePointerOut = () => {
+    isHovered.current = false;
+    if (!isDragging.current) {
+      setIsHoveredState(false);
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('hide-cursor-for-3d');
+      }
+    }
+  };
+
   const scale = isMobile ? 0.55 : 0.95;
 
   return (
-    <group ref={groupRef} scale={scale} onPointerDown={handlePointerDown}>
+    <group
+      ref={groupRef}
+      scale={scale}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMoveHit}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
       {SLIDES.map((s, idx) => (
         <mesh
           key={s.shape}
@@ -307,19 +540,46 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
           }}
           visible={idx === slideIndex}
           scale={idx === slideIndex ? [1, 1, 1] : [0.001, 0.001, 0.001]}
+          material={liquidMaterial}
         >
           <ShapeMesh shape={s.shape} />
-          <meshPhysicalMaterial
-            color="#ffffff"
-            metalness={1.0}
-            roughness={0.10}
-            clearcoat={0.30}
-            clearcoatRoughness={0.06}
-            reflectivity={1.0}
-            envMapIntensity={2.6}
-          />
         </mesh>
       ))}
+
+      {/* ── INTERACTIVE "HOLD AND DRAG" CURSOR FOLLOWER CIRCLE (Matching 3D Hero) ── */}
+      <group ref={ringRef} position={[0, 0, 0.32]}>
+        <Html center style={{ pointerEvents: 'none' }}>
+          <div
+            style={{
+              transformOrigin: 'center center',
+              transition: isHoveredState
+                ? 'transform 0.48s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.28s ease-out, filter 0.28s ease-out'
+                : 'transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease-in, filter 0.22s ease-in',
+              transform: isHoveredState ? 'scale(1)' : 'scale(0)',
+              opacity: isHoveredState ? 1 : 0,
+              filter: isHoveredState ? 'blur(0px)' : 'blur(6px)',
+            }}
+            className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full border-[1.8px] border-white flex items-center justify-center select-none pointer-events-none shadow-[0_0_35px_rgba(255,255,255,0.25),inset_0_0_25px_rgba(255,255,255,0.12)] bg-gradient-to-tr from-white/[0.04] via-transparent to-white/[0.10]"
+          >
+            {/* Concentric inner optical reticle ring */}
+            <div className="absolute inset-2 sm:inset-2.5 rounded-full border border-white/30 pointer-events-none" />
+
+            {/* Precision optical tick marks at cardinal positions */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-2 sm:h-2.5 bg-white/80 pointer-events-none" />
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0.5 h-2 sm:h-2.5 bg-white/80 pointer-events-none" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-2 sm:w-2.5 bg-white/80 pointer-events-none" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-0.5 w-2 sm:w-2.5 bg-white/80 pointer-events-none" />
+
+            {/* Subtle center optical crosshair hint */}
+            <div className="absolute w-2 h-2 rounded-full border border-white/40 pointer-events-none" />
+
+            {/* Magnifying Glass Center Callout */}
+            <span className="relative z-10 text-[10.5px] sm:text-[11.5px] font-mono font-bold tracking-[0.24em] text-white uppercase text-center select-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] px-3">
+              HOLD AND DRAG
+            </span>
+          </div>
+        </Html>
+      </group>
     </group>
   );
 }
@@ -330,12 +590,12 @@ function StudioLights() {
 
   return (
     <>
-      <ambientLight intensity={isMobile ? 1.0 : 0.8} />
-      <directionalLight position={[0, 8, 7]} intensity={isMobile ? 3.4 : 3.0} color="#ffffff" />
-      <directionalLight position={[-5, 2, 4]} intensity={isMobile ? 3.2 : 2.8} color="#ffffff" />
-      <directionalLight position={[-7, -2, 4]} intensity={isMobile ? 2.8 : 2.4} color="#38bdf8" />
-      <directionalLight position={[7, 2, 4]} intensity={isMobile ? 1.4 : 1.2} color="#e0f2fe" />
-      <directionalLight position={[0, 6, -5]} intensity={isMobile ? 2.0 : 1.6} color="#ffffff" />
+      <ambientLight intensity={isMobile ? 0.7 : 0.5} />
+      <directionalLight position={[0, 8, 7]} intensity={isMobile ? 3.0 : 2.5} color="#ffffff" />
+      <directionalLight position={[-5, 2, 4]} intensity={isMobile ? 2.5 : 2.0} color="#ffffff" />
+      <directionalLight position={[-7, -2, 4]} intensity={isMobile ? 2.0 : 1.5} color="#ffffff" />
+      <directionalLight position={[7, 2, 4]} intensity={isMobile ? 1.5 : 1.2} color="#ffffff" />
+      <directionalLight position={[0, 6, -5]} intensity={isMobile ? 1.8 : 1.4} color="#ffffff" />
     </>
   );
 }
@@ -491,33 +751,33 @@ export default function ImmersiveCarousel() {
             <Environment resolution={512}>
               <Lightformer
                 form="rect"
-                intensity={6.5}
-                position={[0, 5, 2.5]}
-                scale={[14, 3, 1]}
+                intensity={3.0}
+                position={[0, 6, 2]}
+                scale={[8, 2, 1]}
+                target={[0, 0, 0]}
+                color="#ffffff"
+              />
+              <Lightformer
+                form="rect"
+                intensity={1.5}
+                position={[0, -4, 2]}
+                scale={[6, 1.5, 1]}
                 target={[0, 0, 0]}
                 color="#ffffff"
               />
               <Lightformer
                 form="rect"
                 intensity={2.0}
-                position={[0, -4, 2]}
-                scale={[10, 2.5, 1]}
+                position={[-5, 3, 2]}
+                scale={[3, 5, 1]}
                 target={[0, 0, 0]}
-                color="#e0f2fe"
+                color="#ffffff"
               />
               <Lightformer
                 form="rect"
-                intensity={5.2}
-                position={[-6, 0.5, 2.5]}
-                scale={[4, 12, 1]}
-                target={[0, 0, 0]}
-                color="#7dd3fc"
-              />
-              <Lightformer
-                form="rect"
-                intensity={4.0}
-                position={[-3.8, 2.8, 3]}
-                scale={[2, 6, 1]}
+                intensity={2.5}
+                position={[5, 2, -2]}
+                scale={[3, 6, 1]}
                 target={[0, 0, 0]}
                 color="#ffffff"
               />
