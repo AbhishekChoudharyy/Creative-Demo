@@ -41,6 +41,10 @@ export default function CustomCursor() {
     const onMouseMove = (e: MouseEvent) => {
       targetX = e.clientX;
       targetY = e.clientY;
+      if (document.body.classList.contains('hide-cursor-for-3d')) {
+        dot.style.opacity = '0';
+        return;
+      }
       dot.style.opacity = '1';
     };
 
@@ -82,6 +86,7 @@ export default function CustomCursor() {
   return (
     <div
       ref={dotRef}
+      data-custom-cursor
       aria-hidden="true"
       className="hidden lg:block fixed top-0 left-0 z-[100000] pointer-events-none opacity-0 transition-opacity duration-200"
     >

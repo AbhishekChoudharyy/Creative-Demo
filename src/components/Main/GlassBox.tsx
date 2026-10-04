@@ -44,18 +44,18 @@ export const GlassBox: FC = () => {
     const s = new THREE.Shape();
     s.absarc(0, 0, 1.15, 0, Math.PI * 2, false);
 
-    // Refined concentric inner circular hole (wider hollow aperture)
+    // Refined concentric inner circular hole (slightly smaller hollow aperture)
     const hole = new THREE.Path();
-    hole.absarc(0, 0, 0.70, 0, Math.PI * 2, true);
+    hole.absarc(0, 0, 0.62, 0, Math.PI * 2, true);
     s.holes.push(hole);
 
     const g = new THREE.ExtrudeGeometry(s, {
-      depth: 0.22,
+      depth: 0.40,
       bevelEnabled: true,
       bevelThickness: 0.08,
       bevelSize: 0.06,
-      bevelSegments: isMobile ? 5 : 12,
-      curveSegments: isMobile ? 48 : 96,
+      bevelSegments: isMobile ? 6 : 16,
+      curveSegments: isMobile ? 64 : 128,
     });
     g.center();
     g.computeVertexNormals();
@@ -97,6 +97,9 @@ export const GlassBox: FC = () => {
     if (isHovered.current) return;
     isHovered.current = true;
     setIsHoveredState(true);
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('hide-cursor-for-3d');
+    }
     updatePointerLocal(e);
     currentHoverPoint.current.copy(targetHoverPoint.current);
     soundManager.playHeroHover();
@@ -111,7 +114,18 @@ export const GlassBox: FC = () => {
     if (!isHovered.current) return;
     isHovered.current = false;
     setIsHoveredState(false);
+    if (!isDragging.current && typeof document !== 'undefined') {
+      document.body.classList.remove('hide-cursor-for-3d');
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('hide-cursor-for-3d');
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
@@ -135,6 +149,9 @@ export const GlassBox: FC = () => {
         soundManager.playClick();
       }
       isDragging.current = false;
+      if (!isHovered.current && typeof document !== 'undefined') {
+        document.body.classList.remove('hide-cursor-for-3d');
+      }
       unlockScroll();
     };
 
@@ -150,6 +167,9 @@ export const GlassBox: FC = () => {
       window.removeEventListener('pointercancel', handlePointerUp);
       window.removeEventListener('blur', handlePointerUp);
       document.removeEventListener('visibilitychange', handlePointerUp);
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('hide-cursor-for-3d');
+      }
       soundManager.stopDrag();
       unlockScroll();
     };
@@ -185,28 +205,27 @@ export const GlassBox: FC = () => {
     group.rotation.y = currentRotation.current.y;
     group.rotation.z = 0.10;
 
-    // ── ULTRA-FAST MAGNETIC GLASS FRACTURE & REWIND ANIMATION ──
+    // ── BUTTERY-SMOOTH PROCEDURAL GLASS FRACTURE & MAGNETIC REWIND ──
     const dt = Math.min(delta, 0.05);
 
     if (isHovered.current) {
-      // Explosive physical burst into fractured state
-      fractureProgress.current += (1.0 - fractureProgress.current) * Math.min(1.0, dt * 12.0);
-      if (fractureProgress.current > 0.98) {
+      // Smooth physical rise into fractured state with organic easing
+      fractureProgress.current += (1.0 - fractureProgress.current) * Math.min(1.0, dt * 7.5);
+      if (fractureProgress.current > 0.99) {
         fractureProgress.current = 1.0;
       }
     } else {
-      // Ultra-fast magnetic rewind back into unified crystal
-      fractureProgress.current += (0.0 - fractureProgress.current) * Math.min(1.0, dt * 14.5);
-      // Instant snap threshold: once within 8%, immediately snap shut to 0 so no broken lines linger!
-      if (fractureProgress.current < 0.08) {
+      // Smooth magnetic rewind back into unified crystal
+      fractureProgress.current += (0.0 - fractureProgress.current) * Math.min(1.0, dt * 7.0);
+      if (fractureProgress.current < 0.005) {
         fractureProgress.current = 0.0;
       }
     }
 
     const p = fractureProgress.current;
 
-    // Smoothly track the localized hover point across the crystal face
-    currentHoverPoint.current.lerp(targetHoverPoint.current, 0.22);
+    // Smoothly track the localized hover point across the crystal face with buttery liquid inertia
+    currentHoverPoint.current.lerp(targetHoverPoint.current, 0.14);
 
     // Position the interactive "HOLD AND DRAG" circular follower ring over the cursor
     if (ringRef.current) {
@@ -224,8 +243,8 @@ export const GlassBox: FC = () => {
         if (boxRef.current.geometry !== fractureSystem.mergedGeometry) {
           boxRef.current.geometry = fractureSystem.mergedGeometry;
         }
-        // Always pass currentHoverPoint so shards rewind directly along the exact reverse trajectory
-        fractureSystem.update(p, t, currentHoverPoint.current);
+        // Pass currentHoverPoint and dt for organic wave delay and smooth per-shard physics
+        fractureSystem.update(p, t, currentHoverPoint.current, dt);
       }
     }
 
@@ -254,7 +273,7 @@ export const GlassBox: FC = () => {
         onPointerLeave={handlePointerLeave}
         position={[0, 0, 0]}
       >
-        <torusGeometry args={[0.92, 0.35, 16, 48]} />
+        <torusGeometry args={[0.88, 0.35, 16, 48]} />
         <meshBasicMaterial visible={false} />
       </mesh>
 
@@ -264,12 +283,12 @@ export const GlassBox: FC = () => {
       <mesh ref={boxRef}>
         <primitive object={circleGeom} attach="geometry" />
         <MeshTransmissionMaterial
-          backside={!isMobile}
+          backside={false}
           transmission={1.0}
           roughness={0.0}
-          thickness={0.22}
-          ior={1.44}
-          chromaticAberration={isMobile ? 0.015 : 0.03}
+          thickness={0.35}
+          ior={1.42}
+          chromaticAberration={isMobile ? 0.01 : 0.02}
           anisotropy={0.0}
           distortion={0.0}
           distortionScale={0.0}
@@ -277,25 +296,27 @@ export const GlassBox: FC = () => {
           clearcoat={1.0}
           clearcoatRoughness={0.0}
           color="#ffffff"
-          attenuationColor="#e0f2fe"
-          attenuationDistance={20.0}
-          reflectivity={0.90}
-          resolution={isMobile ? 384 : 768}
-          samples={isMobile ? 4 : 8}
+          attenuationColor="#ffffff"
+          attenuationDistance={100.0}
+          reflectivity={0.65}
+          resolution={isMobile ? 512 : 2048}
+          samples={isMobile ? 6 : 16}
         />
       </mesh>
 
       {/* ── INTERACTIVE "HOLD AND DRAG" CURSOR FOLLOWER CIRCLE (Magnifying Glass Pop) ──
-          Spawns tiny (scale 6%) and pops out with an elastic spring into an optical magnifying circle */}
+          Animates from zero size (scale 0) up to full size (scale 1) with buttery spring inertia */}
       <group ref={ringRef} position={[0, 0, 0.28]}>
         <Html center style={{ pointerEvents: 'none' }}>
           <div
             style={{
+              transformOrigin: 'center center',
               transition: isHoveredState
-                ? 'transform 0.44s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.20s ease-out'
-                : 'transform 0.22s ease-in, opacity 0.18s ease-in',
-              transform: isHoveredState ? 'scale(1)' : 'scale(0.06)',
+                ? 'transform 0.48s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.28s ease-out, filter 0.28s ease-out'
+                : 'transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease-in, filter 0.22s ease-in',
+              transform: isHoveredState ? 'scale(1)' : 'scale(0)',
               opacity: isHoveredState ? 1 : 0,
+              filter: isHoveredState ? 'blur(0px)' : 'blur(6px)',
             }}
             className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full border-[1.8px] border-white flex items-center justify-center select-none pointer-events-none shadow-[0_0_35px_rgba(255,255,255,0.25),inset_0_0_25px_rgba(255,255,255,0.12)] bg-gradient-to-tr from-white/[0.04] via-transparent to-white/[0.10] backdrop-blur-[0.5px]"
           >

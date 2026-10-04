@@ -17,24 +17,36 @@ export interface MergedFractureSystem {
   mergedGeometry: THREE.BufferGeometry;
   crackLinesGeometry: THREE.BufferGeometry;
   shards: ShardMeta[];
-  update: (progress: number, time: number, hoverPoint?: THREE.Vector2 | null) => void;
+  update: (progress: number, time: number, hoverPoint?: THREE.Vector2 | null, dt?: number) => void;
 }
 
 /**
- * Procedural 3D Crystal Hollow Ring Fracture System:
- * - 8 Architectural beveled crystal ring segments designed to physically turn, hinge, and peel
- *   outward from their exact radial crack seams directly from the hollow ring!
- * - 100% mathematical rest alignment with hollow center (when progress = 0, forms the exact seamless ring)
- * - Retains the center hole (radius 0.55) completely open and hollow at all times
- * - Dynamic shockwave propagation & impact-driven recoil
+ * Procedural 3D Architectural Hollow Ring Fracture System:
+ * - 8 Asymmetric, randomized crystal shards with faceted break seams matching the KODE.IMMERSIVE reference
+ * - Localized cursor affinity: The shard closest to the cursor breaks outward significantly,
+ *   while the rest break only subtly (baseline ~20%).
+ * - Organic wave propagation delay & buttery smooth spring inertia damping
+ * - 100% mathematical rest alignment with hollow center (radius 0.70)
  */
 export function generateFractureSystem(): MergedFractureSystem {
   const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
-  const R = 1.15; // Exact outer radius matching circleGeom
-  const R_inner = 0.70; // Exact inner radius matching hollow circleGeom hole
-  const depth = 0.22;
+  const R = 1.15; // Outer radius matching circleGeom
+  const R_inner = 0.62; // Inner hollow radius matching circleGeom hole
+  const depth = 0.40; // Increased thickness matching chunky reference 3D glass
   const bevelThickness = 0.08;
   const bevelSize = 0.06;
+
+  // 8 Asymmetric, organic cut angles matching the reference image's randomized composition:
+  // - Top crown chunk (large dominant slab)
+  // - Top-right wing
+  // - Mid-right chip
+  // - Lower-right chunky wing
+  // - Bottom monument chunk (broad heavy slab)
+  // - Lower-left wedge
+  // - Mid-left wing
+  // - Upper-left accent
+  const angles = [0.65, 1.55, 2.25, 2.85, 3.85, 4.80, 5.45, 6.25, 0.65 + Math.PI * 2];
+  const arcSteps = isMobile ? 10 : 20;
 
   const shardsData: {
     geom: THREE.BufferGeometry;
@@ -58,25 +70,61 @@ export function generateFractureSystem(): MergedFractureSystem {
     return pts;
   };
 
-  // 8 Architectural radial sector angles spanning the full 360-degree circle
-  const angles = [0.38, 1.18, 1.96, 2.75, 3.53, 4.32, 5.10, 5.89, 0.38 + Math.PI * 2];
-  const arcSteps = isMobile ? 6 : 10;
+  // Precompute faceted intermediate break points along each seam (creates architectural angular cuts)
+  const cutPoints: THREE.Vector2[] = [];
+  const rMid = (R + R_inner) / 2;
+  for (let i = 0; i < 8; i++) {
+    const a = angles[i];
+    // Alternate slight clockwise / counter-clockwise facet offset
+    const aFacet = a + (i % 2 === 0 ? 0.038 : -0.038);
+    cutPoints.push(new THREE.Vector2(Math.cos(aFacet) * rMid, Math.sin(aFacet) * rMid));
+  }
+
+  // Outward displacement distances tuned for controlled, elegant separation ("itna dur bhi nhi")
+  const shardKinematics = [
+    // 0. Top Crown Chunk (bursts up and outward +Y, tilts back)
+    { out: new THREE.Vector3(0.42, 0.90, 0.32), hinge: new THREE.Vector3(0.96, -0.15, 0), turn: -0.42, dist: 0.38 },
+    // 1. Top-Right Wing (bursts up-right)
+    { out: new THREE.Vector3(-0.32, 0.94, 0.20), hinge: new THREE.Vector3(-0.55, 0.82, 0.12), turn: 0.36, dist: 0.34 },
+    // 2. Mid-Right Chip (bursts up-left)
+    { out: new THREE.Vector3(-0.82, 0.57, 0.30), hinge: new THREE.Vector3(0.12, 0.98, -0.10), turn: -0.30, dist: 0.28 },
+    // 3. Lower-Right Chunky Wing (bursts far-left)
+    { out: new THREE.Vector3(-0.96, -0.26, 0.20), hinge: new THREE.Vector3(0.68, 0.72, 0.08), turn: 0.35, dist: 0.35 },
+    // 4. Bottom Monument Chunk (heavy slab bursts down-left and outward)
+    { out: new THREE.Vector3(-0.38, -0.92, 0.35), hinge: new THREE.Vector3(0.98, 0.08, 0), turn: 0.44, dist: 0.40 },
+    // 5. Lower-Left Wedge (bursts down-right)
+    { out: new THREE.Vector3(0.38, -0.92, 0.20), hinge: new THREE.Vector3(-0.62, 0.76, -0.12), turn: -0.32, dist: 0.30 },
+    // 6. Mid-Left Wing (bursts far-right)
+    { out: new THREE.Vector3(0.88, -0.47, 0.30), hinge: new THREE.Vector3(0.18, 0.97, 0.10), turn: 0.38, dist: 0.36 },
+    // 7. Upper-Left Accent (bursts up-right)
+    { out: new THREE.Vector3(0.94, 0.34, 0.20), hinge: new THREE.Vector3(0.82, 0.56, -0.10), turn: -0.30, dist: 0.32 },
+  ];
 
   for (let i = 0; i < 8; i++) {
     const aStart = angles[i];
     const aEnd = angles[i + 1];
     const aMid = (aStart + aEnd) / 2;
 
-    // Crack line along the radial seam between adjacent ring shards (outer rim to inner hole)
+    const startCutMid = cutPoints[i];
+    const endCutMid = cutPoints[(i + 1) % 8];
+
+    // Faceted crack line segments along the radial seam between adjacent ring shards
     crackLinePoints.push(
       new THREE.Vector3(Math.cos(aStart) * R, Math.sin(aStart) * R, 0.12),
+      new THREE.Vector3(startCutMid.x, startCutMid.y, 0.12),
+      new THREE.Vector3(startCutMid.x, startCutMid.y, 0.12),
       new THREE.Vector3(Math.cos(aStart) * R_inner, Math.sin(aStart) * R_inner, 0.12)
     );
 
-    // Build closed 2D polygon of the hollow ring segment
+    // Build closed 2D polygon of the hollow ring shard with faceted seams
     const outerArc = sampleArc(aStart, aEnd, arcSteps, R);
     const innerArc = sampleArc(aEnd, aStart, arcSteps, R_inner);
-    const pts = [...outerArc, ...innerArc];
+    const pts = [
+      ...outerArc,
+      endCutMid,
+      ...innerArc,
+      startCutMid,
+    ];
 
     let cx = 0;
     let cy = 0;
@@ -99,7 +147,7 @@ export function generateFractureSystem(): MergedFractureSystem {
       bevelEnabled: true,
       bevelThickness,
       bevelSize,
-      bevelSegments: isMobile ? 4 : 8,
+      bevelSegments: isMobile ? 5 : 12,
       curveSegments: isMobile ? 32 : 48,
     });
     g.translate(0, 0, -depth / 2);
@@ -109,30 +157,22 @@ export function generateFractureSystem(): MergedFractureSystem {
     if (g !== nonIndexed) g.dispose();
 
     const restPos = new THREE.Vector3(cx, cy, 0);
-
-    // Radial outward push vector with subtle alternating Z depth
-    const outwardVec = new THREE.Vector3(
-      Math.cos(aMid),
-      Math.sin(aMid),
-      i % 2 === 0 ? 0.14 : -0.14
-    ).normalize();
-
-    // Hinge axis tangential to the ring arc
-    const hingeAxis = new THREE.Vector3(-Math.sin(aMid), Math.cos(aMid), 0).normalize();
-    const hingeOrigin = new THREE.Vector3(Math.cos(aMid) * R_inner, Math.sin(aMid) * R_inner, 0);
+    const kin = shardKinematics[i];
+    // Hinge centered on the shard's centroid so rotation cleanly accompanies pure outward expansion
+    const hingeOrigin = restPos.clone();
 
     shardsData.push({
       geom: nonIndexed,
       restPos,
       hingeOrigin,
-      hingeAxis,
-      turnAngle: i % 2 === 0 ? 0.28 : -0.28,
-      outwardVector: outwardVec,
-      outwardDist: 0.44,
+      hingeAxis: kin.hinge.clone().normalize(),
+      turnAngle: kin.turn,
+      outwardVector: kin.out.clone().normalize(),
+      outwardDist: kin.dist,
     });
   }
 
-  // ── MERGE ALL 8 HOLLOW RING BLOCKS INTO A SINGLE BUFFERGEOMETRY ──
+  // ── MERGE ALL 8 CRYSTAL SHARDS INTO A SINGLE BUFFERGEOMETRY ──
   let totalVertices = 0;
   for (const s of shardsData) {
     totalVertices += s.geom.attributes.position.count;
@@ -154,7 +194,6 @@ export function generateFractureSystem(): MergedFractureSystem {
     basePos.set(pArray);
     baseNorm.set(nArray);
 
-    // Initial fill at exact rest coordinates
     for (let j = 0; j < count; j++) {
       const idx = j * 3;
       const dest = (currentVOffset + j) * 3;
@@ -198,7 +237,10 @@ export function generateFractureSystem(): MergedFractureSystem {
   const cursorVec = new THREE.Vector3();
 
   const numShards = shardsMeta.length;
-  const shardAmounts = new Float32Array(numShards);
+  // Per-shard continuous physics state: maintains smooth momentum & wave delay
+  const currentAmounts = new Float32Array(numShards);
+  const targetAmounts = new Float32Array(numShards);
+  const shardDistances = new Float32Array(numShards);
   const activePositions: THREE.Vector3[] = [];
   const repelOffsets: THREE.Vector3[] = [];
   for (let k = 0; k < numShards; k++) {
@@ -206,61 +248,78 @@ export function generateFractureSystem(): MergedFractureSystem {
     repelOffsets.push(new THREE.Vector3());
   }
 
-  // Focus radius for localized heavy break
-  const FOCUS_RADIUS = 0.88;
-
   let lastProgress = -1;
   let lastHoverX = -999;
   let lastHoverY = -999;
 
-  const update = (progress: number, _time: number, hoverPoint?: THREE.Vector2 | null) => {
-    // If progress is at 0, nothing to morph
-    if (progress <= 0.0001) return;
+  const update = (progress: number, _time: number, hoverPoint?: THREE.Vector2 | null, dt?: number) => {
+    const deltaSeconds = Math.min(dt || 0.016, 0.05);
+
+    // 1. Calculate per-shard distance from cursor and identify the closest shard
+    let minDist = 999;
+    if (hoverPoint && progress > 0.001) {
+      for (let i = 0; i < numShards; i++) {
+        const dx = shardsMeta[i].restPosition.x - hoverPoint.x;
+        const dy = shardsMeta[i].restPosition.y - hoverPoint.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        shardDistances[i] = dist;
+        if (dist < minDist) minDist = dist;
+      }
+    }
+
+    // 2. Compute target break amounts with localized cursor affinity ("chipak ke rhta h"):
+    // Closest shard breaks moderately, while remaining shards break only subtly
+    const BASE_BREAK = 0.12; // Controlled baseline fracture for non-focused parts
+    for (let i = 0; i < numShards; i++) {
+      if (progress <= 0.001 || !hoverPoint) {
+        targetAmounts[i] = 0.0;
+      } else {
+        const relativeDist = shardDistances[i] - minDist;
+        // Exponential falloff centered on the closest shard
+        const focusWeight = Math.exp(-relativeDist * 3.4);
+        targetAmounts[i] = progress * (BASE_BREAK + (1.0 - BASE_BREAK) * focusWeight);
+      }
+
+      // Organic wave delay ("delay h halka") & buttery smooth inertia damping:
+      // Nearest shard reacts with immediate responsiveness; distant shards react with slight organic lag
+      const relativeDist = hoverPoint ? Math.max(0, shardDistances[i] - minDist) : 0;
+      const springRate = progress > 0.001
+        ? Math.max(4.5, 9.2 - relativeDist * 3.6) // Smooth delayed propagation across ring
+        : 7.8; // Silky rewind rate when unhovering
+
+      currentAmounts[i] += (targetAmounts[i] - currentAmounts[i]) * Math.min(1.0, deltaSeconds * springRate);
+      if (progress <= 0.001 && currentAmounts[i] < 0.002) {
+        currentAmounts[i] = 0.0;
+      }
+    }
 
     const hx = hoverPoint ? hoverPoint.x : 0;
     const hy = hoverPoint ? hoverPoint.y : 0;
     const deltaP = Math.abs(progress - lastProgress);
     const deltaH = Math.hypot(hx - lastHoverX, hy - lastHoverY);
 
-    // If resting or barely moved, skip vertex buffer upload
-    if (deltaP < 0.0006 && deltaH < 0.004) return;
+    // Check if any shard is still in motion
+    let isMoving = false;
+    for (let i = 0; i < numShards; i++) {
+      if (Math.abs(currentAmounts[i] - targetAmounts[i]) > 0.001 || currentAmounts[i] > 0.001) {
+        isMoving = true;
+        break;
+      }
+    }
+
+    if (!isMoving && deltaP < 0.0006 && deltaH < 0.004) return;
     lastProgress = progress;
     lastHoverX = hx;
     lastHoverY = hy;
 
-    // Physical cubic ease-out
-    const easeP = 1 - Math.pow(1 - progress, 3);
-
     const posArray = mergedGeometry.attributes.position.array as Float32Array;
     const normArray = mergedGeometry.attributes.normal.array as Float32Array;
 
-    // 1. Calculate individual shard morph amounts & dynamic shockwave propagation
+    // 3. Compute active 3D positions and recoil
     for (let i = 0; i < numShards; i++) {
       const s = shardsMeta[i];
-      let localPeak = 0.0;
-      let effectiveProximity = 0.13;
-      let shardEase = easeP;
+      const amount = currentAmounts[i];
 
-      if (hoverPoint) {
-        const dx = s.restPosition.x - hoverPoint.x;
-        const dy = s.restPosition.y - hoverPoint.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const normDist = Math.min(1.0, dist / FOCUS_RADIUS);
-
-        // Real-time shockwave: crack propagates outward from cursor in milliseconds
-        const propagationLag = Math.min(0.20, dist * 0.10);
-        const localProgress = Math.max(0, Math.min(1.0, (progress - propagationLag) / (1.0 - propagationLag + 0.001)));
-        shardEase = 1 - Math.pow(1 - localProgress, 3);
-
-        // Sharp focal peak under the cursor
-        localPeak = Math.pow(Math.cos(normDist * Math.PI * 0.5), 1.8);
-        effectiveProximity = 0.13 + 0.87 * localPeak;
-      }
-
-      const amount = shardEase * effectiveProximity;
-      shardAmounts[i] = amount;
-
-      // Estimated morphed position in 3D
       activePositions[i].set(
         s.restPosition.x + s.outwardVector.x * (s.outwardDist * amount),
         s.restPosition.y + s.outwardVector.y * (s.outwardDist * amount),
@@ -268,30 +327,28 @@ export function generateFractureSystem(): MergedFractureSystem {
       );
       repelOffsets[i].set(0, 0, 0);
 
-      // Directional recoil away from cursor touch point
-      if (hoverPoint && localPeak > 0.05) {
-        cursorVec.set(s.restPosition.x - hoverPoint.x, s.restPosition.y - hoverPoint.y, 0);
-        const cDist = cursorVec.length();
-        if (cDist > 0.001) {
-          cursorVec.normalize().multiplyScalar(localPeak * 0.20 * shardEase);
-          repelOffsets[i].add(cursorVec);
-        }
+      // Controlled outward boost for the focused shard
+      if (hoverPoint && amount > 0.35) {
+        const boost = (amount - 0.35) * 0.10;
+        repelOffsets[i].x += s.outwardVector.x * boost;
+        repelOffsets[i].y += s.outwardVector.y * boost;
+        repelOffsets[i].z += 0.06 * boost;
       }
     }
 
-    // 2. Pairwise 3D collision repulsion between adjacent ring shards
+    // 4. Pairwise 3D collision repulsion between adjacent shards to ensure clean separation
     for (let i = 0; i < numShards; i++) {
       for (let j = i + 1; j < numShards; j++) {
-        const amtA = shardAmounts[i];
-        const amtB = shardAmounts[j];
+        const amtA = currentAmounts[i];
+        const amtB = currentAmounts[j];
         if (amtA > 0.04 && amtB > 0.04) {
           diffVec.subVectors(activePositions[i], activePositions[j]);
           const dist = diffVec.length();
-          const minSafeDistance = 0.46; // Safe 3D clearance for ring segments
+          const minSafeDistance = 0.34;
 
           if (dist < minSafeDistance) {
             const overlap = minSafeDistance - dist;
-            const repelStrength = overlap * 0.50 * Math.min(amtA, amtB);
+            const repelStrength = overlap * 0.45 * Math.min(amtA, amtB);
 
             if (dist > 0.001) {
               diffVec.normalize();
@@ -299,7 +356,6 @@ export function generateFractureSystem(): MergedFractureSystem {
               diffVec.set(0.7, 0.7, 0.1).normalize();
             }
 
-            // Repel in 3D space
             repelOffsets[i].x += diffVec.x * repelStrength;
             repelOffsets[i].y += diffVec.y * repelStrength;
             repelOffsets[i].z += diffVec.z * repelStrength * 0.5;
@@ -312,10 +368,10 @@ export function generateFractureSystem(): MergedFractureSystem {
       }
     }
 
-    // 3. Apply physical HINGE TURNING matrix to vertex buffers
+    // 5. Apply physical HINGE TURNING and 3D DISPLACEMENT matrix to vertex buffers
     for (let i = 0; i < numShards; i++) {
       const s = shardsMeta[i];
-      const shardAmount = shardAmounts[i];
+      const shardAmount = currentAmounts[i];
 
       const hx = s.hingeOrigin.x - s.restPosition.x;
       const hy = s.hingeOrigin.y - s.restPosition.y;
@@ -324,11 +380,11 @@ export function generateFractureSystem(): MergedFractureSystem {
       // 1. Shift local shard origin to hinge line
       turnMatrix.makeTranslation(-hx, -hy, -hz);
 
-      // 2. Rotate along the crack seam axis by turnAngle
+      // 2. Rotate along the 3D hinge axis by turnAngle * shardAmount
       axisMatrix.makeRotationAxis(s.hingeAxis, s.turnAngle * shardAmount);
       turnMatrix.premultiply(axisMatrix);
 
-      // 3. Shift back from hinge line + outward separation displacement + recoil
+      // 3. Shift back from hinge line + outward 3D separation displacement + recoil
       const dispX = hx + s.restPosition.x + s.outwardVector.x * (s.outwardDist * shardAmount) + repelOffsets[i].x;
       const dispY = hy + s.restPosition.y + s.outwardVector.y * (s.outwardDist * shardAmount) + repelOffsets[i].y;
       const dispZ = hz + s.restPosition.z + s.outwardVector.z * (s.outwardDist * shardAmount) + repelOffsets[i].z;

@@ -538,4 +538,21 @@ span:not(#intro *):not([style*="OT Brut"] *):not([style*="ERF Neot"] *):not(.fon
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: reactbits-shine 5s ease-in-out infinite;
-}
+}
+
+/* Hide native and custom cursor when hovering over 3D interactive hero with intentional smooth bloom */
+body.hide-cursor-for-3d,
+body.hide-cursor-for-3d *,
+body.hide-cursor-for-3d canvas {
+  cursor: none !important;
+}
+
+body.hide-cursor-for-3d [data-custom-cursor] {
+  opacity: 0 !important;
+  transform: translate(-50%, -50%) scale(0.35) !important;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+
