@@ -353,10 +353,11 @@ export default function Home() {
             setBootState('ready');
             return 100;
           }
-          const increment = Math.floor(Math.random() * 12) + 6;
+          // Smooth, organic micro-increments: feels continuous and fast
+          const increment = Math.floor(Math.random() * 4) + 2;
           return Math.min(100, prev + increment);
         });
-      }, 150);
+      }, 28);
       return () => clearInterval(interval);
     }
   }, [bootState]);
@@ -390,7 +391,7 @@ export default function Home() {
         style={{ display: 'none', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       />
       {bootState !== 'booted' && (
-        <div className={`fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100'}`}>
+        <div className={`fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center font-mono select-none transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isExiting ? 'opacity-0 scale-[0.98] pointer-events-none' : 'opacity-100 scale-100'}`}>
           <div className="flex flex-col items-center px-6 text-center z-10">
 
             {/* Brand Lockup: Exact spacing and proportional size matching reference image */}
@@ -424,7 +425,7 @@ export default function Home() {
                   </span>
                   <div className="w-24 sm:w-28 h-[1px] bg-[#0A1F44]/15 relative overflow-hidden">
                     <div
-                      className="absolute top-0 bottom-0 left-0 bg-[#0A1F44] transition-all duration-150 ease-out"
+                      className="absolute top-0 bottom-0 left-0 bg-[#0A1F44] transition-all duration-75 ease-out"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -437,7 +438,7 @@ export default function Home() {
                     setIsExiting(true);
                     setTimeout(() => {
                       setBootState('booted');
-                    }, 700);
+                    }, 500);
                   }}
                   onMouseEnter={() => soundManager.playHover()}
                   className="text-xs sm:text-sm font-mono tracking-[0.3em] text-[#0A1F44]/80 hover:text-[#0A1F44] transition-all duration-300 cursor-pointer focus:outline-none uppercase hover:tracking-[0.4em]"

@@ -21,6 +21,56 @@ export interface MergedFractureSystem {
 }
 
 /**
+ * Smooth vertex normals across all coincident vertices (shared 3D coordinates):
+ * Completely eliminates faceted flat-shading on curved arcs and break seams,
+ * giving every crystal shard 100% smooth, continuous, rounded normal shading.
+ */
+export function smoothGeometryNormals(geom: THREE.BufferGeometry) {
+  const posAttr = geom.attributes.position;
+  const normAttr = geom.attributes.normal;
+  if (!posAttr || !normAttr) return;
+
+  const count = posAttr.count;
+  const hashPrecision = 1e4;
+  const posMap = new Map<string, number[]>();
+
+  for (let i = 0; i < count; i++) {
+    const x = Math.round(posAttr.getX(i) * hashPrecision);
+    const y = Math.round(posAttr.getY(i) * hashPrecision);
+    const z = Math.round(posAttr.getZ(i) * hashPrecision);
+    const key = `${x}_${y}_${z}`;
+    let list = posMap.get(key);
+    if (!list) {
+      list = [];
+      posMap.set(key, list);
+    }
+    list.push(i);
+  }
+
+  const avg = new THREE.Vector3();
+  const v = new THREE.Vector3();
+
+  for (const indices of posMap.values()) {
+    if (indices.length <= 1) continue;
+
+    avg.set(0, 0, 0);
+    for (const idx of indices) {
+      v.fromBufferAttribute(normAttr, idx);
+      avg.add(v);
+    }
+
+    if (avg.lengthSq() > 1e-6) {
+      avg.normalize();
+      for (const idx of indices) {
+        normAttr.setXYZ(idx, avg.x, avg.y, avg.z);
+      }
+    }
+  }
+
+  normAttr.needsUpdate = true;
+}
+
+/**
  * Procedural 3D Architectural Hollow Ring Fracture System:
  * - 8 Asymmetric, randomized crystal shards with faceted break seams matching the KODE.IMMERSIVE reference
  * - Localized cursor affinity: The shard closest to the cursor breaks outward significantly,
@@ -147,14 +197,17 @@ export function generateFractureSystem(): MergedFractureSystem {
       bevelEnabled: true,
       bevelThickness,
       bevelSize,
-      bevelSegments: isMobile ? 4 : 8,
-      curveSegments: isMobile ? 16 : 32,
+      bevelSegments: isMobile ? 6 : 10,
+      curveSegments: isMobile ? 24 : 40,
     });
     g.translate(0, 0, -depth / 2);
     g.computeVertexNormals();
 
     const nonIndexed = g.index ? g.toNonIndexed() : g;
     if (g !== nonIndexed) g.dispose();
+
+    // Average normals across coincident vertices so all cut edges and curved arcs shade with buttery smooth normals
+    smoothGeometryNormals(nonIndexed);
 
     const restPos = new THREE.Vector3(cx, cy, 0);
     const kin = shardKinematics[i];

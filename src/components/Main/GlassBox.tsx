@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import { MeshTransmissionMaterial, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { soundManager } from '@/lib/sound';
-import { generateFractureSystem } from './fractureGeometry';
+import { generateFractureSystem, smoothGeometryNormals } from './fractureGeometry';
 
 export const GlassBox: FC = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -60,6 +60,7 @@ export const GlassBox: FC = () => {
     });
     g.center();
     g.computeVertexNormals();
+    smoothGeometryNormals(g);
     return g;
   }, []);
 

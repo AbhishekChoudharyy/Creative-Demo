@@ -16,24 +16,24 @@ export const Scene: FC = () => {
     <>
       <color attach="background" args={["#1E90FF"]} />
 
-      {/* ── Studio Lighting: Polished, glossy specular lighting with zero blowout / clipping ── */}
-      <ambientLight intensity={1.2} color="#f0f9ff" />
+      {/* ── Studio Lighting: Soft, balanced, luxury specular lighting ── */}
+      <ambientLight intensity={0.9} color="#f0f9ff" />
 
       {/* Main Studio Key Light */}
-      <directionalLight position={[5, 8, 5]} intensity={1.8} color="#ffffff" />
+      <directionalLight position={[5, 8, 5]} intensity={1.3} color="#ffffff" />
 
       {/* Studio Fill Light */}
-      <directionalLight position={[-6, -3, 4]} intensity={1.2} color="#e0f2fe" />
+      <directionalLight position={[-6, -3, 4]} intensity={0.9} color="#e0f2fe" />
 
       {/* Gentle Rim Accent */}
-      <directionalLight position={[0, 6, -4]} intensity={1.2} color="#ffffff" />
+      <directionalLight position={[0, 6, -4]} intensity={0.9} color="#ffffff" />
 
       {/* High-Resolution Studio Environment with Soft Circular Softboxes (zero harsh horizontal bars) */}
       <Environment resolution={isMobile ? 256 : 1024}>
         {/* Overhead broad studio softbox for smooth, glossy corner curvature */}
         <Lightformer
           form="circle"
-          intensity={2.2}
+          intensity={1.6}
           position={[0, 6.0, 3.0]}
           scale={[8.0, 8.0, 1]}
           color="#ffffff"
@@ -41,7 +41,7 @@ export const Scene: FC = () => {
         {/* Right studio softbox */}
         <Lightformer
           form="circle"
-          intensity={1.6}
+          intensity={1.2}
           position={[6.0, 1.0, 3.0]}
           scale={[6.0, 6.0, 1]}
           color="#ffffff"
@@ -49,7 +49,7 @@ export const Scene: FC = () => {
         {/* Left cool studio fill */}
         <Lightformer
           form="circle"
-          intensity={1.4}
+          intensity={1.0}
           position={[-6.0, 1.0, 3.0]}
           scale={[6.0, 6.0, 1]}
           color="#e0f2fe"
@@ -57,7 +57,7 @@ export const Scene: FC = () => {
         {/* Bottom soft bounce fill */}
         <Lightformer
           form="circle"
-          intensity={1.2}
+          intensity={0.9}
           position={[0, -5.0, 2.0]}
           scale={[7.0, 7.0, 1]}
           color="#dbeafe"
@@ -65,7 +65,7 @@ export const Scene: FC = () => {
         {/* Back diffuse backlight */}
         <Lightformer
           form="circle"
-          intensity={1.5}
+          intensity={1.1}
           position={[0, 0, -5.0]}
           scale={[10.0, 10.0, 1]}
           color="#93c5fd"
