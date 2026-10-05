@@ -274,7 +274,7 @@ export default function CustomCursor() {
         <div
           className="w-2.5 h-2.5 rounded-full"
           style={{
-            background: '#0A1F44',
+            background:"rgba(20, 20, 20, 0)",
           }}
         />
       </div>
