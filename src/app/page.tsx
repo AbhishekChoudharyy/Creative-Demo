@@ -455,15 +455,18 @@ export default function Home() {
       {/* Sticky Navbar (scrolls down from start of viewport to end of viewport, staying at bottom at end of site) */}
       <div
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-5 sm:px-8 py-5 sm:py-8 pointer-events-auto text-xs font-mono tracking-widest uppercase mix-blend-normal will-change-transform"
+        className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-5 sm:px-8 py-2 sm:py-2.5 pointer-events-auto text-xs font-mono tracking-widest uppercase mix-blend-normal will-change-transform"
       >
+        {/* Thin white strap behind Navbar — full device width */}
+        <div className="absolute inset-0 h-15.1 bg-background: 'linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 24%, #F0F6FD 40%, #C4E1FD 56%, #70B4F9 70%, #1E90FF 82%, #1E90FF 100%)  border border-black/[1] shadow-[1_1px_8px_rgba(0,0,0,0.04)] -z-10 pointer-events-none" />
+
         {/* Brand Lockup: Origo ATELIER (Replaces logo image, active on desktop & mobile) */}
         <div
           onClick={() => {
             soundManager.playClick();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className="flex items-center select-none cursor-pointer hover:opacity-75 transition-opacity min-h-[44px] normal-case"
+          className="flex items-center select-none cursor-pointer hover:opacity-75 transition-opacity min-h-[40px] px-2 sm:px-3 normal-case"
         >
           <div className="flex items-baseline gap-1.5 sm:gap-2">
             <span
@@ -486,8 +489,7 @@ export default function Home() {
 
         {/* Right Navigation Controls */}
         <div
-          className="flex items-center gap-2.5 sm:gap-4 md:gap-8 transition-colors duration-300"
-          style={{ color: isOverWhite ? '#0A1F44' : '#FFFFFF' }}
+          className="flex items-center gap-2.5 sm:gap-4 md:gap-8 text-[#0A1F44] px-2 sm:px-3 transition-colors duration-300"
         >
           <button
             onClick={handleToggleMute}

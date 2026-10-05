@@ -315,21 +315,19 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
 
         float getLiquidDisplacement(vec3 p, vec3 n, float t, vec3 hPt, float hAmt, float drag) {
           float dist = length(p - hPt);
-          float bulgeRadius = 1.35;
+          float bulgeRadius = 1.40;
           if (dist >= bulgeRadius) return 0.0;
 
           float normDist = dist / bulgeRadius;
-          float falloff = smoothstep(1.0, 0.0, normDist);
-          // Smooth cosine bell dome (calm, steady, matching reference Image 3)
+          // Smooth cosine bell dome (continuous, silky smooth from start to end)
           float dome = 0.5 * (1.0 + cos(normDist * 3.14159265));
-          // Viscous perimeter crease indentation matching Image 3
-          float crease = -sin(normDist * 3.14159265) * (1.0 - normDist) * 0.025;
+          // Gentle viscous perimeter crease
+          float crease = -sin(normDist * 3.14159265) * (1.0 - normDist) * 0.02;
+          // Silky slow liquid undulation
+          float slowLiquid = sin(t * 1.6 + normDist * 4.0) * 0.015 * (1.0 - normDist);
 
-          // Slow organic liquid undulation
-          float slowLiquid = sin(t * 1.5 + normDist * 4.5) * 0.018 * (1.0 - normDist);
-
-          // Strictly positive outward displacement so geometry is 100% solid and never cuts inwards
-          float disp = max(0.0, (dome * (0.20 + drag * 0.10) + crease + slowLiquid) * falloff);
+          // Guaranteed smooth positive outward displacement (never intersects inwards)
+          float disp = max(0.0, dome * (0.22 + drag * 0.10) + crease + slowLiquid);
           return disp * hAmt;
         }
       ` + shader.vertexShader;
@@ -366,7 +364,7 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
       );
     };
 
-    mat.customProgramCacheKey = () => 'liquid_unified_v4';
+    mat.customProgramCacheKey = () => 'liquid_unified_v5';
     return mat;
   }, []);
 
@@ -452,16 +450,16 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
 
     liquidUniforms.current.uTime.value = t;
 
-    // Slow, silky liquid hover transition
+    // Silky smooth hover transition from start to end (no sticking, no jerkiness)
     const targetHoverVal = isHovered.current || isDragging.current ? 1.0 : 0.0;
     liquidUniforms.current.uHover.value = THREE.MathUtils.lerp(
       liquidUniforms.current.uHover.value,
       targetHoverVal,
-      0.035
+      isHovered.current ? 0.09 : 0.07
     );
 
-    // Viscous liquid pointer inertia
-    hoverPointCurrent.current.lerp(hoverPointTarget.current, 0.055);
+    // Silky responsive pointer inertia
+    hoverPointCurrent.current.lerp(hoverPointTarget.current, 0.11);
     liquidUniforms.current.uHoverPoint.value.copy(hoverPointCurrent.current);
 
     if (ringRef.current) {
@@ -504,40 +502,6 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     }
   };
 
-  const handlePointerMoveHit = (e: any) => {
-    if (e.point && groupRef.current) {
-      const local = groupRef.current.worldToLocal(e.point.clone());
-      hoverPointTarget.current.copy(local);
-      isHovered.current = true;
-      setIsHoveredState(true);
-      if (typeof document !== 'undefined') {
-        document.body.classList.add('hide-cursor-for-3d');
-      }
-    }
-  };
-
-  const handlePointerOver = (e: any) => {
-    isHovered.current = true;
-    setIsHoveredState(true);
-    if (typeof document !== 'undefined') {
-      document.body.classList.add('hide-cursor-for-3d');
-    }
-    if (e.point && groupRef.current) {
-      const local = groupRef.current.worldToLocal(e.point.clone());
-      hoverPointTarget.current.copy(local);
-    }
-  };
-
-  const handlePointerOut = () => {
-    isHovered.current = false;
-    if (!isDragging.current) {
-      setIsHoveredState(false);
-      if (typeof document !== 'undefined') {
-        document.body.classList.remove('hide-cursor-for-3d');
-      }
-    }
-  };
-
   const scale = isMobile ? 0.55 : 0.95;
 
   return (
@@ -545,10 +509,47 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
       ref={groupRef}
       scale={scale}
       onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMoveHit}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
     >
+      {/* Invisible hit-test proxy mesh ensuring smooth, flicker-free hover detection across the entire shape INCLUDING hollow center */}
+      <mesh
+        onPointerEnter={(e) => {
+          e.stopPropagation();
+          isHovered.current = true;
+          setIsHoveredState(true);
+          if (typeof document !== 'undefined') {
+            document.body.classList.add('hide-cursor-for-3d');
+          }
+          if (e.point && groupRef.current) {
+            const local = groupRef.current.worldToLocal(e.point.clone());
+            hoverPointTarget.current.copy(local);
+          }
+        }}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          if (e.point && groupRef.current) {
+            const local = groupRef.current.worldToLocal(e.point.clone());
+            hoverPointTarget.current.copy(local);
+            isHovered.current = true;
+            setIsHoveredState(true);
+          }
+        }}
+        onPointerLeave={(e) => {
+          e.stopPropagation();
+          isHovered.current = false;
+          if (!isDragging.current) {
+            setIsHoveredState(false);
+            if (typeof document !== 'undefined') {
+              document.body.classList.remove('hide-cursor-for-3d');
+            }
+          }
+        }}
+        position={[0, 0, 0]}
+        rotation={[Math.PI / 2, 0, 0]}
+      >
+        <cylinderGeometry args={[2.0, 2.0, 1.2, 32]} />
+        <meshBasicMaterial visible={false} />
+      </mesh>
+
       {SLIDES.map((s, idx) => (
         <mesh
           key={s.shape}

@@ -91,12 +91,7 @@ html, body {
   font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif;
 }
 
-/* Custom navy dot cursor — hide native cursor on precise pointers */
-@media (pointer: fine) {
-  html, body, a, button, [role="button"], input, textarea, select, label, .cursor-pointer, canvas {
-    cursor: none;
-  }
-}
+/* Default cursor is visible site-wide; custom trail overlays on top */
 
 /* Headings: ERF Neot */
 h1, h2, h3, h4, h5, h6 {
