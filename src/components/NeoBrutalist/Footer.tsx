@@ -5,8 +5,6 @@ import FooterShapes from './FooterShapes';
 import { soundManager } from '@/lib/sound';
 
 export default function Footer() {
-  const [isFooterHovered, setIsFooterHovered] = useState(false);
-
   const scrollToTop = () => {
     soundManager.playClick();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -15,13 +13,11 @@ export default function Footer() {
   return (
     <div
       id="footer"
-      onMouseEnter={() => setIsFooterHovered(true)}
-      onMouseLeave={() => setIsFooterHovered(false)}
       className="relative w-full min-h-[380px] sm:min-h-[420px] lg:min-h-[460px] text-white select-none flex flex-col justify-between px-6 sm:px-10 md:px-14 lg:px-20 pt-8 sm:pt-12 pb-8 sm:pb-12 max-w-[1440px] mx-auto z-[40]"
     >
       {/* ── 3D Magnetic Cluster (Glossy Black Shapes — Centered in Footer Zone) ── */}
       <div className="absolute inset-0 z-[1] pointer-events-auto">
-        <FooterShapes isHovered={isFooterHovered} />
+        <FooterShapes />
       </div>
 
       {/* ── FOOTER CONTENT ROW: Logo at Bottom-Left, 3 Buttons at Bottom-Right ── */}

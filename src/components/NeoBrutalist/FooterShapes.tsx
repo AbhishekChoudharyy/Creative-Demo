@@ -7,119 +7,162 @@ import * as THREE from 'three';
 
 /* ─────────────────────────────────────────────────────────────
    Footer Magnetic Shape Cluster
-   - Reuses the exact 3 signature shapes from the Shapes section:
-     Circle (ring) / Square (frame) / Triangle (frame)
-   - Glossy black, clumped into a magnetic ball that bulges
-     toward the cursor like a magnet — reference: KODE footer
+   - Thick chunky 3D shapes with rounded corners matching
+     the signature carousel 3D models (Rectangle, Triangle, Circle)
+   - Sticky magnetic cluster by default (stays clumped like on mobile)
+   - Disperses/scatters outward ONLY when cursor specifically hovers over the shapes
 ────────────────────────────────────────────────────────────── */
 
 function useShapeGeometries() {
   return useMemo(() => {
     const make = (shape: string) => {
-      // Hollow Square / Rectangle Frame (same as Shapes section)
+      // 1. Hollow Square / Rectangle Frame with rounded corners and thick depth matching carousel
       if (shape === 'rectangle') {
+        const w_out = 1.15;
+        const h_out = 1.15;
+        const r_out = 0.14;
+
         const s = new THREE.Shape();
-        s.moveTo(-1.15, -1.15);
-        s.lineTo(1.15, -1.15);
-        s.lineTo(1.15, 1.15);
-        s.lineTo(-1.15, 1.15);
+        s.moveTo(-w_out + r_out, -h_out);
+        s.lineTo(w_out - r_out, -h_out);
+        s.quadraticCurveTo(w_out, -h_out, w_out, -h_out + r_out);
+        s.lineTo(w_out, h_out - r_out);
+        s.quadraticCurveTo(w_out, h_out, w_out - r_out, h_out);
+        s.lineTo(-w_out + r_out, h_out);
+        s.quadraticCurveTo(-w_out, h_out, -w_out, h_out - r_out);
+        s.lineTo(-w_out, -h_out + r_out);
+        s.quadraticCurveTo(-w_out, -h_out, -w_out + r_out, -h_out);
         s.closePath();
+
+        const w_in = 0.52;
+        const h_in = 0.52;
+        const r_in = 0.08;
         const hole = new THREE.Path();
-        hole.moveTo(-0.92, -0.92);
-        hole.lineTo(-0.92, 0.92);
-        hole.lineTo(0.92, 0.92);
-        hole.lineTo(0.92, -0.92);
+        hole.moveTo(-w_in + r_in, -h_in);
+        hole.quadraticCurveTo(-w_in, -h_in, -w_in, -h_in + r_in);
+        hole.lineTo(-w_in, h_in - r_in);
+        hole.quadraticCurveTo(-w_in, h_in, -w_in + r_in, h_in);
+        hole.lineTo(w_in - r_in, h_in);
+        hole.quadraticCurveTo(w_in, h_in, w_in, h_in - r_in);
+        hole.lineTo(w_in, -h_in + r_in);
+        hole.quadraticCurveTo(w_in, -h_in, w_in - r_in, -h_in);
         hole.closePath();
         s.holes.push(hole);
+
         const g = new THREE.ExtrudeGeometry(s, {
-          depth: 0.22,
+          depth: 0.58,
           bevelEnabled: true,
-          bevelThickness: 0.05,
-          bevelSize: 0.05,
-          bevelSegments: 8,
+          bevelThickness: 0.10,
+          bevelSize: 0.08,
+          bevelSegments: 16,
+          curveSegments: 32,
         });
         g.center();
         g.computeVertexNormals();
         return g;
       }
 
-      // Hollow Triangle Frame
+      // 2. Hollow Triangle Frame with rounded corners and thick walls matching carousel
       if (shape === 'triangle') {
+        const R_out = 1.66;
+        const cr_out = 0.20;
+        const cornersOut = [
+          new THREE.Vector2(0, R_out),
+          new THREE.Vector2(R_out * Math.cos(-Math.PI / 6), R_out * Math.sin(-Math.PI / 6)),
+          new THREE.Vector2(R_out * Math.cos((7 * Math.PI) / 6), R_out * Math.sin((7 * Math.PI) / 6)),
+        ];
+
         const s = new THREE.Shape();
-        const R_out = 1.48;
-        s.moveTo(0, R_out);
-        s.lineTo(R_out * Math.cos(-Math.PI / 6), R_out * Math.sin(-Math.PI / 6));
-        s.lineTo(R_out * Math.cos((7 * Math.PI) / 6), R_out * Math.sin((7 * Math.PI) / 6));
+        for (let i = 0; i < 3; i++) {
+          const curr = cornersOut[i];
+          const next = cornersOut[(i + 1) % 3];
+          const prev = cornersOut[(i + 2) % 3];
+          const dirFromPrev = new THREE.Vector2().subVectors(curr, prev).normalize();
+          const dirToNext = new THREE.Vector2().subVectors(next, curr).normalize();
+          const pStart = new THREE.Vector2().copy(curr).addScaledVector(dirFromPrev, -cr_out);
+          const pEnd = new THREE.Vector2().copy(curr).addScaledVector(dirToNext, cr_out);
+
+          if (i === 0) {
+            s.moveTo(pEnd.x, pEnd.y);
+          } else {
+            s.lineTo(pStart.x, pStart.y);
+            s.quadraticCurveTo(curr.x, curr.y, pEnd.x, pEnd.y);
+          }
+        }
+        const c0 = cornersOut[0];
+        const pStart0 = new THREE.Vector2()
+          .copy(c0)
+          .addScaledVector(new THREE.Vector2().subVectors(c0, cornersOut[2]).normalize(), -cr_out);
+        const pEnd0 = new THREE.Vector2()
+          .copy(c0)
+          .addScaledVector(new THREE.Vector2().subVectors(cornersOut[1], c0).normalize(), cr_out);
+        s.lineTo(pStart0.x, pStart0.y);
+        s.quadraticCurveTo(c0.x, c0.y, pEnd0.x, pEnd0.y);
         s.closePath();
-        const R_in = 0.98;
+
+        const R_in = 0.88;
+        const cr_in = 0.11;
+        const cornersIn = [
+          new THREE.Vector2(0, R_in),
+          new THREE.Vector2(R_in * Math.cos((7 * Math.PI) / 6), R_in * Math.sin((7 * Math.PI) / 6)),
+          new THREE.Vector2(R_in * Math.cos(-Math.PI / 6), R_in * Math.sin(-Math.PI / 6)),
+        ];
+
         const hole = new THREE.Path();
-        hole.moveTo(0, R_in);
-        hole.lineTo(R_in * Math.cos((7 * Math.PI) / 6), R_in * Math.sin((7 * Math.PI) / 6));
-        hole.lineTo(R_in * Math.cos(-Math.PI / 6), R_in * Math.sin(-Math.PI / 6));
+        for (let i = 0; i < 3; i++) {
+          const curr = cornersIn[i];
+          const next = cornersIn[(i + 1) % 3];
+          const prev = cornersIn[(i + 2) % 3];
+          const dirFromPrev = new THREE.Vector2().subVectors(curr, prev).normalize();
+          const dirToNext = new THREE.Vector2().subVectors(next, curr).normalize();
+          const pStart = new THREE.Vector2().copy(curr).addScaledVector(dirFromPrev, -cr_in);
+          const pEnd = new THREE.Vector2().copy(curr).addScaledVector(dirToNext, cr_in);
+
+          if (i === 0) {
+            hole.moveTo(pEnd.x, pEnd.y);
+          } else {
+            hole.lineTo(pStart.x, pStart.y);
+            hole.quadraticCurveTo(curr.x, curr.y, pEnd.x, pEnd.y);
+          }
+        }
+        const h0 = cornersIn[0];
+        const hpStart0 = new THREE.Vector2()
+          .copy(h0)
+          .addScaledVector(new THREE.Vector2().subVectors(h0, cornersIn[2]).normalize(), -cr_in);
+        const hpEnd0 = new THREE.Vector2()
+          .copy(h0)
+          .addScaledVector(new THREE.Vector2().subVectors(cornersIn[1], h0).normalize(), cr_in);
+        hole.lineTo(hpStart0.x, hpStart0.y);
+        hole.quadraticCurveTo(h0.x, h0.y, hpEnd0.x, hpEnd0.y);
         hole.closePath();
         s.holes.push(hole);
+
         const g = new THREE.ExtrudeGeometry(s, {
-          depth: 0.22,
+          depth: 0.58,
           bevelEnabled: true,
-          bevelThickness: 0.05,
-          bevelSize: 0.05,
-          bevelSegments: 8,
+          bevelThickness: 0.10,
+          bevelSize: 0.08,
+          bevelSegments: 16,
+          curveSegments: 32,
         });
         g.center();
         g.computeVertexNormals();
         return g;
       }
 
-      // Hollow Circle / Ring Frame
-      if (shape === 'circle') {
-        const s = new THREE.Shape();
-        s.absarc(0, 0, 1.25, 0, Math.PI * 2, false);
-        const hole = new THREE.Path();
-        hole.absarc(0, 0, 1.02, 0, Math.PI * 2, true);
-        s.holes.push(hole);
-        const g = new THREE.ExtrudeGeometry(s, {
-          depth: 0.22,
-          bevelEnabled: true,
-          bevelThickness: 0.05,
-          bevelSize: 0.05,
-          bevelSegments: 10,
-          curveSegments: 96,
-        });
-        g.center();
-        g.computeVertexNormals();
-        return g;
-      }
-
-      // Solid Donut (torus) — KODE-style 3D "O"
-      if (shape === 'donut') {
-        const g = new THREE.TorusGeometry(1.0, 0.52, 40, 96);
-        g.computeVertexNormals();
-        return g;
-      }
-
-      // Solid Plus / Cross — KODE-style 3D "+"
+      // 3. Hollow Circle / Tyre Ring with chunky profile matching carousel
       const s = new THREE.Shape();
-      const a = 0.42;
-      const L = 1.35;
-      s.moveTo(-a, -L);
-      s.lineTo(a, -L);
-      s.lineTo(a, -a);
-      s.lineTo(L, -a);
-      s.lineTo(L, a);
-      s.lineTo(a, a);
-      s.lineTo(a, L);
-      s.lineTo(-a, L);
-      s.lineTo(-a, a);
-      s.lineTo(-L, a);
-      s.lineTo(-L, -a);
-      s.lineTo(-a, -a);
-      s.closePath();
+      s.absarc(0, 0, 1.30, 0, Math.PI * 2, false);
+      const hole = new THREE.Path();
+      hole.absarc(0, 0, 0.70, 0, Math.PI * 2, true);
+      s.holes.push(hole);
       const g = new THREE.ExtrudeGeometry(s, {
-        depth: 0.42,
+        depth: 0.58,
         bevelEnabled: true,
-        bevelThickness: 0.12,
-        bevelSize: 0.12,
-        bevelSegments: 10,
+        bevelThickness: 0.10,
+        bevelSize: 0.08,
+        bevelSegments: 16,
+        curveSegments: 128,
       });
       g.center();
       g.computeVertexNormals();
@@ -130,23 +173,22 @@ function useShapeGeometries() {
       circle: make('circle'),
       rectangle: make('rectangle'),
       triangle: make('triangle'),
-      donut: make('donut'),
-      plus: make('plus'),
     } as Record<string, THREE.BufferGeometry>;
   }, []);
 }
 
-function Cluster({ count, isHovered = false }: { count: number; isHovered?: boolean }) {
+function Cluster({ count }: { count: number }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshesRef = useRef<Array<THREE.Mesh | null>>([]);
   const geometries = useShapeGeometries();
   const pointer = useThree((state) => state.pointer);
   const camera = useThree((state) => state.camera);
   const hoverStrength = useRef(0);
-  const [inHover, setInHover] = useState(false);
+  const hoveredCount = useRef(0);
+  const isDirectHoverRef = useRef(false);
 
   const items = useMemo(() => {
-    // Only 3 signature Origo shapes: Circle, Triangle, Rectangle
+    // Exact 3 signature Origo shapes
     const shapes = ['circle', 'triangle', 'rectangle'];
     const arr: Array<{
       shape: string;
@@ -156,11 +198,10 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
       tumble: number;
       offset: THREE.Vector3;
       scatterVector: THREE.Vector3;
-      glass: boolean;
     }> = [];
     for (let i = 0; i < count; i++) {
       // Clumped magnetic cluster centered behind typography
-      const r = 0.52 + Math.random() * 0.85;
+      const r = 0.42 + Math.random() * 0.72;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
@@ -168,12 +209,11 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
       // Upar repel na ho — only Left (-X), Right (+X), Downward (-Y) and Depth (Z)
       const dirAngle = Math.random() * Math.PI * 2;
       const speed = 0.95 + Math.random() * 0.85;
-      // Downward only: Y is strictly negative (-Y), never upward (+Y)
       const yScatter = -(0.25 + Math.random() * 0.95) * speed;
       const scatterVector = new THREE.Vector3(
-        Math.cos(dirAngle) * speed * 1.25, // Left & Right
-        yScatter,                          // Strictly Downward (never up)
-        Math.sin(dirAngle) * speed * 0.85  // Depth Z (front & back)
+        Math.cos(dirAngle) * speed * 1.35,
+        yScatter,
+        Math.sin(dirAngle) * speed * 0.95
       );
 
       arr.push({
@@ -188,11 +228,10 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
           Math.random() * Math.PI,
           Math.random() * Math.PI
         ),
-        scale: 0.36 + Math.random() * 0.28,
+        scale: 0.32 + Math.random() * 0.22,
         tumble: 0.16 + Math.random() * 0.35,
         offset: new THREE.Vector3(),
         scatterVector,
-        glass: false,
       });
     }
     return arr;
@@ -216,53 +255,53 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
     tmpDir.copy(tmpTarget).sub(camera.position).normalize();
     const planeDist = -camera.position.z / tmpDir.z;
     tmpTarget.copy(camera.position).add(tmpDir.multiplyScalar(planeDist));
-    // Do not let magnetic pull drag shapes upwards beyond the upper footer boundary
     tmpTarget.y = Math.min(tmpTarget.y, 0.25);
+
+    // Distance from cursor to the cluster center in world coordinates
+    const cursorDist = Math.hypot(tmpTarget.x, tmpTarget.y);
+
+    // TARGETED HOVER: Only scatter if cursor is directly over the cluster shapes
+    // Otherwise stay clumped and stuck together ("pass chipak jynge jese mobile me hai")
+    if (cursorDist < 1.45 || hoveredCount.current > 0) {
+      isDirectHoverRef.current = true;
+    } else if (cursorDist > 2.05 && hoveredCount.current === 0) {
+      isDirectHoverRef.current = false;
+    }
 
     const dt = Math.min(delta, 0.05);
 
-    // Hover = instant physical scatter in ONE go ("ek baar me bikhad jaye"):
-    // Unhover = instant magnetic snap ("wapas magnet jese firse chipak jaye"):
-    const activeHover = inHover || isHovered;
-    if (activeHover) {
-      // Explosive instant burst in 1 go
-      hoverStrength.current += (1.0 - hoverStrength.current) * Math.min(1.0, dt * 13.5);
+    if (isDirectHoverRef.current) {
+      // Scatter dynamically away from cursor
+      hoverStrength.current += (1.0 - hoverStrength.current) * Math.min(1.0, dt * 11.5);
     } else {
-      // Ultra-fast magnetic rewind back into unified knot
-      hoverStrength.current += (0.0 - hoverStrength.current) * Math.min(1.0, dt * 15.5);
+      // Fast magnetic snap back into tight knot
+      hoverStrength.current += (0.0 - hoverStrength.current) * Math.min(1.0, dt * 14.0);
       if (hoverStrength.current < 0.01) hoverStrength.current = 0.0;
     }
     const scatter = hoverStrength.current;
 
-    // Fast snappy damp for instant magnetic sticking
-    const damp = activeHover ? (1 - Math.pow(0.00005, dt)) : (1 - Math.pow(0.00000001, dt));
+    const damp = isDirectHoverRef.current ? (1 - Math.pow(0.00005, dt)) : (1 - Math.pow(0.00000001, dt));
 
     meshesRef.current.forEach((mesh, i) => {
       if (!mesh) return;
       const item = items[i];
       if (!item) return;
 
-      // Base position rotated into current world orientation
       tmpWorld.copy(item.base).applyEuler(group.rotation);
+      tmpWorld.addScaledVector(item.scatterVector, scatter * 1.35);
 
-      // Controlled 3D scatter outward (left, right, downward, depth)
-      tmpWorld.addScaledVector(item.scatterVector, scatter * 1.3);
-
-      // Prevent any upward drift during scatter: keep Y at or below initial rest Y
       if (scatter > 0.02 && tmpWorld.y > item.base.y + 0.05) {
         tmpWorld.y = item.base.y + 0.05;
       }
 
-      // Magnetic pull: shapes near the cursor bulge toward it
+      // Magnetic bulge when hovering
       const dist = tmpWorld.distanceTo(tmpTarget);
-      const pull = Math.max(0, 1 - dist / 3.5);
-
-      tmpWorld.lerp(tmpTarget, pull * 0.22 * (1 - scatter * 0.7));
+      const pull = Math.max(0, 1 - dist / 3.2);
+      tmpWorld.lerp(tmpTarget, pull * 0.20 * (1 - scatter * 0.7));
 
       item.offset.lerp(tmpWorld, damp);
       mesh.position.copy(item.offset);
 
-      // Energetic tumbling and spinning during scatter
       mesh.rotation.x += delta * (item.tumble + scatter * 3.2);
       mesh.rotation.y += delta * (item.tumble * 0.7 + scatter * 2.8);
       mesh.rotation.z += delta * (scatter * 2.0);
@@ -270,36 +309,31 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
   });
 
   return (
-    <group
-      ref={groupRef}
-      scale={1.05}
-    >
-      {/* Invisible plane over entire 3D space so any hover triggers instant scatter */}
-      <mesh
-        position={[0, 0, 0]}
-        onPointerOver={() => setInHover(true)}
-        onPointerOut={() => setInHover(false)}
-      >
-        <planeGeometry args={[40, 40]} />
-        <meshBasicMaterial visible={false} />
-      </mesh>
-
+    <group ref={groupRef} scale={1.05}>
       {items.map((item, i) => (
         <mesh
           key={i}
-          ref={el => {
+          ref={(el) => {
             meshesRef.current[i] = el;
           }}
           geometry={geometries[item.shape]}
           position={item.base}
           rotation={item.rot}
           scale={item.scale}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            hoveredCount.current++;
+          }}
+          onPointerOut={(e) => {
+            e.stopPropagation();
+            hoveredCount.current = Math.max(0, hoveredCount.current - 1);
+          }}
         >
           <meshStandardMaterial
-            color="#161c28"
-            roughness={0.10}
-            metalness={0.78}
-            envMapIntensity={2.5}
+            color="#141923"
+            roughness={0.06}
+            metalness={0.88}
+            envMapIntensity={3.0}
           />
         </mesh>
       ))}
@@ -307,7 +341,7 @@ function Cluster({ count, isHovered = false }: { count: number; isHovered?: bool
   );
 }
 
-export default function FooterShapes({ isHovered = false }: { isHovered?: boolean }) {
+export default function FooterShapes() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -328,14 +362,14 @@ export default function FooterShapes({ isHovered = false }: { isHovered?: boolea
   }, []);
 
   return (
-    <div ref={wrapRef} className="absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+    <div ref={wrapRef} className="absolute inset-0 z-0 pointer-events-auto" aria-hidden="true">
       {inView && (
         <Canvas
           frameloop="always"
           dpr={[1, 1.5]}
           gl={{ powerPreference: 'high-performance', antialias: true, alpha: true }}
           camera={{ fov: 40, position: [0.0, -0.15, 6.0] }}
-          style={{ touchAction: 'pan-y' }}
+          style={{ touchAction: 'pan-y', pointerEvents: 'auto' }}
         >
           <ambientLight intensity={0.85} color="#dbeafe" />
           <directionalLight position={[3, 5, 4]} intensity={2.6} color="#ffffff" />
@@ -348,7 +382,7 @@ export default function FooterShapes({ isHovered = false }: { isHovered?: boolea
               <Lightformer form="rect" intensity={2.4} position={[4, 0, 2]} scale={[0.8, 6, 1]} color="#ffffff" />
               <Lightformer form="circle" intensity={1.8} position={[0, 0, -4]} scale={7} color="#60a5fa" />
             </Environment>
-            <Cluster count={isMobile ? 14 : 26} isHovered={isHovered} />
+            <Cluster count={isMobile ? 14 : 24} />
             <Preload all />
           </Suspense>
         </Canvas>
@@ -356,4 +390,3 @@ export default function FooterShapes({ isHovered = false }: { isHovered?: boolea
     </div>
   );
 }
-
