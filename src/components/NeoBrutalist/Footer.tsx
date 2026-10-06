@@ -13,7 +13,7 @@ export default function Footer() {
   return (
     <div
       id="footer"
-      className="relative w-full min-h-[380px] sm:min-h-[420px] lg:min-h-[460px] text-white select-none flex flex-col justify-between px-6 sm:px-10 md:px-14 lg:px-20 pt-8 sm:pt-12 pb-8 sm:pb-12 max-w-[1440px] mx-auto z-[40]"
+      className="relative w-full min-h-[440px] sm:min-h-[480px] lg:min-h-[520px] text-white select-none flex flex-col justify-between px-6 sm:px-10 md:px-14 lg:px-20 pt-10 sm:pt-14 pb-16 sm:pb-20 lg:pb-24 max-w-[1440px] mx-auto z-[40]"
     >
       {/* ── 3D Magnetic Cluster (Glossy Black Shapes — Centered in Footer Zone) ── */}
       <div className="absolute inset-0 z-[1] pointer-events-auto">
@@ -21,7 +21,7 @@ export default function Footer() {
       </div>
 
       {/* ── FOOTER CONTENT ROW: Logo at Bottom-Left, 3 Buttons at Bottom-Right ── */}
-      <div className="relative z-10 w-full flex flex-row justify-between items-end gap-3 mt-auto pt-10 sm:pt-14">
+      <div className="relative z-10 w-full flex flex-row justify-between items-end gap-3 mt-auto pt-14 sm:pt-20">
         
         {/* LEFT ZONE: OFFICIAL WHITE LOGO (Bottom Left) */}
         <div className="flex items-end select-none">

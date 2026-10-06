@@ -285,7 +285,7 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
     uDragSpeed: { value: 0 },
   });
 
-  // Unified Liquid Material for Circle, Rectangle and Triangle
+  // Unified Liquid Material for Circle, Rectangle and Triangle (Original Silky Smooth Molten Liquid)
   const liquidMaterial = useMemo(() => {
     const mat = new THREE.MeshPhysicalMaterial({
       color: '#080808',
@@ -381,23 +381,12 @@ function MetalHeroObject({ slideIndex, onFirstDrag }: ShapeProps) {
   const lockScroll = () => {
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.touchAction = 'none';
-    document.body.style.touchAction = 'none';
   };
+
   const unlockScroll = () => {
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
-    document.documentElement.style.touchAction = '';
-    document.body.style.touchAction = '';
   };
-
-  useEffect(() => {
-    return () => {
-      if (typeof document !== 'undefined') {
-        document.body.classList.remove('hide-cursor-for-3d');
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
