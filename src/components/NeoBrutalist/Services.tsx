@@ -59,25 +59,6 @@ export default function Services() {
       // Setup reveal element centering
       gsap.set(revealRef.current, { xPercent: -50, yPercent: -50 });
 
-      // List Item Reveal
-      const items = listRef.current?.children;
-      if (items) {
-        Array.from(items).forEach((item) => {
-          gsap.fromTo(item, 
-            { y: 50, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.8,
-              scrollTrigger: {
-                trigger: item,
-                start: "top 95%",
-                toggleActions: "play reverse play reverse",
-              }
-            }
-          );
-        });
-      }
 
       // Mouse Move Effect for Image Reveal
       const moveReveal = (e: MouseEvent) => {
@@ -115,7 +96,7 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="pt-6 sm:pt-8 md:pt-10 pb-20 sm:pb-24 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform -mt-4 sm:-mt-8 md:-mt-10"
+      className="pt-6 sm:pt-8 md:pt-10 pb-20 sm:pb-24 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform transform-gpu -mt-4 sm:-mt-8 md:-mt-10"
     >
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
@@ -183,7 +164,7 @@ export default function Services() {
                     0{service.id}
                   </span>
                   <h3
-                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white group-hover:text-black transition-colors group-hover:translate-x-2 sm:group-hover:translate-x-3 duration-300 break-words font-semibold tracking-tight"
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white group-hover:text-black transition-colors duration-200 break-words font-semibold tracking-tight"
                     style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
                   >
                     {service.title}
@@ -192,7 +173,7 @@ export default function Services() {
                 
                 <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                   <span
-                    className="text-[10px] sm:text-xs uppercase tracking-widest opacity-0 md:opacity-100 text-white/80 group-hover:text-black transition-all transform translate-y-2 group-hover:translate-y-0 duration-300 delay-75 hidden sm:inline font-mono"
+                    className="text-[10px] sm:text-xs uppercase tracking-widest text-white/80 group-hover:text-black transition-colors duration-200 hidden sm:inline font-mono"
                     style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', monospace, sans-serif" }}
                   >
                     {service.category}

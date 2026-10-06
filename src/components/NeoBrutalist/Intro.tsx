@@ -892,19 +892,13 @@ export default function Intro() {
       </div>
 
       {/* ══════════════════════════════════════════════
-          WHAT WE BELIEVE — BRAND PHILOSOPHY PARAGRAPH
+          BRAND PHILOSOPHY PARAGRAPH
       ══════════════════════════════════════════════ */}
       <div 
         id="what-we-believe"
         className="flex relative z-10 w-full max-w-[1700px] mx-auto mt-12 sm:mt-16 md:mt-24 lg:mt-32 mb-12 sm:mb-16 md:mb-24 justify-end"
       >
-        <div className="w-full sm:w-10/12 md:w-8/12 lg:w-6/12 border-l-2 border-[#0A1F44]/25 pl-6 sm:pl-8 space-y-4">
-          <span 
-            className="text-xs sm:text-sm uppercase tracking-[0.25em] font-bold text-[#0A1F44]/70 block mb-1"
-            style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif" }}
-          >
-            {"WHAT WE BELIEVE"}
-          </span>
+        <div className="w-full sm:w-10/12 md:w-8/12 lg:w-6/12 space-y-4">
           <p 
             className="text-[19px] sm:text-[20px] md:text-[21px] text-[#0A1F44] leading-[1.65]"
             style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif" }}

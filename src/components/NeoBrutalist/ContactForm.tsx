@@ -27,52 +27,56 @@ export default function ContactForm() {
       const servicesEl = document.getElementById('services');
       if (!servicesEl) return;
 
-      ScrollTrigger.create({
-        id: 'services-to-contact-stack',
-        trigger: servicesEl,
-        start: 'bottom bottom',
-        end: '+=240%',
-        pin: true,
-        pinSpacing: false,
-        anticipatePin: 1,
-        scrub: 1.2,
-        onUpdate: (self) => {
-          gsap.set(servicesEl, {
-            scale: 1 - self.progress * 0.04,
-            opacity: 1 - self.progress * 0.15,
-            transformOrigin: 'center bottom',
-          });
+      // Unified single timeline: 100% perfectly synced, ultra-smooth scrub interpolation
+      const stackTl = gsap.timeline({
+        scrollTrigger: {
+          id: 'services-to-contact-stack',
+          trigger: servicesEl,
+          start: 'bottom bottom',
+          end: '+=240%',
+          pin: true,
+          pinSpacing: false,
+          scrub: 1.0,
+          invalidateOnRefresh: true,
         },
       });
 
-      // Slower, smooth glide-in for ContactForm so "WHAT WE DO" remains clearly visible and readable
-      gsap.fromTo(
-        sectionRef.current,
-        { y: 360 },
+      // Services subtle scale & soften
+      stackTl.to(
+        servicesEl,
         {
-          y: 0,
-          ease: 'power1.out',
-          scrollTrigger: {
-            id: 'contact-slow-glide',
-            trigger: servicesEl,
-            start: 'bottom bottom',
-            end: '+=240%',
-            scrub: 1.5,
-          },
-        }
+          scale: 0.965,
+          opacity: 0.88,
+          transformOrigin: 'center bottom',
+          ease: 'power1.inOut',
+          force3D: true,
+        },
+        0
       );
 
-      // Staggered / delayed stacked entrance for all form blocks
+      // Contact Form fluid, silky glide-in
+      stackTl.fromTo(
+        sectionRef.current,
+        { y: 340, force3D: true },
+        {
+          y: 0,
+          ease: 'power1.inOut',
+          force3D: true,
+        },
+        0
+      );
+
+      // Staggered smooth entrance for form content blocks
       gsap.fromTo(
         '.cf-stack',
-        { y: 80, opacity: 0, scale: 0.98 },
+        { y: 60, opacity: 0, scale: 0.98 },
         {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 1.2,
-          ease: 'power3.out',
-          stagger: 0.15,
+          duration: 1.1,
+          ease: 'power2.out',
+          stagger: 0.12,
           scrollTrigger: {
             id: 'contact-staggered-reveal',
             trigger: sectionRef.current,
@@ -103,7 +107,7 @@ export default function ContactForm() {
     <footer
       ref={sectionRef}
       id="contact"
-      className="relative z-30 w-full text-[#0A1F44] overflow-hidden rounded-t-[36px] sm:rounded-t-[56px] border-t border-white/60 shadow-[0_-25px_60px_rgba(0,0,0,0.14)] will-change-transform"
+      className="relative z-30 w-full text-[#0A1F44] overflow-hidden rounded-t-[36px] sm:rounded-t-[56px] border-t border-white/60 shadow-[0_-25px_60px_rgba(0,0,0,0.14)] will-change-transform transform-gpu"
       style={{
         // One continuous organic canvas: Pure White → Soft Ice Sky → Electric Blue
         background: 'linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 24%, #F0F6FD 40%, #C4E1FD 56%, #70B4F9 70%, #1E90FF 82%, #1E90FF 100%)',
