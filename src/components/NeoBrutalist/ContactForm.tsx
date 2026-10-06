@@ -31,35 +31,52 @@ export default function ContactForm() {
         id: 'services-to-contact-stack',
         trigger: servicesEl,
         start: 'bottom bottom',
-        end: '+=160%',
+        end: '+=240%',
         pin: true,
         pinSpacing: false,
         anticipatePin: 1,
-        scrub: 0.8,
+        scrub: 1.2,
         onUpdate: (self) => {
           gsap.set(servicesEl, {
-            scale: 1 - self.progress * 0.06,
-            opacity: 1 - self.progress * 0.3,
+            scale: 1 - self.progress * 0.04,
+            opacity: 1 - self.progress * 0.15,
             transformOrigin: 'center bottom',
           });
         },
       });
 
+      // Slower, smooth glide-in for ContactForm so "WHAT WE DO" remains clearly visible and readable
+      gsap.fromTo(
+        sectionRef.current,
+        { y: 360 },
+        {
+          y: 0,
+          ease: 'power1.out',
+          scrollTrigger: {
+            id: 'contact-slow-glide',
+            trigger: servicesEl,
+            start: 'bottom bottom',
+            end: '+=240%',
+            scrub: 1.5,
+          },
+        }
+      );
+
       // Staggered / delayed stacked entrance for all form blocks
       gsap.fromTo(
         '.cf-stack',
-        { y: 100, opacity: 0, scale: 0.96 },
+        { y: 80, opacity: 0, scale: 0.98 },
         {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 1.3,
+          duration: 1.2,
           ease: 'power3.out',
-          stagger: 0.2,
+          stagger: 0.15,
           scrollTrigger: {
             id: 'contact-staggered-reveal',
             trigger: sectionRef.current,
-            start: 'top 82%',
+            start: 'top 75%',
             once: true,
           },
         }

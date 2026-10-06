@@ -124,19 +124,23 @@ span:not(#intro *):not([style*="OT Brut"] *):not([style*="ERF Neot"] *):not(.fon
   font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif !important;
 }
 
-/* INTRO SECTION: Strict OT Brut priority on all words and headers */
-#intro,
-#intro *,
+/* INTRO SECTION: Strict OT Brut priority on all editorial poster words and headers */
 #intro h1,
 #intro h2,
 #intro h3,
-#intro span,
-#intro div,
 #intro .intro-reveal-text,
-#intro .intro-reveal-text *,
-[style*="OT Brut"],
-[style*="OT Brut"] * {
+#intro .intro-reveal-text * {
   font-family: 'OT Brut', 'Bodoni Moda', serif !important;
+}
+
+/* WHAT WE BELIEVE: Uses standard paragraph font FF Identification Std Five C Regular */
+#what-we-believe,
+#what-we-believe *,
+#intro #what-we-believe,
+#intro #what-we-believe *,
+#intro p,
+#intro p * {
+  font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif !important;
 }
 
 /* WHAT WE DO SECTION: Main heading uses ERF Neot (matching Contact Form heading), all other texts use FF Identification Std Five C Regular */

@@ -594,7 +594,6 @@ export default function Intro() {
       className="relative w-full min-h-screen text-[#0A1F44] overflow-hidden flex flex-col justify-between px-3 sm:px-8 lg:px-16 pb-6 select-none"
       style={{
         background: '#FFFFFF',
-        fontFamily: "'OT Brut', 'Bodoni Moda', serif",
       }}
     >
       {/* ── Pristine Subtle Micro-Grid Overlay (Zero papery grit) ── */}
@@ -894,17 +893,28 @@ export default function Intro() {
 
       {/* ══════════════════════════════════════════════
           WHAT WE BELIEVE — BRAND PHILOSOPHY PARAGRAPH
-          - DESKTOP ONLY: 100% original full 2 paragraphs exactly as approved
       ══════════════════════════════════════════════ */}
-      <div className="hidden md:flex relative z-10 w-full max-w-[1700px] mx-auto mt-16 md:mt-24 lg:mt-32 mb-16 md:mb-24 justify-end">
-        <div className="w-8/12 lg:w-6/12 border-l-2 border-[#0A1F44]/25 pl-8 space-y-3">
-          <span className="text-xs uppercase tracking-[0.25em] font-mono font-bold text-[#0A1F44]/60 block">
+      <div 
+        id="what-we-believe"
+        className="flex relative z-10 w-full max-w-[1700px] mx-auto mt-12 sm:mt-16 md:mt-24 lg:mt-32 mb-12 sm:mb-16 md:mb-24 justify-end"
+      >
+        <div className="w-full sm:w-10/12 md:w-8/12 lg:w-6/12 border-l-2 border-[#0A1F44]/25 pl-6 sm:pl-8 space-y-4">
+          <span 
+            className="text-xs sm:text-sm uppercase tracking-[0.25em] font-bold text-[#0A1F44]/70 block mb-1"
+            style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif" }}
+          >
             {"WHAT WE BELIEVE"}
           </span>
-          <p className="text-[17px] font-mono text-[#0A1F44] leading-relaxed">
+          <p 
+            className="text-[19px] sm:text-[20px] md:text-[21px] text-[#0A1F44] leading-[1.65]"
+            style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif" }}
+          >
             <strong className="font-bold text-[#0A1F44]">“Origo” means Origin</strong> – the starting point from which every idea, form and creation begins. Every great design begins with a simple origin and evolves into something extraordinary.
           </p>
-          <p className="text-[17px] font-mono text-[#0A1F44]/80 leading-relaxed">
+          <p 
+            className="text-[19px] sm:text-[20px] md:text-[21px] text-[#0A1F44]/80 leading-[1.65]"
+            style={{ fontFamily: "'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif" }}
+          >
             We believe in finding the origin of that idea and building from there. The objective is not simply to create something visually impressive, but to create experiences that connect, engage, inspire and endure.
           </p>
         </div>

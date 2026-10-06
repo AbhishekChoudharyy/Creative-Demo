@@ -115,7 +115,7 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="py-16 sm:py-20 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform"
+      className="pt-6 sm:pt-8 md:pt-10 pb-20 sm:pb-24 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform -mt-4 sm:-mt-8 md:-mt-10"
     >
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
@@ -128,7 +128,7 @@ export default function Services() {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row justify-between items-start select-none mb-12 md:mb-16">
+        <div className="flex flex-col lg:flex-row justify-between items-start select-none mb-8 sm:mb-10 md:mb-12">
           {/* LEFT SIDE: WHAT WE DO (Stacked ERF Neot Heading - exact solid & stroke mix matching Contact Form) */}
           <div className="flex flex-col items-start text-left">
             <h2
