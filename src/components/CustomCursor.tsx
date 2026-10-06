@@ -269,15 +269,11 @@ export default function CustomCursor() {
         ref={dotRef}
         data-custom-cursor
         aria-hidden="true"
-        className="hidden lg:block fixed top-0 left-0 z-[100000] pointer-events-none opacity-0 transition-opacity duration-200"
-      >
-        <div
-          className="w-2.5 h-2.5 rounded-full"
-          style={{
-            background:"rgba(20, 20, 20, 0)",
-          }}
-        />
-      </div>
+        className="hidden lg:block fixed top-0 left-0 z-[100000] pointer-events-none opacity-0 transition-opacity duration-200 w-2.5 h-2.5 rounded-full"
+        style={{
+          borderRadius: '50%',
+        }}
+      />
     </>
   );
 }
