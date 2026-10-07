@@ -896,7 +896,7 @@ export default function Intro() {
       ══════════════════════════════════════════════ */}
       <div 
         id="what-we-believe"
-        className="flex relative z-10 w-full max-w-[1700px] mx-auto mt-12 sm:mt-16 md:mt-24 lg:mt-32 mb-12 sm:mb-16 md:mb-24 justify-end"
+        className="hidden md:flex relative z-10 w-full max-w-[1700px] mx-auto mt-12 sm:mt-16 md:mt-24 lg:mt-32 mb-12 sm:mb-16 md:mb-24 justify-end"
       >
         <div className="w-full sm:w-10/12 md:w-8/12 lg:w-6/12 space-y-4">
           <p 
