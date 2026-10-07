@@ -99,7 +99,7 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="pt-6 sm:pt-8 md:pt-10 pb-20 sm:pb-24 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform transform-gpu -mt-4 sm:-mt-8 md:-mt-10"
+      className="pt-14 sm:pt-18 md:pt-24 pb-20 sm:pb-24 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform transform-gpu"
     >
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
@@ -116,14 +116,10 @@ export default function Services() {
           {/* LEFT SIDE: WHAT WE DO (Stacked ERF Neot Heading - exact solid & stroke mix matching Contact Form) */}
           <div className="flex flex-col items-start text-left">
             <h2
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-[#0A1F44] font-heading font-black tracking-tight"
-              style={{ fontFamily: "'ERF Neot', sans-serif" }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.96] uppercase text-[#0A1F44] font-black tracking-[-0.02em] whitespace-nowrap"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
-              <AsciiScramble text="WHAT" />
-              <br />
-              <span className="text-transparent" style={{ WebkitTextStroke: "1.5px #0A1F44" }}>
-                <AsciiScramble text="WE DO" />
-              </span>
+              <AsciiScramble text="WHAT WE DO" />
             </h2>
           </div>
 

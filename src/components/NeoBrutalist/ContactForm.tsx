@@ -146,19 +146,14 @@ export default function ContactForm() {
           <div className="flex flex-col justify-center">
 
             <h3
-              className="text-[#0A1F44] font-heading font-black text-3xl sm:text-4xl lg:text-5xl leading-[1.08] uppercase tracking-tight cf-stack"
-              style={{ fontFamily: "'ERF Neot', sans-serif" }}
+              className="text-[#0A1F44] font-black text-3xl sm:text-4xl lg:text-5xl leading-[1.06] uppercase tracking-[-0.02em] cf-stack"
+              style={{ fontFamily: "'OT Brut', 'Bodoni Moda', serif" }}
             >
-              <AsciiScramble text="Let's " />
-              <span className="text-transparent" style={{ WebkitTextStroke: "1.5px #0A1F44" }}>
-                <AsciiScramble text="Create" />
-              </span>
+              <AsciiScramble text="Let's Create" />
               <br />
               <AsciiScramble text="From The" />
               <br />
-              <span className="text-[#0A1F44] font-bold">
-                <AsciiScramble text="Origin." />
-              </span>
+              <AsciiScramble text="Origin." />
             </h3>
 
             <p className="text-sm sm:text-base font-mono mt-6 mb-8 max-w-md text-[#0A1F44]/80 leading-relaxed cf-stack">

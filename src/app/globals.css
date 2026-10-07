@@ -81,12 +81,22 @@
   --font-ot-brut: 'OT Brut', 'Bodoni Moda', serif;
 }
 
-html, body {
+html {
   background-color: #050505;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: auto;
+}
+
+body {
+  background-color: #050505;
+  margin: 0;
+  padding: 0;
+  overflow-x: clip;
+  overflow-y: visible;
   max-width: 100vw;
+  min-height: 100vh;
   -webkit-overflow-scrolling: touch;
   font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif;
 }
@@ -143,10 +153,12 @@ span:not(#intro *):not([style*="OT Brut"] *):not([style*="ERF Neot"] *):not(.fon
   font-family: 'FF Identification Std Five C Regular', 'FF Identification Std', var(--font-manrope), sans-serif !important;
 }
 
-/* WHAT WE DO SECTION: Main heading uses ERF Neot (matching Contact Form heading), all other texts use FF Identification Std Five C Regular */
+/* WHAT WE DO & CONTACT FORM MAIN HEADINGS: Use OT Brut */
 #services h2,
-#services h2 * {
-  font-family: 'ERF Neot', sans-serif !important;
+#services h2 *,
+#contact h3,
+#contact h3 * {
+  font-family: 'OT Brut', 'Bodoni Moda', serif !important;
 }
 
 #services *:not(h2):not(h2 *) {

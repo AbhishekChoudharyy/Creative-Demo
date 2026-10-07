@@ -94,7 +94,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full antialiased"
+      className="antialiased"
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -118,7 +118,7 @@ export default function RootLayout({
         <link rel="image_src" href={`${siteUrl}/og-square.png`} />
         <meta itemProp="image" content={`${siteUrl}/og-square.png`} />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-screen flex flex-col">{children}</body>
     </html>
   );
 }
