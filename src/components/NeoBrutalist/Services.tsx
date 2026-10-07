@@ -99,7 +99,7 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="pt-14 sm:pt-18 md:pt-24 pb-20 sm:pb-24 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform transform-gpu"
+      className="pt-6 sm:pt-8 md:pt-10 pb-20 sm:pb-24 bg-[#1E90FF] text-[#0A1F44] relative z-20 overflow-hidden will-change-transform transform-gpu -mt-4 sm:-mt-8 md:-mt-10"
     >
       
       {/* Floating Reveal Image - Fixed position relative to viewport */}
