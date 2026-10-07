@@ -59,24 +59,25 @@ export default function Services() {
       // Setup reveal element centering
       gsap.set(revealRef.current, { xPercent: -50, yPercent: -50 });
 
-
-      // Mouse Move Effect for Image Reveal
-      const moveReveal = (e: MouseEvent) => {
-        if (!revealRef.current) return;
-        
-        gsap.to(revealRef.current, {
-          x: e.clientX,
-          y: e.clientY,
-          duration: 0.5,
-          ease: 'power2.out',
-          overwrite: 'auto'
-        });
-      };
-
-      window.addEventListener('mousemove', moveReveal);
+      // Mouse Move Effect for Image Reveal (Desktop only)
+      let moveReveal: ((e: MouseEvent) => void) | null = null;
+      if (window.innerWidth >= 768) {
+        moveReveal = (e: MouseEvent) => {
+          if (!revealRef.current) return;
+          
+          gsap.to(revealRef.current, {
+            x: e.clientX,
+            y: e.clientY,
+            duration: 0.5,
+            ease: 'power2.out',
+            overwrite: 'auto'
+          });
+        };
+        window.addEventListener('mousemove', moveReveal);
+      }
 
       return () => {
-        window.removeEventListener('mousemove', moveReveal);
+        if (moveReveal) window.removeEventListener('mousemove', moveReveal);
       };
     }, sectionRef);
 
@@ -84,11 +85,13 @@ export default function Services() {
   }, []);
 
   const handleMouseEnter = (img: string) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) return;
     setActiveImage(img);
     gsap.to(revealRef.current, { scale: 1, opacity: 1, duration: 0.3 });
   };
 
   const handleMouseLeave = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) return;
     gsap.to(revealRef.current, { scale: 0, opacity: 0, duration: 0.3 });
   };
 
@@ -150,9 +153,11 @@ export default function Services() {
               onClick={() => {
                 soundManager.playClick();
                 setOpenIndex(openIndex === idx ? null : idx);
-                setTimeout(() => {
-                  ScrollTrigger.refresh();
-                }, 520);
+                if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                  setTimeout(() => {
+                    ScrollTrigger.refresh();
+                  }, 520);
+                }
               }}
             >
               <div className="relative z-10 flex justify-between items-center py-5 sm:py-6 md:py-7 px-2 sm:px-4 group-hover:px-4 sm:group-hover:px-6 transition-all duration-300">
@@ -187,7 +192,7 @@ export default function Services() {
                 className={`overflow-hidden transition-all duration-500 ease-out ${openIndex === idx ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'}`}
               >
                 <div className="pb-8 pl-4 pr-4 sm:pl-12 md:pl-16 max-w-2xl">
-                  <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-xl p-4 sm:p-6 shadow-[0_8px_32px_0_rgba(10,31,68,0.15)]">
+                  <div className="bg-white/15 border border-white/20 backdrop-blur-sm sm:backdrop-blur-md rounded-xl p-4 sm:p-6 shadow-[0_8px_32px_0_rgba(10,31,68,0.15)]">
                     <div className="flex flex-row items-start gap-3 sm:gap-5">
                       <p
                         className="text-[11px] sm:text-sm leading-[1.55] sm:leading-relaxed font-normal text-white/95 flex-1"

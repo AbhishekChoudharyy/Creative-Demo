@@ -23,11 +23,13 @@ export default function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const servicesEl = document.getElementById('services');
-      if (!servicesEl) return;
+    const servicesEl = document.getElementById('services');
+    if (!servicesEl) return;
 
-      // Unified single timeline: 100% perfectly synced, ultra-smooth scrub interpolation
+    const mm = gsap.matchMedia();
+
+    // DESKTOP (>= 768px): Unified pinned card-stack scrub animation
+    mm.add('(min-width: 768px)', () => {
       const stackTl = gsap.timeline({
         scrollTrigger: {
           id: 'services-to-contact-stack',
@@ -85,9 +87,33 @@ export default function ContactForm() {
           },
         }
       );
-    }, sectionRef);
+    });
 
-    return () => ctx.revert();
+    // MOBILE (< 768px): No scroll pinning! Natural, buttery-smooth touch scrolling
+    mm.add('(max-width: 767px)', () => {
+      gsap.set(servicesEl, { clearProps: 'transform,opacity,scale' });
+      gsap.set(sectionRef.current, { clearProps: 'transform,y' });
+
+      gsap.fromTo(
+        '.cf-stack',
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: 'power2.out',
+          stagger: 0.08,
+          scrollTrigger: {
+            id: 'contact-staggered-reveal-mobile',
+            trigger: sectionRef.current,
+            start: 'top 88%',
+            once: true,
+          },
+        }
+      );
+    });
+
+    return () => mm.revert();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

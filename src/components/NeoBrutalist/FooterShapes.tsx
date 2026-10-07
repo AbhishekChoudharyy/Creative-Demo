@@ -4,6 +4,7 @@ import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Lightformer, Preload } from '@react-three/drei';
 import * as THREE from 'three';
+import { soundManager } from '@/lib/sound';
 
 /* ─────────────────────────────────────────────────────────────
    Footer Magnetic Shape Cluster
@@ -181,7 +182,7 @@ function useShapeGeometries() {
   }, []);
 }
 
-function Cluster({ count }: { count: number }) {
+function Cluster({ count, isMobile }: { count: number; isMobile: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshesRef = useRef<Array<THREE.Mesh | null>>([]);
   const geometries = useShapeGeometries();
@@ -190,6 +191,29 @@ function Cluster({ count }: { count: number }) {
   const hoverStrength = useRef(0);
   const hoveredCount = useRef(0);
   const isDirectHoverRef = useRef(false);
+  const isTappedRef = useRef(false);
+  const tapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleTap = (e?: any) => {
+    if (!isMobile) return;
+    if (e && e.stopPropagation) e.stopPropagation();
+    soundManager.playClick();
+    isTappedRef.current = !isTappedRef.current;
+
+    if (tapTimeoutRef.current) clearTimeout(tapTimeoutRef.current);
+    if (isTappedRef.current) {
+      // Auto-return to tight knot after 3.2s
+      tapTimeoutRef.current = setTimeout(() => {
+        isTappedRef.current = false;
+      }, 3200);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (tapTimeoutRef.current) clearTimeout(tapTimeoutRef.current);
+    };
+  }, []);
 
   const items = useMemo(() => {
     const shapes = ['circle', 'triangle', 'rectangle'];
@@ -203,41 +227,64 @@ function Cluster({ count }: { count: number }) {
       scatterVector: THREE.Vector3;
     }> = [];
 
+    // 3D Infinity / Lemniscate Ribbon Formation:
+    // Vertical figure-8 with crossing in center (bich) and lobes up/down (upar/niche)
+    const H = 1.35; // Vertical half-span (top & bottom lobes)
+    const W = 1.25; // Horizontal width of lobes
+    const D = 0.52; // Depth separation at the crossover waist
+
     for (let i = 0; i < count; i++) {
-      // Natural organic spherical shell layering with balanced spacing
-      const r = 0.35 + Math.random() * 0.85;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
+      // Evenly distributed along the infinity curve with slight natural jitter
+      const u = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * ((Math.PI * 2) / count) * 0.45;
+
+      // Spine curve of the 3D Infinity (Figure-8 / Lemniscate):
+      // - At u = 0, PI: center waist (bich) -> x = 0, y = 0, z = +-D
+      // - At u = PI/2: top apex (upar) -> x = 0, y = +H, z = 0
+      // - At u = 3*PI/2: bottom apex (niche) -> x = 0, y = -H, z = 0
+      const spineX = W * Math.sin(2 * u);
+      const spineY = H * Math.sin(u);
+      const spineZ = D * Math.cos(u);
+      const spine = new THREE.Vector3(spineX, spineY, spineZ);
+
+      // Distance from center along Y: e in [0, 1]
+      // e ~ 0 at center (bich); e ~ 1 at top/bottom (upar & niche)
+      const e = Math.abs(Math.sin(u));
+
+      // Size Hierarchy: "chote bich, bade upar niche"
+      // Center (bich): compact small satellites & accent shapes (~0.16 - 0.22)
+      // Apexes (upar/niche): hero large volumetric shapes (~0.48 - 0.56)
+      const scaleMin = 0.17;
+      const scaleMax = 0.52;
+      const scale = scaleMin + (scaleMax - scaleMin) * Math.pow(e, 1.25) + (Math.random() - 0.5) * 0.05;
+
+      // Organic volumetric ribbon thickness around the spine:
+      // Tighter tube at the waist (bich), slightly more spread in the outer lobes
+      const jitterRadius = 0.10 + 0.22 * Math.pow(e, 0.7);
+      const jitterAngle = Math.random() * Math.PI * 2;
+      const jitterDepth = (Math.random() - 0.5) * 0.35;
+      const baseX = spineX + Math.cos(jitterAngle) * jitterRadius;
+      const baseY = spineY + Math.sin(jitterAngle) * jitterRadius;
+      const baseZ = spineZ + jitterDepth;
 
       // 360° Organic 3D scatter vector:
-      // Freely dispatches elements in the TOP (+Y), BOTTOM (-Y), LEFT, RIGHT, and DEPTH directions!
-      const elevation = (Math.random() - 0.48) * Math.PI; // Full vertical range (+Y and -Y)
-      const azimuth = Math.random() * Math.PI * 2;
-      const speed = 1.05 + Math.random() * 0.95;
-      const scatterVector = new THREE.Vector3(
-        Math.cos(elevation) * Math.cos(azimuth) * speed * 1.35,
-        Math.sin(elevation) * speed * 1.35, // Can fly upwards (+Y) and downwards (-Y) freely!
-        Math.cos(elevation) * Math.sin(azimuth) * speed * 1.05
-      );
-
-      // Dynamic Size Hierarchy: mix of large hero elements, medium bodies, and small floating satellites
-      const sizeType = Math.random();
-      let scale: number;
-      if (sizeType < 0.28) {
-        scale = 0.48 + Math.random() * 0.14; // BADE (Large hero pieces)
-      } else if (sizeType < 0.72) {
-        scale = 0.30 + Math.random() * 0.12; // MEDIUM pieces
-      } else {
-        scale = 0.16 + Math.random() * 0.09; // CHOTE (Small floating satellites)
-      }
+      // Outward burst along spine normal + 3D radial dispersion
+      const spineNormal = spine.length() > 0.05 ? spine.clone().normalize() : new THREE.Vector3(0, 1, 0);
+      const randomScatter = new THREE.Vector3(
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2
+      ).normalize();
+      const speed = 1.1 + Math.random() * 0.9;
+      const scatterVector = spineNormal
+        .clone()
+        .multiplyScalar(1.3)
+        .add(randomScatter.multiplyScalar(0.7))
+        .normalize()
+        .multiplyScalar(speed * 1.35);
 
       arr.push({
         shape: shapes[i % shapes.length],
-        base: new THREE.Vector3(
-          r * Math.sin(phi) * Math.cos(theta),
-          r * Math.sin(phi) * Math.sin(theta) * 0.9,
-          r * Math.cos(phi)
-        ),
+        base: new THREE.Vector3(baseX, baseY, baseZ),
         rot: new THREE.Euler(
           Math.random() * Math.PI,
           Math.random() * Math.PI,
@@ -274,18 +321,23 @@ function Cluster({ count }: { count: number }) {
     // Distance from cursor to the cluster center in world coordinates
     const cursorDist = Math.hypot(tmpTarget.x, tmpTarget.y);
 
-    // TARGETED HOVER: Only scatter if cursor is directly over the cluster shapes
-    // Otherwise stay clumped and stuck together ("pass chipak jynge jese mobile me hai")
-    if (cursorDist < 1.55 || hoveredCount.current > 0) {
-      isDirectHoverRef.current = true;
-    } else if (cursorDist > 2.15 && hoveredCount.current === 0) {
-      isDirectHoverRef.current = false;
+    if (isMobile) {
+      // On mobile: triggered exclusively by tap/touch burst
+      isDirectHoverRef.current = isTappedRef.current;
+    } else {
+      // TARGETED HOVER (Desktop): Only scatter if cursor is directly over the cluster shapes
+      // Otherwise stay clumped and stuck together ("pass chipak jynge jese mobile me hai")
+      if (cursorDist < 1.55 || hoveredCount.current > 0) {
+        isDirectHoverRef.current = true;
+      } else if (cursorDist > 2.15 && hoveredCount.current === 0) {
+        isDirectHoverRef.current = false;
+      }
     }
 
     const dt = Math.min(delta, 0.05);
 
     if (isDirectHoverRef.current) {
-      // Scatter dynamically away from cursor
+      // Scatter dynamically away from cursor / center
       hoverStrength.current += (1.0 - hoverStrength.current) * Math.min(1.0, dt * 11.5);
     } else {
       // Fast magnetic snap back into tight knot
@@ -304,10 +356,12 @@ function Cluster({ count }: { count: number }) {
       tmpWorld.copy(item.base).applyEuler(group.rotation);
       tmpWorld.addScaledVector(item.scatterVector, scatter * 1.4);
 
-      // Magnetic bulge when hovering
-      const dist = tmpWorld.distanceTo(tmpTarget);
-      const pull = Math.max(0, 1 - dist / 3.4);
-      tmpWorld.lerp(tmpTarget, pull * 0.22 * (1 - scatter * 0.7));
+      // Magnetic bulge when hovering (desktop only)
+      if (!isMobile) {
+        const dist = tmpWorld.distanceTo(tmpTarget);
+        const pull = Math.max(0, 1 - dist / 3.4);
+        tmpWorld.lerp(tmpTarget, pull * 0.22 * (1 - scatter * 0.7));
+      }
 
       item.offset.lerp(tmpWorld, damp);
       mesh.position.copy(item.offset);
@@ -319,7 +373,13 @@ function Cluster({ count }: { count: number }) {
   });
 
   return (
-    <group ref={groupRef} scale={1.05}>
+    <group
+      ref={groupRef}
+      scale={isMobile ? 0.74 : 1.05}
+      onPointerDown={(e) => {
+        if (isMobile) handleTap(e);
+      }}
+    >
       {items.map((item, i) => (
         <mesh
           key={i}
@@ -330,11 +390,16 @@ function Cluster({ count }: { count: number }) {
           position={item.base}
           rotation={item.rot}
           scale={item.scale}
+          onPointerDown={(e) => {
+            if (isMobile) handleTap(e);
+          }}
           onPointerOver={(e) => {
+            if (isMobile) return;
             e.stopPropagation();
             hoveredCount.current++;
           }}
           onPointerOut={(e) => {
+            if (isMobile) return;
             e.stopPropagation();
             hoveredCount.current = Math.max(0, hoveredCount.current - 1);
           }}
@@ -357,18 +422,26 @@ export default function FooterShapes() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
     const el = wrapRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') {
       setInView(true);
-      return;
+      return () => window.removeEventListener('resize', checkMobile);
     }
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
       { threshold: 0.05 }
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   return (
@@ -392,7 +465,7 @@ export default function FooterShapes() {
               <Lightformer form="rect" intensity={2.4} position={[4, 0, 2]} scale={[0.8, 6, 1]} color="#ffffff" />
               <Lightformer form="circle" intensity={1.8} position={[0, 0, -4]} scale={7} color="#60a5fa" />
             </Environment>
-            <Cluster count={isMobile ? 15 : 26} />
+            <Cluster count={isMobile ? 18 : 28} isMobile={isMobile} />
             <Preload all />
           </Suspense>
         </Canvas>
