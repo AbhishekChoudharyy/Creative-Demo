@@ -115,6 +115,8 @@ export default function CustomCursor() {
       return { r: 255, g: 255, b: 255 };
     };
 
+    let lastColorDetectTime = 0;
+
     const onMouseMove = (e: MouseEvent) => {
       targetX = e.clientX;
       targetY = e.clientY;
@@ -127,7 +129,11 @@ export default function CustomCursor() {
       dot.style.opacity = '1';
       isHidden = false;
 
-      targetColor = detectColorAt(targetX, targetY);
+      const now = performance.now();
+      if (now - lastColorDetectTime > 80) {
+        lastColorDetectTime = now;
+        targetColor = detectColorAt(targetX, targetY);
+      }
 
       // Add trail points
       const dx = targetX - prevX;

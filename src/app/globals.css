@@ -8,7 +8,7 @@
   font-family: 'OT Brut';
   src: url('/fonts/OTBrut-Regular.woff2') format('woff2'),
        url('/fonts/OTBrut-Regular.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: 100 500;
   font-style: normal;
   font-display: swap;
 }
@@ -16,39 +16,8 @@
 @font-face {
   font-family: 'OT Brut';
   src: url('/fonts/OTBrut-Bold.ttf') format('truetype'),
-       url('/fonts/OTBrut-Regular.woff2') format('woff2'),
-       url('/fonts/OTBrut-Regular.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'OT Brut';
-  src: url('/fonts/OTBrut-Bold.ttf') format('truetype'),
-       url('/fonts/OTBrut-Regular.woff2') format('woff2'),
-       url('/fonts/OTBrut-Regular.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'OT Brut';
-  src: url('/fonts/OTBrut-Bold.ttf') format('truetype'),
-       url('/fonts/OTBrut-Regular.woff2') format('woff2'),
-       url('/fonts/OTBrut-Regular.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'OT Brut';
-  src: url('/fonts/OTBrut-Regular.woff2') format('woff2'),
-       url('/fonts/OTBrut-Regular.ttf') format('truetype'),
-       url('/fonts/OTBrut-Bold.ttf') format('truetype');
-  font-weight: 100 900;
+       url('/fonts/OTBrut-Regular.woff2') format('woff2');
+  font-weight: 600 900;
   font-style: normal;
   font-display: swap;
 }
@@ -200,7 +169,6 @@ span:not(#intro *):not([style*="OT Brut"] *):not([style*="ERF Neot"] *):not(.fon
   z-index: 9999;
   opacity: 0.10; /* Ultra-low noise for razor-sharp clarity */
   background-repeat: repeat;
-  will-change: transform;
 }
 
 /* Cinematic Atmospheric Dissolve: Hero Electric Blue into Intro Luminous Whitish-Blue (Zero papery tone) */

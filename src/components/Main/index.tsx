@@ -27,11 +27,11 @@ const CanvasLoader: FC = () => {
 export const Main: FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
-  const [dpr, setDpr] = useState<[number, number]>([1, 2]);
+  const [dpr, setDpr] = useState<[number, number]>([1, 1.75]);
 
   useEffect(() => {
     const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
-    setDpr(isMobile ? [1, 1.5] : [1, 2]);
+    setDpr(isMobile ? [1, 1.3] : [1, 1.75]);
 
     const el = containerRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;

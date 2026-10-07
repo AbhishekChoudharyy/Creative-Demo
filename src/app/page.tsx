@@ -7,7 +7,6 @@ import { soundManager } from "@/lib/sound";
 import Intro from "@/components/NeoBrutalist/Intro";
 import WorkGallery from "@/components/NeoBrutalist/WorkGallery";
 import ImmersiveCarousel from "@/components/NeoBrutalist/ImmersiveCarousel";
-import Team from "@/components/NeoBrutalist/Team";
 import Services from "@/components/NeoBrutalist/Services";
 import ContactForm from "@/components/NeoBrutalist/ContactForm";
 import CustomCursor from "@/components/CustomCursor";
@@ -61,8 +60,9 @@ export default function Home() {
   const [isExiting, setIsExiting] = useState(false);
   const flashRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
-  const [scrollCount, setScrollCount] = useState(0);
-  const [isOverWhite, setIsOverWhite] = useState(false);
+  const scrollCountRef = useRef<HTMLSpanElement>(null);
+  const atelierTextRef = useRef<HTMLSpanElement>(null);
+  const lastOverWhiteRef = useRef<boolean>(false);
   const triggerFlashToShapesRef = useRef<(() => void) | null>(null);
   const triggerFlashToWorkRef = useRef<(() => void) | null>(null);
 
@@ -85,7 +85,9 @@ export default function Home() {
 
       const exactPercent = progress * 100;
       const count = Math.round(exactPercent);
-      setScrollCount(count);
+      if (scrollCountRef.current) {
+        scrollCountRef.current.textContent = `[ ${String(count).padStart(3, '0')} ]`;
+      }
 
       const isScrollingDown = window.scrollY > lastY;
       const isScrollingUp = window.scrollY < lastY;
@@ -165,7 +167,12 @@ export default function Home() {
         if (rect.top <= checkY && rect.top + rect.height * 0.45 >= checkY) overWhite = true;
       }
 
-      setIsOverWhite(overWhite);
+      if (lastOverWhiteRef.current !== overWhite) {
+        lastOverWhiteRef.current = overWhite;
+        if (atelierTextRef.current) {
+          atelierTextRef.current.style.color = overWhite ? '#1E90FF' : '#FFFFFF';
+        }
+      }
 
       rafId = requestAnimationFrame(loop);
     };
@@ -479,10 +486,11 @@ export default function Home() {
               Origo
             </span>
             <span
+              ref={atelierTextRef}
               className="text-[10px] sm:text-[11.5px] font-extralight uppercase tracking-[0.26em] leading-none font-sans transition-colors duration-300"
               style={{
                 fontWeight: 200,
-                color: isOverWhite ? '#1E90FF' : '#FFFFFF',
+                color: '#FFFFFF',
               }}
             >
               ATELIER
@@ -537,7 +545,7 @@ export default function Home() {
               [ SOUND {isMuted ? 'OFF' : 'ON'} ]
             </span>
           </button>
-          <span className="opacity-80 inline font-mono">[ {String(scrollCount).padStart(3, '0')} ]</span>
+          <span ref={scrollCountRef} className="opacity-80 inline font-mono">[ 000 ]</span>
           <button
             onClick={() => {
               soundManager.playClick();
