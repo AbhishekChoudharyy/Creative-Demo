@@ -3,42 +3,25 @@ const fs = require('fs');
 const path = require('path');
 
 async function makeFavicons() {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="108" fill="#1E90FF"/>
-  <g fill="none" stroke="#FFFFFF" stroke-width="34" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="118" cy="256" r="58" />
-    <polygon points="256,188 322,320 190,320" />
-    <rect x="336" y="194" width="122" height="122" rx="6" />
-  </g>
-</svg>`;
+  const srcImage = path.join(__dirname, '../public/apple-touch-icon.png');
+  const srcBuf = fs.readFileSync(srcImage);
 
-  fs.writeFileSync('public/favicon.svg', svg);
-  console.log('Wrote public/favicon.svg');
+  // 1. Generate PNG sizes
+  const sizes = [16, 32, 48, 64, 128, 256];
+  for (const s of sizes) {
+    await sharp(srcBuf).resize(s, s).png().toFile(`public/favicon-${s}x${s}.png`);
+  }
+  console.log('Generated PNG favicon sizes from apple-touch-icon.png');
 
-  const svgBuf = Buffer.from(svg);
+  // 2. Build multi-resolution ICO file (16, 32, 48, 64, 128, 256)
+  const icoSizes = [16, 32, 48, 64, 128, 256];
+  const pngBuffers = await Promise.all(icoSizes.map(s => sharp(srcBuf).resize(s, s).png().toBuffer()));
 
-  // Generate PNG sizes
-  await sharp(svgBuf).resize(16, 16).png().toFile('public/favicon-16x16.png');
-  await sharp(svgBuf).resize(32, 32).png().toFile('public/favicon-32x32.png');
-  await sharp(svgBuf).resize(48, 48).png().toFile('public/favicon-48x48.png');
-  await sharp(svgBuf).resize(64, 64).png().toFile('public/favicon-64x64.png');
-  await sharp(svgBuf).resize(128, 128).png().toFile('public/favicon-128x128.png');
-  await sharp(svgBuf).resize(256, 256).png().toFile('public/favicon-256x256.png');
-  console.log('Generated PNG sizes');
-
-  // Build a true multi-resolution ICO file (16x16, 32x32, 48x48, 256x256)
-  // ICO format stores PNG data directly for modern systems or BMP for older
-  const icoSizes = [16, 32, 48, 256];
-  const pngBuffers = await Promise.all(icoSizes.map(s => sharp(svgBuf).resize(s, s).png().toBuffer()));
-
-  // ICO header: 6 bytes
-  // ICONDIR: reserved (2 bytes: 0), type (2 bytes: 1 for icon), count (2 bytes: icoSizes.length)
   const header = Buffer.alloc(6);
   header.writeUInt16LE(0, 0);
   header.writeUInt16LE(1, 2);
   header.writeUInt16LE(icoSizes.length, 4);
 
-  // Directory entries: 16 bytes each
   const dirEntries = [];
   let currentOffset = 6 + icoSizes.length * 16;
 
@@ -61,7 +44,16 @@ async function makeFavicons() {
   const icoBuffer = Buffer.concat([header, ...dirEntries, ...pngBuffers]);
   fs.writeFileSync('public/favicon.ico', icoBuffer);
   fs.writeFileSync('src/app/favicon.ico', icoBuffer);
+  fs.copyFileSync(srcImage, 'src/app/icon.png');
   console.log('Created valid multi-resolution favicon.ico for public and src/app');
+
+  // 3. SVG with embedded apple-touch-icon data URI
+  const b64 = srcBuf.toString('base64');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <image width="180" height="180" href="data:image/png;base64,${b64}"/>
+</svg>`;
+  fs.writeFileSync('public/favicon.svg', svg);
+  console.log('Updated public/favicon.svg with apple-touch-icon base64');
 }
 
 makeFavicons().catch(console.error);
